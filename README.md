@@ -55,6 +55,8 @@ The `examples/custom_single_value/` directory is a complete, working visualizati
 - Horizontal and vertical alignment
 - Optional label with left, centre, or right alignment
 
+![Custom Single Value](screenshots/custom-single-value.png)
+
 ```spl
 | makeresults | eval value="Hello Splunk!"
 ```
@@ -68,6 +70,8 @@ The `examples/component_status_board/` directory is a NOC-style status board tha
 - Error and warning count badges on each tile
 - Click any tile to drilldown to that component's logs
 - Theme-aware — works on both light and dark dashboards
+
+![Component Status Board](screenshots/component-status-board.png)
 
 ```spl
 index=_internal sourcetype=splunkd log_level=* earliest=-15m
