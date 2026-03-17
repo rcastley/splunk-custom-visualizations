@@ -97,6 +97,8 @@ Each visualization is a standalone Splunk app:
 
 The build script handles npm install, webpack bundling, and tarball packaging — excluding dev files from the final package.
 
+Each viz is a standalone app by default, but you can also embed visualizations into an existing Splunk app. See [EMBEDDING.md](EMBEDDING.md) for instructions.
+
 ## Contributing
 
 1. Create your viz in `examples/your_viz_name/` following the directory structure
