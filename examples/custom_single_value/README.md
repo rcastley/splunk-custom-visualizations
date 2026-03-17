@@ -53,8 +53,10 @@ Any — works with both real-time and historical searches.
 
 ## Build
 
+From the repo root:
+
 ```bash
-cd appserver/static/visualizations/custom_single_value
-npm install
-npm run build
+./build.sh custom_single_value
 ```
+
+The tarball is output to `dist/custom_single_value-1.0.0.tar.gz`.

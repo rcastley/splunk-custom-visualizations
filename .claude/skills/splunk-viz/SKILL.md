@@ -116,11 +116,13 @@ Every viz app includes a `README.md` at the app root. This is the single source 
 
 ## Build
 
+From the repo root:
+
+\`\`\`bash
+./build.sh {app_name}
 \`\`\`
-cd appserver/static/visualizations/{app_name}
-npm install
-npm run build
-\`\`\`
+
+The tarball is output to `dist/{app_name}-1.0.0.tar.gz`.
 ```
 
 #### default/app.conf

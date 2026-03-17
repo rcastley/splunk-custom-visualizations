@@ -73,8 +73,10 @@ The `$row.component.value$` token receives the component name from the clicked t
 
 ## Build
 
+From the repo root:
+
 ```bash
-cd appserver/static/visualizations/component_status_board
-npm install
-npm run build
+./build.sh component_status_board
 ```
+
+The tarball is output to `dist/component_status_board-1.0.0.tar.gz`.
