@@ -1,9 +1,9 @@
 /*
  * Component Status Board — Splunk Custom Visualization
  *
- * NOC-style grid of status tiles showing Splunk component health.
- * Each tile displays a component name, error/warning counts, and
- * a status indicator. Click a tile to drilldown to that component.
+ * Material-inspired grid of status cards showing Splunk component health.
+ * Each card has a status icon, component name, error/warning counts,
+ * and card shadow for depth. Click a card to drilldown.
  *
  * Expected SPL columns: component, errors, warns, status
  */
@@ -16,22 +16,31 @@ define([
 
     var STATUS = {
         critical: {
-            accent:   '#FF1744',
-            tint:     'rgba(255,23,68,0.10)',
-            badgeBg:  'rgba(255,23,68,0.25)',
-            border:   'rgba(255,23,68,0.25)'
+            accent:    '#EF5350',
+            iconBg:    'rgba(239,83,80,0.15)',
+            iconRing:  'rgba(239,83,80,0.30)',
+            cardTint:  'rgba(239,83,80,0.04)',
+            badgeBg:   'rgba(239,83,80,0.12)',
+            badgeText: '#EF5350',
+            shadow:    'rgba(239,83,80,0.25)'
         },
         warning: {
-            accent:   '#FFB300',
-            tint:     'rgba(255,179,0,0.08)',
-            badgeBg:  'rgba(255,179,0,0.20)',
-            border:   'rgba(255,179,0,0.25)'
+            accent:    '#FFA726',
+            iconBg:    'rgba(255,167,38,0.15)',
+            iconRing:  'rgba(255,167,38,0.30)',
+            cardTint:  'rgba(255,167,38,0.04)',
+            badgeBg:   'rgba(255,167,38,0.12)',
+            badgeText: '#F57C00',
+            shadow:    'rgba(255,167,38,0.15)'
         },
         ok: {
-            accent:   '#00C853',
-            tint:     'rgba(0,200,83,0.06)',
-            badgeBg:  'rgba(0,200,83,0.15)',
-            border:   'rgba(0,200,83,0.25)'
+            accent:    '#66BB6A',
+            iconBg:    'rgba(102,187,106,0.15)',
+            iconRing:  'rgba(102,187,106,0.30)',
+            cardTint:  'rgba(102,187,106,0.03)',
+            badgeBg:   'rgba(102,187,106,0.12)',
+            badgeText: '#43A047',
+            shadow:    'rgba(0,0,0,0.06)'
         }
     };
 
@@ -61,33 +70,89 @@ define([
         return size;
     }
 
-    function drawBadge(ctx, label, count, x, y, h, bgColor, textColor) {
-        var text = label + ' ' + count;
-        ctx.font = 'bold ' + (h - 2) + 'px monospace';
-        var tw = ctx.measureText(text).width;
-        var pw = 8;
-        var bw = tw + pw * 2;
-        var br = h / 2;
+    // ── Icon drawing (Canvas 2D paths) ──────────────────────────
 
-        roundRect(ctx, x, y, bw, h, br);
-        ctx.fillStyle = bgColor;
+    function drawCriticalIcon(ctx, cx, cy, r) {
+        // X mark
+        var s = r * 0.38;
+        ctx.beginPath();
+        ctx.moveTo(cx - s, cy - s);
+        ctx.lineTo(cx + s, cy + s);
+        ctx.moveTo(cx + s, cy - s);
+        ctx.lineTo(cx - s, cy + s);
+        ctx.strokeStyle = STATUS.critical.accent;
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+    }
+
+    function drawWarningIcon(ctx, cx, cy, r) {
+        // Exclamation triangle
+        var s = r * 0.45;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - s);
+        ctx.lineTo(cx + s, cy + s * 0.7);
+        ctx.lineTo(cx - s, cy + s * 0.7);
+        ctx.closePath();
+        ctx.strokeStyle = STATUS.warning.accent;
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+        // Dot
+        ctx.beginPath();
+        ctx.arc(cx, cy + s * 0.25, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = STATUS.warning.accent;
         ctx.fill();
+        // Line
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - s * 0.25);
+        ctx.lineTo(cx, cy + s * 0.05);
+        ctx.strokeStyle = STATUS.warning.accent;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+    }
 
-        ctx.fillStyle = textColor;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text, x + pw, y + h / 2);
+    function drawOkIcon(ctx, cx, cy, r) {
+        // Checkmark
+        var s = r * 0.35;
+        ctx.beginPath();
+        ctx.moveTo(cx - s, cy);
+        ctx.lineTo(cx - s * 0.2, cy + s * 0.7);
+        ctx.lineTo(cx + s, cy - s * 0.5);
+        ctx.strokeStyle = STATUS.ok.accent;
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+    }
 
-        return bw;
+    function drawStatusIcon(ctx, cx, cy, r, status, pal) {
+        // Outer ring
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = pal.iconBg;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = pal.iconRing;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        if (status === 'critical') drawCriticalIcon(ctx, cx, cy, r);
+        else if (status === 'warning') drawWarningIcon(ctx, cx, cy, r);
+        else drawOkIcon(ctx, cx, cy, r);
     }
 
     function getThemeColors(isDark) {
         return {
-            textPrimary:   isDark ? 'rgba(255,255,255,0.90)' : 'rgba(0,0,0,0.85)',
-            textSecondary: isDark ? 'rgba(255,255,255,0.50)' : 'rgba(0,0,0,0.45)',
-            badgeText:     isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.90)',
-            separator:     isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-            tileBg:        isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'
+            textPrimary:   isDark ? 'rgba(255,255,255,0.92)' : 'rgba(30,30,30,0.88)',
+            textSecondary: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.42)',
+            textTertiary:  isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.28)',
+            cardBg:        isDark ? 'rgba(255,255,255,0.06)' : '#ffffff',
+            cardBorder:    isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+            cardShadow:    isDark ? 'rgba(0,0,0,0.30)' : 'rgba(0,0,0,0.08)',
+            headerLine:    isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'
         };
     }
 
@@ -234,31 +299,30 @@ define([
                 });
             }
 
-            // ── Grid layout (calculate before sizing canvas) ──
+            // ── Grid layout ──
             var el = this.el;
             var rect = el.getBoundingClientRect();
             if (rect.width <= 0 || rect.height <= 0) return;
 
             var w = rect.width;
-            var headerH = 32;
-            var gap = 6;
-            var tileH = 80;
-            var minTileW = 180;
-            var maxTileW = 280;
-            var cornerRadius = 4;
+            var headerH = 44;
+            var gap = 10;
+            var tileH = 96;
+            var minTileW = 220;
+            var maxTileW = 340;
+            var cornerRadius = 12;
 
-            var availW = w - gap;
-            var cols = Math.max(1, Math.floor(availW / (minTileW + gap)));
+            var availW = w - gap * 2;
+            var cols = Math.max(1, Math.floor((availW + gap) / (minTileW + gap)));
             var tileW = Math.min(maxTileW, (availW - gap * (cols - 1)) / cols);
             var gridW = cols * tileW + (cols - 1) * gap;
             var offsetX = (w - gridW) / 2;
             var totalRows = Math.ceil(items.length / cols);
 
-            // Calculate total content height — canvas grows to fit all tiles
-            var contentH = headerH + gap + totalRows * tileH + (totalRows - 1) * gap + gap;
+            var contentH = headerH + gap + totalRows * (tileH + gap) + gap;
             var h = Math.max(rect.height, contentH);
 
-            // ── Size canvas to full content height ──
+            // ── Size canvas ──
             var dpr = window.devicePixelRatio || 1;
             this.canvas.style.height = h + 'px';
             this.canvas.width = w * dpr;
@@ -281,72 +345,77 @@ define([
             }
 
             // ── Header ──
-            // Title (left)
-            ctx.font = 'bold 11px sans-serif';
-            ctx.fillStyle = colors.textSecondary;
+            ctx.font = '600 13px sans-serif';
+            ctx.fillStyle = colors.textPrimary;
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(title.toUpperCase(), 10, headerH / 2);
+            ctx.fillText(title.toUpperCase(), offsetX, headerH / 2);
 
-            // Legend (right)
+            // Legend (right) — pill badges
             if (showLegend) {
                 var legendItems = [
-                    { label: 'Critical', count: counts.critical, color: STATUS.critical.accent },
-                    { label: 'Warning',  count: counts.warning,  color: STATUS.warning.accent },
-                    { label: 'OK',       count: counts.ok,       color: STATUS.ok.accent }
+                    { label: 'Critical', count: counts.critical, pal: STATUS.critical },
+                    { label: 'Warning',  count: counts.warning,  pal: STATUS.warning },
+                    { label: 'OK',       count: counts.ok,       pal: STATUS.ok }
                 ];
 
-                var lx = w - 10;
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'middle';
+                var pillH = 24;
+                var pillGap = 6;
+                var pillY = (headerH - pillH) / 2;
 
-                for (var li = legendItems.length - 1; li >= 0; li--) {
-                    var item = legendItems[li];
+                // Measure total width first to right-align
+                var totalPillW = 0;
+                var pillWidths = [];
+                for (var li = 0; li < legendItems.length; li++) {
+                    var lItem = legendItems[li];
+                    var pillText = lItem.count + ' ' + lItem.label;
+                    ctx.font = '600 11px sans-serif';
+                    var pw = ctx.measureText(pillText).width + 20;
+                    pillWidths.push(pw);
+                    totalPillW += pw + (li < legendItems.length - 1 ? pillGap : 0);
+                }
 
-                    // Count
-                    ctx.font = 'bold 11px monospace';
-                    ctx.fillStyle = colors.textPrimary;
-                    var countStr = String(item.count);
-                    var countW = ctx.measureText(countStr).width;
-                    ctx.fillText(countStr, lx, headerH / 2);
-                    lx -= countW + 4;
+                var px = w - offsetX - totalPillW;
+                for (var li2 = 0; li2 < legendItems.length; li2++) {
+                    var lItem2 = legendItems[li2];
+                    var pillText2 = lItem2.count + ' ' + lItem2.label;
+                    var pw2 = pillWidths[li2];
 
-                    // Label
-                    ctx.font = 'normal 10px sans-serif';
-                    ctx.fillStyle = colors.textSecondary;
-                    var labelW = ctx.measureText(item.label).width;
-                    ctx.fillText(item.label, lx, headerH / 2);
-                    lx -= labelW + 4;
-
-                    // Dot
-                    ctx.beginPath();
-                    ctx.arc(lx, headerH / 2, 4, 0, Math.PI * 2);
-                    ctx.fillStyle = item.color;
+                    roundRect(ctx, px, pillY, pw2, pillH, pillH / 2);
+                    ctx.fillStyle = lItem2.pal.iconBg;
                     ctx.fill();
-                    lx -= 16;
+                    roundRect(ctx, px, pillY, pw2, pillH, pillH / 2);
+                    ctx.strokeStyle = lItem2.pal.iconRing;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    ctx.font = '600 11px sans-serif';
+                    ctx.fillStyle = lItem2.pal.accent;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(pillText2, px + pw2 / 2, pillY + pillH / 2);
+
+                    px += pw2 + pillGap;
                 }
             }
 
-            // Header separator
-            ctx.fillStyle = colors.separator;
-            ctx.fillRect(0, headerH - 1, w, 1);
+            // Header line
+            ctx.fillStyle = colors.headerLine;
+            ctx.fillRect(offsetX, headerH - 1, gridW, 1);
 
-            // ── Font scaling ──
-            var nameFontSize = 13;
-            var badgeFontSize = 11;
-            var statusFontSize = 9;
+            // ── Icon sizing ──
+            var iconRadius = Math.min(18, tileH * 0.2);
 
-            // ── Draw tiles ──
+            // ── Draw cards ──
             this._tileRects = [];
 
             for (var ti = 0; ti < items.length; ti++) {
                 var tItem = items[ti];
-                var col = ti % cols;
+                var col2 = ti % cols;
                 var row2 = Math.floor(ti / cols);
-                var tx = offsetX + col * (tileW + gap);
+                var tx = offsetX + col2 * (tileW + gap);
                 var ty = headerH + gap + row2 * (tileH + gap);
 
-                // Store rect for drilldown hit testing
                 this._tileRects.push({
                     x: tx, y: ty, w: tileW, h: tileH,
                     name: tItem.name
@@ -355,104 +424,126 @@ define([
                 var pal = STATUS[tItem.status] || STATUS.ok;
                 var isMuted = mutedOk && tItem.status === 'ok';
 
-                // Set opacity for muted OK tiles
-                if (isMuted) ctx.globalAlpha = 0.55;
+                if (isMuted) ctx.globalAlpha = 0.5;
 
-                // Critical glow
+                // ── Card shadow ──
+                ctx.save();
                 if (showGlow && tItem.status === 'critical') {
-                    ctx.save();
-                    ctx.shadowColor = '#FF1744';
+                    ctx.shadowColor = pal.shadow;
+                    ctx.shadowBlur = 16;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 2;
+                } else {
+                    ctx.shadowColor = colors.cardShadow;
                     ctx.shadowBlur = 8;
                     ctx.shadowOffsetX = 0;
-                    ctx.shadowOffsetY = 0;
-                    roundRect(ctx, tx, ty, tileW, tileH, cornerRadius);
-                    ctx.fillStyle = pal.tint;
-                    ctx.fill();
-                    ctx.restore();
+                    ctx.shadowOffsetY = 2;
                 }
 
-                // Tile base fill
+                // Card background
                 roundRect(ctx, tx, ty, tileW, tileH, cornerRadius);
-                ctx.fillStyle = colors.tileBg;
+                ctx.fillStyle = colors.cardBg;
                 ctx.fill();
+                ctx.restore();
 
                 // Status tint overlay
                 roundRect(ctx, tx, ty, tileW, tileH, cornerRadius);
-                ctx.fillStyle = pal.tint;
+                ctx.fillStyle = pal.cardTint;
                 ctx.fill();
 
-                // Subtle gradient overlay for depth
-                var grad = ctx.createLinearGradient(tx, ty, tx, ty + tileH);
-                grad.addColorStop(0, 'rgba(255,255,255,0.03)');
-                grad.addColorStop(1, 'rgba(0,0,0,0.03)');
+                // Card border
                 roundRect(ctx, tx, ty, tileW, tileH, cornerRadius);
-                ctx.fillStyle = grad;
-                ctx.fill();
-
-                // Tile border
-                roundRect(ctx, tx, ty, tileW, tileH, cornerRadius);
-                ctx.strokeStyle = pal.border;
+                ctx.strokeStyle = colors.cardBorder;
                 ctx.lineWidth = 1;
                 ctx.stroke();
 
-                // Left status accent bar
-                var barInset = 4;
-                ctx.fillStyle = pal.accent;
-                ctx.fillRect(tx + 1, ty + barInset, 4, tileH - barInset * 2);
+                // ── Layout: icon left, content right ──
+                var iconCX = tx + 16 + iconRadius;
+                var iconCY = ty + tileH / 2;
+                var contentX = iconCX + iconRadius + 14;
+                var contentW = tileW - (contentX - tx) - 16;
 
-                // ── Tile content layout (proportional to tileH) ──
-                var contentX = tx + 14;
-                var contentW = tileW - 28;
+                // Status icon circle
+                drawStatusIcon(ctx, iconCX, iconCY, iconRadius, tItem.status, pal);
 
+                // ── Text content ──
                 // Component name
-                var nSize = fitText(ctx, tItem.name.toUpperCase(), contentW, nameFontSize, 'bold', 'sans-serif');
-                ctx.font = 'bold ' + nSize + 'px sans-serif';
+                var nameFontSize = 14;
+                var nSize = fitText(ctx, tItem.name, contentW, nameFontSize, '600', 'sans-serif');
+                ctx.font = '600 ' + nSize + 'px sans-serif';
                 ctx.fillStyle = colors.textPrimary;
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'top';
-                ctx.fillText(tItem.name.toUpperCase(), contentX, ty + tileH * 0.12);
+                var nameY = ty + 16;
+                ctx.fillText(tItem.name, contentX, nameY);
 
-                // Error/warning badges
-                var badgeY = ty + tileH * 0.42;
-                var badgeH = Math.max(12, badgeFontSize + 2);
+                // Status label
+                ctx.font = '500 10px sans-serif';
+                ctx.fillStyle = pal.accent;
+                ctx.textBaseline = 'top';
+                ctx.fillText(tItem.status.toUpperCase(), contentX, nameY + nSize + 4);
+
+                // ── Badges (bottom of card) ──
+                var badgeY = ty + tileH - 28;
+                var badgeH = 20;
                 var bx = contentX;
 
                 if (tItem.errors > 0) {
-                    var ew = drawBadge(ctx, 'ERR', tItem.errors, bx, badgeY, badgeH,
-                        STATUS.critical.badgeBg, colors.badgeText);
-                    bx += ew + 6;
+                    var errText = '\u2716 ' + tItem.errors + ' error' + (tItem.errors !== 1 ? 's' : '');
+                    ctx.font = '600 10px sans-serif';
+                    var errTW = ctx.measureText(errText).width;
+                    var errBW = errTW + 14;
+
+                    roundRect(ctx, bx, badgeY, errBW, badgeH, badgeH / 2);
+                    ctx.fillStyle = STATUS.critical.badgeBg;
+                    ctx.fill();
+
+                    ctx.fillStyle = STATUS.critical.badgeText;
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(errText, bx + 7, badgeY + badgeH / 2);
+                    bx += errBW + 6;
                 }
+
                 if (tItem.warnings > 0) {
-                    drawBadge(ctx, 'WARN', tItem.warnings, bx, badgeY, badgeH,
-                        STATUS.warning.badgeBg, colors.badgeText);
+                    var warnText = '\u26A0 ' + tItem.warnings + ' warn' + (tItem.warnings !== 1 ? 's' : '');
+                    ctx.font = '600 10px sans-serif';
+                    var warnTW = ctx.measureText(warnText).width;
+                    var warnBW = warnTW + 14;
+
+                    roundRect(ctx, bx, badgeY, warnBW, badgeH, badgeH / 2);
+                    ctx.fillStyle = STATUS.warning.badgeBg;
+                    ctx.fill();
+
+                    ctx.fillStyle = STATUS.warning.badgeText;
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(warnText, bx + 7, badgeY + badgeH / 2);
                 }
 
-                // Separator line
-                var sepY = ty + tileH * 0.68;
-                ctx.fillStyle = colors.separator;
-                ctx.fillRect(contentX, sepY, contentW, 1);
+                // Show "All clear" for ok tiles with no issues
+                if (tItem.errors === 0 && tItem.warnings === 0) {
+                    ctx.font = '500 10px sans-serif';
+                    ctx.fillStyle = colors.textTertiary;
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('\u2713 All clear', contentX, badgeY + badgeH / 2);
+                }
 
-                // Status label
-                ctx.font = '600 ' + statusFontSize + 'px sans-serif';
-                ctx.fillStyle = pal.accent;
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'top';
-                ctx.fillText(tItem.status.toUpperCase(), contentX, ty + tileH * 0.74);
-
-                // Reset opacity
                 if (isMuted) ctx.globalAlpha = 1.0;
             }
 
             // ── No data state ──
             if (items.length === 0) {
-                ctx.font = 'bold 14px sans-serif';
+                ctx.font = '600 16px sans-serif';
                 ctx.fillStyle = colors.textSecondary;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText('AWAITING COMPONENT DATA', w / 2, h / 2 - 12);
+                ctx.fillText('AWAITING COMPONENT DATA', w / 2, h / 2 - 14);
 
-                ctx.font = 'normal 11px sans-serif';
-                ctx.fillText('Expected columns: component, errors, warns, status', w / 2, h / 2 + 12);
+                ctx.font = 'normal 12px sans-serif';
+                ctx.fillStyle = colors.textTertiary;
+                ctx.fillText('Expected columns: component, errors, warns, status', w / 2, h / 2 + 14);
             }
         },
 
