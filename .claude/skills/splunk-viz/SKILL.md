@@ -362,14 +362,14 @@ define([
             // Main render method. Called whenever data or config changes.
             //
             // MUST handle:
-            //   1. data === false (no data) — clear canvas or show placeholder
+            //   1. data === false (no data) — use cached data or show placeholder
             //   2. Canvas sizing with devicePixelRatio for sharp rendering
             //   3. Reading user settings from config
             //   4. Full canvas redraw (clear + draw)
 
             if (!data) {
-                // Optionally draw a "no data" message
-                return;
+                if (this._lastGoodData) { data = this._lastGoodData; }
+                else { return; }
             }
 
             // ── Read user settings ──
@@ -644,7 +644,25 @@ define([
     - Data flowing: renders normally (correct)
     - Brief gap between batches: keeps showing last known data instead of flashing error (correct)
 
-    **Important:** Only cache-return for the empty-rows check. If `formatData` also validates required columns (e.g., `if (colIdx.driver === undefined) throw ...`), that check should still throw because it indicates a genuine configuration error, not a transient data gap.
+    **Important:** Only cache-return for the empty-rows check. If `formatData` also validates required columns, that check should also return `_lastGoodData` before throwing, so a transient batch with missing columns doesn't flash an error:
+    ```javascript
+    if (colIdx.required_field === undefined) {
+        if (this._lastGoodData) return this._lastGoodData;
+        throw new SplunkVisualizationBase.VisualizationError('...');
+    }
+    ```
+
+    **Cache in `updateView` too — not just `formatData`**. In Dashboard Studio, Splunk can pass `data = false` directly to `updateView` even when `formatData` returned cached data (e.g., when a chain/post-process search temporarily returns zero rows between result batches). Without a cache fallback in `updateView`, the viz goes blank with no error message. Always use this pattern:
+    ```javascript
+    updateView: function(data, config) {
+        if (!data) {
+            if (this._lastGoodData) { data = this._lastGoodData; }
+            else { return; } // or draw a no-data placeholder
+        }
+        // ... rest of drawing code ...
+    }
+    ```
+    This provides two layers of protection: `formatData` caching prevents `VisualizationError` flashing, and `updateView` caching prevents blank canvas flashing.
 
     **Do NOT throw `VisualizationError` for missing individual fields** in real-time vizs. When a real-time search first starts (or a playback begins), some fields may not exist in the initial results. For these transient missing-field cases, fall back to safe defaults so the viz renders immediately and updates as data arrives:
     ```javascript
