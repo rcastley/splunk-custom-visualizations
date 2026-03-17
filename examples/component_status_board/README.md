@@ -20,6 +20,7 @@ NOC-style grid of status tiles showing Splunk component health at a glance. Each
 ## Notes
 
 - Tiles auto-flow into a responsive grid based on panel width
+- Scrollable — the panel scrolls vertically when there are more tiles than fit
 - Works on both light and dark Splunk dashboard themes
 - Critical tiles glow and sort first; OK tiles are visually muted
 - Click a tile to drilldown to that component's logs
