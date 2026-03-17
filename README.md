@@ -74,7 +74,7 @@ The `examples/component_status_board/` directory is a NOC-style status board tha
 ![Component Status Board](screenshots/component-status-board.png)
 
 ```spl
-index=_internal sourcetype=splunkd log_level=* earliest=-15m
+index=_internal sourcetype=splunkd log_level=* component=*
 | stats count(eval(log_level="ERROR")) as errors
         count(eval(log_level="WARN")) as warns by component
 | eval status=if(errors>0,"critical",if(warns>0,"warning","ok"))

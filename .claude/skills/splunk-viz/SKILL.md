@@ -798,7 +798,7 @@ define([
 
     Example drilldown search for a component status board:
     ```spl
-    index=_internal sourcetype=splunkd component="$row.component.value$" (log_level=ERROR OR log_level=WARN) earliest=-15m
+    index=_internal sourcetype=splunkd component="$row.component.value$" (log_level=ERROR OR log_level=WARN)
     ```
 
     **Important**: Always quote the token in SPL (`"$row.field.value$"`) because values may contain special characters like colons.

@@ -29,7 +29,7 @@ NOC-style grid of status tiles showing Splunk component health at a glance. Each
 ## Search
 
 ```spl
-index=_internal sourcetype=splunkd log_level=* earliest=-15m
+index=_internal sourcetype=splunkd log_level=* component=*
 | stats count(eval(log_level="ERROR")) as errors
         count(eval(log_level="WARN")) as warns
         latest(_time) as last_seen
@@ -63,14 +63,14 @@ Click any tile to drilldown to that component's error and warning logs. In Dashb
 5. Use this search string:
 
 ```spl
-index=_internal sourcetype=splunkd component="$row.component.value$" (log_level=ERROR OR log_level=WARN) earliest=-15m
+index=_internal sourcetype=splunkd component="$row.component.value$" (log_level=ERROR OR log_level=WARN)
 ```
 
 The `$row.component.value$` token receives the component name from the clicked tile. Quote the token value to handle component names with special characters (e.g., `AdminHandler:TCP`).
 
 ## Time Range
 
-`-15m` to `now` for testing, or use real-time (`rt-5m` to `rt`) for live monitoring.
+Controlled by the dashboard's global time picker. Use `-15m` to `now` for testing, or real-time (`rt-5m` to `rt`) for live monitoring.
 
 ## Build
 
