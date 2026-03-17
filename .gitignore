@@ -1,0 +1,22 @@
+# Build output
+dist/
+
+# Node dependencies
+node_modules/
+
+# macOS
+.DS_Store
+._*
+__MACOSX/
+
+# Webpack output (built bundles — rebuild from source)
+examples/*/appserver/static/visualizations/*/visualization.js
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# npm
+package-lock.json

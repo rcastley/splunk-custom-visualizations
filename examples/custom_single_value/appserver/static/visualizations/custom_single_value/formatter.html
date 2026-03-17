@@ -1,0 +1,76 @@
+<form class="splunk-formatter-section" section-label="Data">
+    <splunk-control-group label="Field Name" help="Column name from your search to display">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.field" value="value">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Label" help="Optional label text displayed above the value (leave empty for none)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.label" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Label Align" help="Horizontal alignment of the label text">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.labelAlign" value="center">
+            <option value="left">Left</option>
+            <option value="center">Centre</option>
+            <option value="right">Right</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Style">
+    <splunk-control-group label="Text Colour" help="Hex colour for the main value text">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.color" type="custom" value="#E20082">
+            <splunk-color>#E20082</splunk-color>
+            <splunk-color>#e10600</splunk-color>
+            <splunk-color>#ff8700</splunk-color>
+            <splunk-color>#ffd700</splunk-color>
+            <splunk-color>#00d2be</splunk-color>
+            <splunk-color>#0090ff</splunk-color>
+            <splunk-color>#9b59b6</splunk-color>
+            <splunk-color>#00ff00</splunk-color>
+            <splunk-color>#888888</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Label Colour" help="Hex colour for the label text">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.labelColor" type="custom" value="#888888">
+            <splunk-color>#888888</splunk-color>
+            <splunk-color>#ffffff</splunk-color>
+            <splunk-color>#e10600</splunk-color>
+            <splunk-color>#ff8700</splunk-color>
+            <splunk-color>#00d2be</splunk-color>
+            <splunk-color>#0090ff</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Font Weight" help="Bold or regular text">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.weight" value="bold">
+            <option value="bold">Bold</option>
+            <option value="normal">Regular</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Horizontal Align" help="Text horizontal alignment">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.align" value="center">
+            <option value="left">Left</option>
+            <option value="center">Centre</option>
+            <option value="right">Right</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Vertical Align" help="Text vertical alignment">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.valign" value="middle">
+            <option value="top">Top</option>
+            <option value="middle">Middle</option>
+            <option value="bottom">Bottom</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Glow" help="Add a glow effect to the value text using the text colour">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="false">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>

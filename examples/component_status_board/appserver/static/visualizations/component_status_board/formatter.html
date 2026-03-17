@@ -1,0 +1,56 @@
+<form class="splunk-formatter-section" section-label="Data">
+    <splunk-control-group label="Component Field" help="Column name for the component/host name">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.componentField" value="component">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Errors Field" help="Column name for the error count">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.errorsField" value="errors">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Warnings Field" help="Column name for the warning count">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.warningsField" value="warns">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Status Field" help="Column name for status (ok/warning/critical)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.statusField" value="status">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Display">
+    <splunk-control-group label="Title" help="Header text displayed above the tile grid">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value="COMPONENT STATUS">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Sort Order" help="How tiles are ordered in the grid">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.sortOrder" value="severity">
+            <option value="severity">By Severity</option>
+            <option value="alphabetical">Alphabetical</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Legend" help="Display status legend in the header bar">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLegend" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Critical Glow" help="Red glow effect on tiles with errors">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Mute OK Tiles" help="Dim healthy component tiles so problems stand out">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.mutedOk" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>

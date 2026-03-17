@@ -1,0 +1,9 @@
+display.visualizations.custom.component_status_board.component_status_board.componentField = <string>
+display.visualizations.custom.component_status_board.component_status_board.errorsField = <string>
+display.visualizations.custom.component_status_board.component_status_board.warningsField = <string>
+display.visualizations.custom.component_status_board.component_status_board.statusField = <string>
+display.visualizations.custom.component_status_board.component_status_board.title = <string>
+display.visualizations.custom.component_status_board.component_status_board.sortOrder = <string>
+display.visualizations.custom.component_status_board.component_status_board.showLegend = <boolean>
+display.visualizations.custom.component_status_board.component_status_board.showGlow = <boolean>
+display.visualizations.custom.component_status_board.component_status_board.mutedOk = <boolean>

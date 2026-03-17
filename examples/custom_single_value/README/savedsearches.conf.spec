@@ -1,0 +1,9 @@
+display.visualizations.custom.custom_single_value.custom_single_value.field = <string>
+display.visualizations.custom.custom_single_value.custom_single_value.color = <string>
+display.visualizations.custom.custom_single_value.custom_single_value.weight = <string>
+display.visualizations.custom.custom_single_value.custom_single_value.align = <string>
+display.visualizations.custom.custom_single_value.custom_single_value.valign = <string>
+display.visualizations.custom.custom_single_value.custom_single_value.label = <string>
+display.visualizations.custom.custom_single_value.custom_single_value.labelColor = <string>
+display.visualizations.custom.custom_single_value.custom_single_value.labelAlign = <string>
+display.visualizations.custom.custom_single_value.custom_single_value.showGlow = <boolean>
