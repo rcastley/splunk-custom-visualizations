@@ -825,6 +825,10 @@ define([
 
     **Document drilldown setup in the viz README** — always include a "Drilldown" section explaining the token format and example search, since Dashboard Studio users must configure it manually.
 
+26. **Use original ingested field names**. Vizs must reference fields by the exact name used at indexing time. Never require users to rename fields with `as` aliases in SPL just to match a viz's hardcoded expectations. This keeps SPL straightforward (`latest(field_name) as field_name`) and prevents silent breakage from mismatched aliases. The only exceptions are:
+    - **Display renames** in table-style vizs (e.g., `| rename status as Status`) where the column header is the user-facing label
+    - **Computed/derived fields** that don't exist at ingestion (e.g., `eval delta = field_a - field_b`)
+
 ## Step 3: Generate Build Script
 
 Generate one build shell script per viz. **Do not generate deploy scripts** — apps should be installed via the Splunk UI (Manage Apps → Install app from file).
