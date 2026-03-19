@@ -1,0 +1,7 @@
+{
+  "pathTemplate": "examples/{name}/appserver/static/visualizations/{name}",
+  "vizs": [
+    "custom_single_value",
+    "component_status_board"
+  ]
+}

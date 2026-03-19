@@ -1,0 +1,25 @@
+{
+  "label": "Custom Single Value",
+  "defaultSize": { "width": 300, "height": 150 },
+  "noDataMessage": "No data available",
+  "dependencies": [],
+  "fields": [
+    { "name": "value", "label": "Value", "type": "text", "default": "Hello Splunk!" }
+  ],
+  "formatter": [
+    { "name": "field", "label": "Field Name", "type": "text", "default": "value" },
+    { "name": "label", "label": "Label", "type": "text", "default": "" },
+    { "name": "labelAlign", "label": "Label Align", "type": "radio", "options": ["left", "center", "right"], "default": "center" },
+    { "name": "color", "label": "Text Colour", "type": "color", "default": "#E20082" },
+    { "name": "labelColor", "label": "Label Colour", "type": "color", "default": "#888888" },
+    { "name": "weight", "label": "Font Weight", "type": "radio", "options": ["bold", "normal"], "default": "bold" },
+    { "name": "align", "label": "Horizontal Align", "type": "radio", "options": ["left", "center", "right"], "default": "center" },
+    { "name": "valign", "label": "Vertical Align", "type": "radio", "options": ["top", "middle", "bottom"], "default": "middle" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "false" }
+  ],
+  "data": {
+    "mode": "single_row",
+    "columns": ["value"],
+    "dynamicColumnName": { "column": "value", "configKey": "field" }
+  }
+}

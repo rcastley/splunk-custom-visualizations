@@ -63,6 +63,7 @@ Every viz app follows this exact layout — do not deviate:
           visualization.css       (transparent background by default)
           webpack.config.js
           package.json
+          harness.json            (test harness config — fields, formatter, sample data)
           .gitignore              (excludes node_modules)
 ```
 
@@ -1211,6 +1212,152 @@ Before presenting the generated code, verify:
 - [ ] `metadata/default.meta` exists with global `[]` access stanza and `export = system`
 - [ ] `.gitignore` excludes `node_modules`
 - [ ] Build script excludes src/, node_modules/, package.json, webpack.config.js from tarball
+- [ ] `harness.json` exists with correct fields, formatter (matching JS defaults), and data mode
+- [ ] `harness.json` sampleRows use strings only (Splunk passes strings)
+- [ ] Viz name added to `harness-manifest.json`
+
+## Step 5: Generate Test Harness Config
+
+Every viz app includes a `harness.json` file that enables local browser testing without deploying to Splunk. A generic `test-harness.html` (containing zero viz-specific code) reads these files and renders any viz with interactive controls.
+
+### harness-manifest.json
+
+A single manifest at the project root registers all vizs and optional shared config:
+
+```json
+{
+  "fontCSS": "shared/fonts.css",
+  "pathTemplate": "examples/{name}/appserver/static/visualizations/{name}",
+  "vizs": [
+    "my_viz_1",
+    "my_viz_2"
+  ]
+}
+```
+
+- `fontCSS` (optional): path to a shared CSS file with `@font-face` declarations. Loaded once when any viz is selected.
+- `pathTemplate` (optional): URL path pattern to locate each viz's files. `{name}` is replaced with the viz name. Defaults to `{name}/appserver/static/visualizations/{name}` if omitted. Use this when viz apps live under a subdirectory (e.g., `examples/`) or when the repo layout differs from the standard flat structure.
+- `vizs`: array of viz app directory names. The harness loads `{pathTemplate}/harness.json` for each.
+
+### harness.json
+
+Located alongside `formatter.html` in each viz's directory. Defines everything the test harness needs to render the viz with interactive controls.
+
+```json
+{
+  "label": "My Visualization",
+  "defaultSize": { "width": 600, "height": 400 },
+  "noDataMessage": "Awaiting data",
+  "dependencies": ["track_splines.json"],
+  "fields": [
+    { "name": "speed", "label": "Speed", "type": "slider", "min": 0, "max": 380, "step": 1, "default": 285 },
+    { "name": "mode", "label": "Mode", "type": "select", "options": [{"v": "0", "l": "Off"}, {"v": "1", "l": "On"}], "default": "0" },
+    { "name": "host", "label": "Host", "type": "text", "default": "rig_1" }
+  ],
+  "formatter": [
+    { "name": "colorScheme", "label": "Color Scheme", "type": "select", "options": ["speed", "rpm"], "default": "speed" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "accentColor", "label": "Accent Color", "type": "color", "default": "#ff8700" },
+    { "name": "maxValue", "label": "Max Value", "type": "text", "default": "320" }
+  ],
+  "data": {
+    "mode": "single_row",
+    "columns": ["speed", "host"],
+    "dynamicColumnName": { "column": "speed", "configKey": "field" }
+  }
+}
+```
+
+### Schema Reference
+
+**Top-level keys:**
+
+| Key | Type | Required | Description |
+|-----|------|----------|-------------|
+| `label` | string | Yes | Human-readable name shown in the viz picker dropdown |
+| `defaultSize` | `{ width, height }` | No | Default panel dimensions in pixels when the viz is selected |
+| `noDataMessage` | string | No | Custom message shown when "Test No Data" is clicked. Falls back to "No data available" |
+| `dependencies` | string[] | No | JSON files to preload (e.g., `["track_splines.json"]`). Loaded from the viz root dir, registered in the AMD module cache as `../{filename}` and `./{filename}` |
+| `fields` | array | Yes | Data field controls shown in the sidebar (see below) |
+| `formatter` | array | Yes | Formatter setting controls matching the viz's `formatter.html` (see below) |
+| `data` | object | Yes | Defines how Splunk-format data is constructed (see below) |
+
+**Field types** (`fields` array):
+
+| Type | Properties | Description |
+|------|-----------|-------------|
+| `slider` | `min`, `max`, `step`, `default` | Range input with live value display |
+| `select` | `options`, `default` | Dropdown. Options can be strings (`"opt"`) or objects (`{"v": "0", "l": "Off"}`) |
+| `text` | `default` | Free text input |
+
+Optional field properties:
+- `transform`: `"divide100"` — divides the value by 100 before inserting into the data row (e.g., steer input -100..100 → -1.0..1.0)
+
+Fields whose names start with `_` (e.g., `_numDrivers`, `_preset`) are control fields — they influence data generation but are not inserted as columns.
+
+**Formatter types** (`formatter` array):
+
+| Type | Properties | Description |
+|------|-----------|-------------|
+| `radio` | `options` (string[]), `default` | Toggle buttons |
+| `select` | `options`, `default` | Dropdown |
+| `color` | `default` | Color picker + hex text input |
+| `text` | `default` | Free text input |
+
+Formatter setting names must match the suffixes used in `formatter.html` (e.g., `colorScheme` maps to `config[ns + 'colorScheme']` in the viz JS). Defaults must match the JS fallback values (rule 19).
+
+**Data modes** (`data` object):
+
+Two generic modes — the harness has no domain-specific code:
+
+**`single_row`** — builds one row from field values. Used for gauges, single-value displays, and any viz that reads `data.rows[data.rows.length - 1]`.
+
+```json
+{
+  "mode": "single_row",
+  "columns": ["speed", "gear", "rev_lights_percent"],
+  "dynamicColumnName": { "column": "speed", "configKey": "field" }
+}
+```
+
+- `columns`: array of column names. Each column's value comes from the matching field's current value.
+- `dynamicColumnName` (optional): renames a column based on a formatter setting. Used when the viz has a configurable "Field Name" setting (rule 18).
+
+**`multi_row`** — passes pre-defined sample rows. Used for charts, tables, maps, and any viz that iterates `data.rows`.
+
+```json
+{
+  "mode": "multi_row",
+  "columns": ["position", "driver", "lap_time", "delta"],
+  "rowCountField": "_numDrivers",
+  "sampleRows": [
+    ["1", "L. Norris", "1:22.580", "0"],
+    ["2", "O. Piastri", "1:23.100", "0.520"]
+  ]
+}
+```
+
+- `columns`: array of column names (defines the field schema).
+- `sampleRows`: array of row arrays. Each row is an array of **strings** (Splunk always passes strings).
+- `rowCountField` (optional): name of a `_`-prefixed slider field that controls how many rows to show (slices from the start).
+- **Column overrides**: when a non-`_` field name matches a column name, the slider value replaces that column's value in every row. This lets users change a value (e.g., `track_id`) across all sample rows interactively.
+
+### Usage
+
+To test locally:
+
+```bash
+cd splunk_app && python3 -m http.server 8080
+```
+
+Open `http://localhost:8080/test-harness.html`. Select a viz from the dropdown. Adjust data fields and formatter settings — the canvas re-renders in real-time.
+
+### Adding a new viz to the harness
+
+1. Create `harness.json` in the viz's `appserver/static/visualizations/{name}/` directory
+2. Add the viz name to the `vizs` array in `harness-manifest.json`
+
+No changes to `test-harness.html` are needed — it discovers everything from JSON.
 
 ## Splunk Version Requirements
 

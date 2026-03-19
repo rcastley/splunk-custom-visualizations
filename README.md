@@ -12,7 +12,10 @@ examples/
   custom_single_value/         Working example: configurable single value display
   component_status_board/      Working example: NOC-style component health grid
 build.sh                       Build and package any viz into an installable .tar.gz
+test-harness.html              Browser-based testing without Splunk deployment
+harness-manifest.json          Registry of vizs for the test harness
 INSTRUCTIONS.md                Step-by-step setup and usage guide
+TEST-HARNESS.md                Test harness documentation
 ```
 
 ## Quick Start
@@ -80,6 +83,18 @@ index=_internal sourcetype=splunkd log_level=* component=*
 | eval status=if(errors>0,"critical",if(warns>0,"warning","ok"))
 ```
 
+## Test Harness
+
+Iterate on your visualizations in the browser without deploying to Splunk:
+
+```bash
+python3 -m http.server 8080
+```
+
+Open [http://localhost:8080/test-harness.html](http://localhost:8080/test-harness.html) — select a viz, adjust sliders and settings, see the canvas update in real-time. Test the no-data state, resize the panel, and tweak formatter options — all without a Splunk instance.
+
+Each viz includes a `harness.json` that defines interactive controls and sample data. The harness HTML is fully generic — no viz-specific code. See [TEST-HARNESS.md](TEST-HARNESS.md) for full documentation.
+
 ## Requirements
 
 - **Splunk Enterprise 10.2+** or **Splunk Cloud**
@@ -102,8 +117,9 @@ Each viz is a standalone app by default, but you can also embed visualizations i
 ## Contributing
 
 1. Create your viz in `examples/your_viz_name/` following the directory structure
-2. Use `./build.sh your_viz_name` to build and package
-3. Test in Splunk, then submit a PR
+2. Add a `harness.json` for browser testing and register it in `harness-manifest.json`
+3. Use `./build.sh your_viz_name` to build and package
+4. Test locally with the harness, then in Splunk, then submit a PR
 
 ## Licence
 

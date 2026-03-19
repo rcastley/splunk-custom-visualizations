@@ -1,0 +1,39 @@
+{
+  "label": "Component Status Board",
+  "defaultSize": { "width": 800, "height": 400 },
+  "noDataMessage": "No component data available",
+  "dependencies": [],
+  "fields": [
+    { "name": "_numComponents", "label": "Number of Components", "type": "slider", "min": 1, "max": 12, "step": 1, "default": 8 }
+  ],
+  "formatter": [
+    { "name": "componentField", "label": "Component Field", "type": "text", "default": "component" },
+    { "name": "errorsField", "label": "Errors Field", "type": "text", "default": "errors" },
+    { "name": "warningsField", "label": "Warnings Field", "type": "text", "default": "warns" },
+    { "name": "statusField", "label": "Status Field", "type": "text", "default": "status" },
+    { "name": "title", "label": "Title", "type": "text", "default": "COMPONENT STATUS" },
+    { "name": "sortOrder", "label": "Sort Order", "type": "radio", "options": ["severity", "alphabetical"], "default": "severity" },
+    { "name": "showLegend", "label": "Show Legend", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showGlow", "label": "Critical Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "mutedOk", "label": "Mute OK Tiles", "type": "radio", "options": ["true", "false"], "default": "true" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "rowCountField": "_numComponents",
+    "columns": ["component", "errors", "warns", "status"],
+    "sampleRows": [
+      ["SearchScheduler", "12", "45", "critical"],
+      ["IndexerService", "3", "18", "critical"],
+      ["LicenseManager", "0", "22", "warning"],
+      ["DeploymentServer", "0", "8", "warning"],
+      ["KVStoreService", "0", "0", "ok"],
+      ["SplunkWebService", "0", "0", "ok"],
+      ["DistSearchPeer", "0", "0", "ok"],
+      ["HttpEventCollector", "0", "0", "ok"],
+      ["ModularInputs", "0", "3", "warning"],
+      ["TcpInputProc", "0", "0", "ok"],
+      ["UDPInputProc", "0", "0", "ok"],
+      ["BatchProcessor", "1", "5", "critical"]
+    ]
+  }
+}

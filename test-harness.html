@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Splunk Custom Viz Test Harness</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                gh: {
+                    bg: '#0d1117',
+                    card: '#161b22',
+                    border: '#30363d',
+                    text: '#e6edf3',
+                    muted: '#8b949e',
+                    subtle: '#c9d1d9',
+                    accent: '#58a6ff',
+                    btn: '#21262d'
+                }
+            }
+        }
+    }
+}
+</script>
+<style>
+    [x-cloak] { display: none !important; }
+    input[type="range"] { accent-color: #58a6ff; }
+</style>
+</head>
+<body class="h-screen bg-gh-bg text-gh-text font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif]">
+
+<div x-data="harness()" x-init="init()" class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <div class="w-80 min-w-[320px] bg-gh-card border-r border-gh-border flex flex-col overflow-y-auto">
+        <div class="p-4 border-b border-gh-border">
+            <h1 class="text-sm font-semibold text-gh-accent tracking-wide">SPLUNK VIZ TEST HARNESS</h1>
+            <p class="text-[11px] text-gh-muted mt-1">Local testing without Splunk deployment</p>
+        </div>
+
+        <!-- Viz picker -->
+        <div class="p-3 px-4 border-b border-gh-border">
+            <div class="text-[11px] font-semibold text-gh-muted uppercase tracking-wider mb-2.5">Visualization</div>
+            <select x-model="selectedViz" @change="switchViz($el.value)"
+                class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs cursor-pointer focus:border-gh-accent outline-none">
+                <option value="">— Select a viz —</option>
+                <template x-for="v in vizList" :key="v.name">
+                    <option :value="v.name" x-text="v.label"></option>
+                </template>
+            </select>
+            <div class="flex gap-1.5 mt-2">
+                <button @click="toggleNoData()"
+                    class="px-3 py-1.5 border rounded text-xs cursor-pointer transition-all"
+                    :class="isNoData ? 'border-gh-accent text-gh-accent bg-gh-accent/10' : 'border-gh-border bg-gh-btn text-gh-subtle hover:border-gh-muted'">
+                    Test No Data
+                </button>
+                <button @click="resetDefaults()"
+                    class="px-3 py-1.5 border border-gh-border rounded bg-gh-btn text-gh-subtle text-xs cursor-pointer hover:border-gh-muted transition-all">
+                    Reset Defaults
+                </button>
+            </div>
+        </div>
+
+        <!-- Data fields -->
+        <div x-show="currentHarness && currentHarness.fields.length > 0" x-cloak class="p-3 px-4 border-b border-gh-border">
+            <div class="text-[11px] font-semibold text-gh-muted uppercase tracking-wider mb-2.5">Data Fields</div>
+            <template x-for="f in (currentHarness ? currentHarness.fields : [])" :key="f.name">
+                <div class="mb-2.5">
+                    <label class="block text-xs text-gh-subtle mb-1" x-text="f.label"></label>
+
+                    <!-- Slider -->
+                    <template x-if="f.type === 'slider'">
+                        <div class="flex items-center gap-2">
+                            <input type="range" :min="f.min" :max="f.max" :step="f.step || 1"
+                                :value="dataValues[f.name]"
+                                @input="dataValues[f.name] = $el.value; triggerUpdate()"
+                                class="flex-1">
+                            <span class="text-xs text-gh-accent font-semibold min-w-[48px] text-right tabular-nums"
+                                x-text="dataValues[f.name]"></span>
+                        </div>
+                    </template>
+
+                    <!-- Select -->
+                    <template x-if="f.type === 'select'">
+                        <select @change="dataValues[f.name] = $el.value; triggerUpdate()"
+                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs cursor-pointer focus:border-gh-accent outline-none">
+                            <template x-for="o in f.options" :key="typeof o === 'object' ? o.v : o">
+                                <option :value="typeof o === 'object' ? o.v : o"
+                                    :selected="(typeof o === 'object' ? o.v : o) === String(dataValues[f.name])"
+                                    x-text="typeof o === 'object' ? o.l : o"></option>
+                            </template>
+                        </select>
+                    </template>
+
+                    <!-- Text -->
+                    <template x-if="f.type === 'text' || (!f.type && f.type !== 'slider' && f.type !== 'select')">
+                        <input type="text" :value="dataValues[f.name] || ''"
+                            @change="dataValues[f.name] = $el.value; triggerUpdate()"
+                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <!-- Formatter settings -->
+        <div x-show="currentHarness && currentHarness.formatter.length > 0" x-cloak class="p-3 px-4 border-b border-gh-border">
+            <div class="text-[11px] font-semibold text-gh-muted uppercase tracking-wider mb-2.5">Formatter Settings</div>
+            <template x-for="s in (currentHarness ? currentHarness.formatter : [])" :key="s.name">
+                <div class="mb-2.5">
+                    <label class="block text-xs text-gh-subtle mb-1" x-text="s.label"></label>
+
+                    <!-- Radio -->
+                    <template x-if="s.type === 'radio'">
+                        <div class="flex gap-1 flex-wrap">
+                            <template x-for="o in s.options" :key="o">
+                                <label class="text-[11px] px-2 py-0.5 border rounded cursor-pointer transition-all"
+                                    :class="config[ns + s.name] === o ? 'border-gh-accent bg-gh-accent/10 text-gh-accent' : 'border-gh-border text-gh-subtle'">
+                                    <input type="radio" :name="'fmt_' + s.name" :value="o" class="hidden"
+                                        :checked="config[ns + s.name] === o"
+                                        @change="config[ns + s.name] = o; triggerUpdate()">
+                                    <span x-text="o"></span>
+                                </label>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Select -->
+                    <template x-if="s.type === 'select'">
+                        <select @change="config[ns + s.name] = $el.value; triggerUpdate()"
+                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs cursor-pointer focus:border-gh-accent outline-none">
+                            <template x-for="o in s.options" :key="typeof o === 'object' ? o.v : o">
+                                <option :value="typeof o === 'object' ? o.v : o"
+                                    :selected="(typeof o === 'object' ? o.v : o) === config[ns + s.name]"
+                                    x-text="typeof o === 'object' ? o.l : o"></option>
+                            </template>
+                        </select>
+                    </template>
+
+                    <!-- Color -->
+                    <template x-if="s.type === 'color'">
+                        <div class="flex items-center gap-2">
+                            <input type="color" :value="config[ns + s.name]"
+                                @input="config[ns + s.name] = $el.value; $refs['ctxt_' + s.name] && ($refs['ctxt_' + s.name].value = $el.value); triggerUpdate()"
+                                class="w-7 h-7 border border-gh-border rounded bg-transparent cursor-pointer p-0">
+                            <input type="text" :value="config[ns + s.name]" :ref="'ctxt_' + s.name"
+                                @change="config[ns + s.name] = $el.value; triggerUpdate()"
+                                class="flex-1 p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                        </div>
+                    </template>
+
+                    <!-- Text -->
+                    <template x-if="s.type === 'text'">
+                        <input type="text" :value="config[ns + s.name] || ''"
+                            @change="config[ns + s.name] = $el.value; triggerUpdate()"
+                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                    </template>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Main panel -->
+    <div class="flex-1 flex flex-col p-4 gap-3 overflow-hidden">
+        <div class="flex items-center gap-3 shrink-0">
+            <label class="text-xs text-gh-muted">Panel Size:</label>
+            <div class="flex items-center gap-2 ml-auto">
+                <input type="number" x-model="vizWidth" @change="resizeViz()" min="100" max="2000" step="10"
+                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                <span class="text-xs text-gh-muted">&times;</span>
+                <input type="number" x-model="vizHeight" @change="resizeViz()" min="100" max="1200" step="10"
+                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                <button @click="fitToContainer()"
+                    class="px-3 py-1.5 border border-gh-border rounded bg-gh-btn text-gh-subtle text-xs cursor-pointer hover:border-gh-muted transition-all">
+                    Fit
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 flex items-center justify-center bg-gh-card border border-gh-border rounded-md overflow-hidden relative min-h-0" x-ref="vizWrapper">
+            <div class="relative overflow-hidden bg-gh-bg" :style="'width:' + vizWidth + 'px;height:' + vizHeight + 'px'">
+                <div id="vizRoot" class="w-full h-full relative overflow-hidden"></div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+            <div class="w-2 h-2 rounded-full"
+                :class="{ 'bg-green-500': statusType === 'ok', 'bg-orange-400': statusType === 'nodata', 'bg-red-500': statusType === 'err' }"></div>
+            <span class="text-[11px] text-gh-muted" x-text="statusText"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// Splunk Visualization API Mock
+// ══════════════════════════════════════════════════════════
+
+var _modules = {};
+
+(function() {
+    var VisualizationError = function(msg) { this.message = msg; this.name = 'VisualizationError'; };
+    VisualizationError.prototype = Object.create(Error.prototype);
+
+    var BaseProto = {
+        initialize: function() {},
+        destroy: function() {},
+        getPropertyNamespaceInfo: function() { return { propertyNamespace: 'display.visualizations.custom.test.test.' }; },
+        drilldown: function() {},
+        invalidateUpdateView: function() {
+            var self = this;
+            if (self._updatePending) return;
+            self._updatePending = true;
+            requestAnimationFrame(function() { self._updatePending = false; if (window._harnessUpdate) window._harnessUpdate(); });
+        },
+        invalidateFormatData: function() { this.invalidateUpdateView(); },
+        invalidateReflow: function() { this.invalidateUpdateView(); }
+    };
+
+    var Base = {
+        ROW_MAJOR_OUTPUT_MODE: 'row_major',
+        FIELD_VALUE_DRILLDOWN: 'fieldValue',
+        VisualizationError: VisualizationError,
+        prototype: BaseProto,
+        extend: function(proto) {
+            var Ctor = function() {};
+            Ctor.prototype = Object.create(BaseProto);
+            Ctor.prototype.constructor = Ctor;
+            for (var k in proto) { if (proto.hasOwnProperty(k)) Ctor.prototype[k] = proto[k]; }
+            Ctor.VisualizationError = VisualizationError;
+            Ctor.ROW_MAJOR_OUTPUT_MODE = 'row_major';
+            Ctor.FIELD_VALUE_DRILLDOWN = 'fieldValue';
+            return Ctor;
+        }
+    };
+
+    _modules['api/SplunkVisualizationBase'] = Base;
+    _modules['api/SplunkVisualizationUtils'] = {
+        escapeHtml: function(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; },
+        makeSafeUrl: function(u) { return u; },
+        getCurrentTheme: function() { return 'dark'; },
+        normalizeBoolean: function(v) { return v === true || v === 'true' || v === '1'; }
+    };
+})();
+
+window.define = function(deps, factory) {
+    if (typeof deps === 'function') { factory = deps; deps = []; }
+    var resolved = (deps || []).map(function(d) { return _modules[d]; });
+    window._VizClass = factory.apply(null, resolved);
+};
+window.define.amd = true;
+
+window.require = function(deps, callback) {
+    if (typeof deps === 'string') return _modules[deps];
+    if (Array.isArray(deps) && callback) {
+        callback.apply(null, deps.map(function(d) { return _modules[d] || {}; }));
+    }
+};
+
+
+// ══════════════════════════════════════════════════════════
+// Data Builders
+// ══════════════════════════════════════════════════════════
+
+function buildSplunkData(harness, vals, config) {
+    var data = harness.data;
+    if (data.mode === 'multi_row') return buildMultiRow(harness, vals);
+    return buildSingleRow(harness, vals, config);
+}
+
+function buildSingleRow(harness, vals, config) {
+    var data = harness.data;
+    var ns = 'display.visualizations.custom.test.test.';
+    var fields = [];
+    var row = [];
+
+    for (var i = 0; i < data.columns.length; i++) {
+        var colName = data.columns[i];
+        if (data.dynamicColumnName && data.dynamicColumnName.column === colName) {
+            fields.push({ name: config[ns + data.dynamicColumnName.configKey] || colName });
+        } else {
+            fields.push({ name: colName });
+        }
+        var val = vals[colName];
+        var fieldDef = findFieldDef(harness.fields, colName);
+        if (fieldDef && fieldDef.transform === 'divide100' && val !== undefined) {
+            val = parseFloat(val) / 100;
+        }
+        row.push(val !== undefined ? String(val) : '0');
+    }
+    return { fields: fields, rows: [row] };
+}
+
+function buildMultiRow(harness, vals) {
+    var data = harness.data;
+    var fields = data.columns.map(function(c) { return { name: c }; });
+    var allRows = (data.sampleRows || []).slice();
+
+    if (data.rowCountField && vals[data.rowCountField] !== undefined) {
+        allRows = allRows.slice(0, parseInt(vals[data.rowCountField], 10) || allRows.length);
+    }
+
+    var overrides = {};
+    for (var key in vals) {
+        if (key.charAt(0) === '_') continue;
+        var colIdx = data.columns.indexOf(key);
+        if (colIdx !== -1) overrides[colIdx] = String(vals[key]);
+    }
+
+    if (Object.keys(overrides).length > 0) {
+        allRows = allRows.map(function(row) {
+            var newRow = row.slice();
+            for (var idx in overrides) newRow[idx] = overrides[idx];
+            return newRow;
+        });
+    }
+    return { fields: fields, rows: allRows };
+}
+
+function findFieldDef(fields, name) {
+    for (var i = 0; i < fields.length; i++) {
+        if (fields[i].name === name) return fields[i];
+    }
+    return null;
+}
+
+
+// ══════════════════════════════════════════════════════════
+// Alpine Component
+// ══════════════════════════════════════════════════════════
+
+function harness() {
+    return {
+        ns: 'display.visualizations.custom.test.test.',
+        vizDefs: {},
+        vizList: [],
+        manifestConfig: {},
+        selectedViz: '',
+        currentHarness: null,
+        currentInstance: null,
+        config: {},
+        dataValues: {},
+        isNoData: false,
+        statusType: 'nodata',
+        statusText: 'Loading manifest...',
+        vizWidth: 600,
+        vizHeight: 400,
+
+        init: function() {
+            var self = this;
+            window._harnessUpdate = function() { self.triggerUpdate(); };
+
+            fetch('harness-manifest.json')
+                .then(function(r) { return r.json(); })
+                .then(function(manifest) {
+                    self.manifestConfig = manifest;
+                    var names = manifest.vizs;
+                    var pending = names.length;
+
+                    names.forEach(function(name) {
+                        var pathTemplate = manifest.pathTemplate || '{name}/appserver/static/visualizations/{name}';
+                        var basePath = pathTemplate.replace(/\{name\}/g, name);
+
+                        fetch(basePath + '/harness.json')
+                            .then(function(r) { if (!r.ok) throw new Error('No harness.json'); return r.json(); })
+                            .then(function(h) {
+                                self.vizDefs[name] = { name: name, path: basePath, harness: h };
+                                var newList = self.vizList.slice();
+                                newList.push({ name: name, label: h.label || name });
+                                newList.sort(function(a, b) { return a.label.localeCompare(b.label); });
+                                self.vizList = newList;
+                            })
+                            .catch(function(e) { console.warn('Skipping ' + name + ': ' + e.message); })
+                            .finally(function() {
+                                if (--pending === 0) {
+                                    self.statusType = 'ok';
+                                    self.statusText = 'Loaded ' + Object.keys(self.vizDefs).length + ' vizs \u2014 select one to begin';
+                                }
+                            });
+                    });
+                })
+                .catch(function(e) {
+                    self.statusType = 'err';
+                    self.statusText = 'Failed to load manifest: ' + e.message;
+                });
+        },
+
+        switchViz: function(name) {
+            if (!name) return;
+            var def = this.vizDefs[name];
+            if (!def) { this.setStatus('err', 'Unknown viz: ' + name); return; }
+
+            if (this.currentInstance && this.currentInstance.destroy) {
+                try { this.currentInstance.destroy(); } catch (e) {}
+            }
+            var root = document.getElementById('vizRoot');
+            root.innerHTML = '';
+
+            this.config = {};
+            this.dataValues = {};
+            this.isNoData = false;
+            this.currentHarness = def.harness;
+
+            if (def.harness.defaultSize) {
+                this.vizWidth = def.harness.defaultSize.width;
+                this.vizHeight = def.harness.defaultSize.height;
+            }
+
+            var self = this;
+            for (var i = 0; i < def.harness.formatter.length; i++) {
+                this.config[this.ns + def.harness.formatter[i].name] = def.harness.formatter[i].default;
+            }
+            for (var j = 0; j < def.harness.fields.length; j++) {
+                this.dataValues[def.harness.fields[j].name] = def.harness.fields[j].default;
+            }
+
+            this.loadFontCSS();
+            this.setStatus('nodata', 'Loading ' + name + '...');
+
+            this.loadDependencies(def, function() {
+                fetch(def.path + '/src/visualization_source.js')
+                    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+                    .then(function(code) {
+                        window._VizClass = null;
+                        eval(code);
+                        if (!window._VizClass) { self.setStatus('err', 'Failed to load viz class'); return; }
+                        var instance = new window._VizClass();
+                        instance.el = root;
+                        try { if (instance.initialize) instance.initialize(); } catch (e) {
+                            self.setStatus('err', 'Init error: ' + e.message);
+                            return;
+                        }
+                        self.currentInstance = instance;
+                        setTimeout(function() { self.triggerUpdate(); }, 100);
+                    })
+                    .catch(function(e) { self.setStatus('err', 'Failed to load: ' + e.message); });
+            });
+        },
+
+        loadFontCSS: function() {
+            var fontPath = this.manifestConfig.fontCSS;
+            if (!fontPath || document.getElementById('harness-font-css')) return;
+            var link = document.createElement('link');
+            link.id = 'harness-font-css';
+            link.rel = 'stylesheet';
+            link.href = fontPath;
+            document.head.appendChild(link);
+        },
+
+        loadDependencies: function(def, callback) {
+            var deps = def.harness.dependencies || [];
+            if (deps.length === 0) { callback(); return; }
+            var pending = deps.length;
+
+            for (var i = 0; i < deps.length; i++) {
+                (function(dep) {
+                    fetch(def.path + '/' + dep)
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            _modules['../' + dep] = data;
+                            _modules['./' + dep] = data;
+                            if (--pending === 0) callback();
+                        })
+                        .catch(function() {
+                            console.warn('Could not load dependency: ' + dep);
+                            if (--pending === 0) callback();
+                        });
+                })(deps[i]);
+            }
+        },
+
+        triggerUpdate: function() {
+            if (!this.currentInstance || !this.currentHarness) return;
+            try {
+                var rawData;
+                if (this.isNoData) {
+                    var msg = this.currentHarness.noDataMessage || 'No data available';
+                    rawData = { fields: [{ name: '_status' }], rows: [[msg]] };
+                } else {
+                    rawData = buildSplunkData(this.currentHarness, this.dataValues, this.config);
+                }
+                var formatted = this.currentInstance.formatData(rawData, this.config);
+                this.currentInstance.updateView(formatted, this.config);
+                this.setStatus(this.isNoData ? 'nodata' : 'ok', this.isNoData ? 'Showing no-data state' : 'Rendering with live data');
+            } catch (e) {
+                if (e.name === 'VisualizationError') {
+                    this.setStatus('nodata', 'VisualizationError: ' + e.message);
+                } else {
+                    this.setStatus('err', 'Error: ' + e.message);
+                    console.error(e);
+                }
+            }
+        },
+
+        toggleNoData: function() {
+            this.isNoData = !this.isNoData;
+            this.triggerUpdate();
+        },
+
+        resetDefaults: function() {
+            if (this.selectedViz) this.switchViz(this.selectedViz);
+        },
+
+        resizeViz: function() {
+            if (this.currentInstance && this.currentInstance.reflow) {
+                this.currentInstance.reflow();
+            }
+        },
+
+        fitToContainer: function() {
+            var rect = this.$refs.vizWrapper.getBoundingClientRect();
+            this.vizWidth = Math.floor(rect.width - 32);
+            this.vizHeight = Math.floor(rect.height - 32);
+            this.resizeViz();
+        },
+
+        setStatus: function(type, msg) {
+            this.statusType = type;
+            this.statusText = msg;
+        }
+    };
+}
+</script>
+</body>
+</html>
