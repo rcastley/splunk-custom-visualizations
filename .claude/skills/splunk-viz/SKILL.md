@@ -32,6 +32,7 @@ Before generating code, ask the user (or extract from context):
 4. **Expected SPL columns**: which fields the search must produce (e.g., `_time, source, dest, value`). Distinguish required vs optional columns. Ask if the viz will share a base search with other panels — if so, use configurable field names (see rule 18) instead of hardcoding column names like `value`.
 5. **Configurable settings**: what the user should be able to tweak from the formatter panel (e.g., colors, sizes, toggles, units). For each setting, determine: name, type (text/radio/dropdown), default value.
 6. **Rendering approach**: what to draw on the canvas (shapes, lines, text, gradients, animations).
+7. **Custom no-data message**: ask the user if they want a custom "awaiting data" message rendered on the canvas when no data is flowing (e.g., "Awaiting telemetry data"). If yes, the viz will detect a `_status` field from an SPL `appendpipe` fallback and render the message centered on the canvas. Optionally, an emoji can be displayed above the text for visual flair. If no, the viz falls back to Dashboard Studio's default placeholder (grey bar chart icon or `VisualizationError` text).
 
 If the user provides a vague request, ask clarifying questions before scaffolding.
 
@@ -331,6 +332,15 @@ define([
                 colIdx[fields[i].name] = i;
             }
 
+            // Check for status message from appendpipe fallback (see rule 27)
+            if (colIdx._status !== undefined) {
+                var statusRow = data.rows[data.rows.length - 1];
+                var statusVal = statusRow[colIdx._status];
+                if (statusVal) {
+                    return { _status: statusVal };
+                }
+            }
+
             // Helper to safely parse numeric values
             function getVal(row, name, fallback) {
                 if (colIdx[name] === undefined) return fallback;
@@ -366,6 +376,13 @@ define([
             //   2. Canvas sizing with devicePixelRatio for sharp rendering
             //   3. Reading user settings from config
             //   4. Full canvas redraw (clear + draw)
+
+            // Custom no-data message from appendpipe fallback (see rule 27)
+            if (data && data._status) {
+                this._ensureCanvas();
+                this._drawStatusMessage(data._status);
+                return;
+            }
 
             if (!data) {
                 if (this._lastGoodData) { data = this._lastGoodData; }
@@ -405,6 +422,62 @@ define([
             // Use data (the object returned by formatData)
             // NOTE: Do NOT fill the canvas with an opaque background color
             // unless the user explicitly requests it. Transparent is the default.
+        },
+
+        // ── Custom no-data message support (see rule 27) ──
+
+        _ensureCanvas: function() {
+            if (!this.canvas) {
+                this.el.innerHTML = '';
+                this.canvas = document.createElement('canvas');
+                this.canvas.style.width = '100%';
+                this.canvas.style.height = '100%';
+                this.canvas.style.display = 'block';
+                this.el.appendChild(this.canvas);
+            }
+            var rect = this.el.getBoundingClientRect();
+            var dpr = window.devicePixelRatio || 1;
+            this.canvas.width = rect.width * dpr;
+            this.canvas.height = rect.height * dpr;
+        },
+
+        _drawStatusMessage: function(message) {
+            var rect = this.el.getBoundingClientRect();
+            var dpr = window.devicePixelRatio || 1;
+            var ctx = this.canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            var w = rect.width;
+            var h = rect.height;
+            ctx.clearRect(0, 0, w, h);
+
+            var maxTextW = w * 0.85;
+            var fontSize = Math.max(10, Math.min(32, Math.min(w, h) * 0.09));
+            var emojiSize = Math.round(fontSize * 1.6);
+            var gap = fontSize * 0.5;
+
+            // Scale font down if text overflows container
+            ctx.font = '500 ' + fontSize + 'px sans-serif';
+            while (ctx.measureText(message).width > maxTextW && fontSize > 8) {
+                fontSize -= 1;
+                emojiSize = Math.round(fontSize * 1.6);
+                ctx.font = '500 ' + fontSize + 'px sans-serif';
+            }
+
+            // Optional emoji icon above text (full opacity)
+            // Replace the emoji string with any relevant Unicode emoji
+            ctx.font = emojiSize + 'px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'rgba(255,255,255,1)';
+            ctx.fillText('\u23F3', w / 2, h / 2 - fontSize * 0.5 - gap);
+
+            // Message text below emoji (dimmed)
+            ctx.font = '500 ' + fontSize + 'px sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.30)';
+            ctx.fillText(message, w / 2, h / 2 + emojiSize * 0.3);
+
+            ctx.textAlign = 'start';
+            ctx.textBaseline = 'alphabetic';
         },
 
         reflow: function() {
@@ -614,7 +687,7 @@ define([
 
     For vizs that iterate all rows (charts, tables, maps), `data.rows[0]` through `data.rows[length-1]` is fine. But for vizs that display a single current value, always use `data.rows[data.rows.length - 1]`.
 
-    **Use `VisualizationError` for the no-data state** (empty/missing rows). In Dashboard Studio v2, `return false` from `formatData` causes Splunk to show its own default grey bar chart placeholder and never call `updateView` — there is no way to display a custom message. Throwing `VisualizationError` is the **only** mechanism that works in Dashboard Studio v2 to show a meaningful "Awaiting data" message.
+    **Use `VisualizationError` for the no-data state** (empty/missing rows). In Dashboard Studio v2, `return false` from `formatData` causes Splunk to show its own default grey bar chart placeholder and never call `updateView` — there is no way to display a custom message. Throwing `VisualizationError` is the **only** mechanism that works in Dashboard Studio v2 to show a meaningful "Awaiting data" message. For fully custom no-data rendering (custom fonts, emojis, styled text on canvas), use the `_status` field + SPL `appendpipe` pattern described in rule 27.
 
     **Cache last good data to prevent flashing**. In real-time searches, Splunk can briefly call `formatData` with empty `data.rows` between result batches. Without caching, this causes the "Awaiting data" error to flash momentarily even though data was flowing moments before. Fix: store the last successful `formatData` result on `this._lastGoodData` and return it when rows are temporarily empty. Only throw the error on the very first call (before any data has ever arrived):
 
@@ -825,9 +898,102 @@ define([
 
     **Document drilldown setup in the viz README** — always include a "Drilldown" section explaining the token format and example search, since Dashboard Studio users must configure it manually.
 
-26. **Use original ingested field names**. Vizs must reference fields by the exact name used at indexing time. Never require users to rename fields with `as` aliases in SPL just to match a viz's hardcoded expectations. This keeps SPL straightforward (`latest(field_name) as field_name`) and prevents silent breakage from mismatched aliases. The only exceptions are:
+26. **Use original ingested field names (no aliases required)**. Vizs must reference fields by the exact name used at indexing time. Never require users to rename fields with `as` aliases in SPL just to match a viz's hardcoded expectations. This keeps SPL straightforward (`latest(field_name) as field_name`) and prevents silent breakage from mismatched aliases. The only exceptions are:
     - **Display renames** in table-style vizs (e.g., `| rename status as Status`) where the column header is the user-facing label
     - **Computed/derived fields** that don't exist at ingestion (e.g., `eval delta = field_a - field_b`)
+
+27. **Custom no-data message via `_status` field and SPL `appendpipe`**. In Dashboard Studio v2, the "Awaiting data" overlay (from `VisualizationError`) and the default placeholder (grey bar chart icon) are both rendered **outside** the viz's sandboxed iframe — CSS and JS inside the viz cannot hide or style them. The only way to display a fully custom no-data state is to ensure the search always returns at least one row.
+
+    **SPL pattern** — append a fallback row with a `_status` field when the main search returns zero results:
+    ```spl
+    | appendpipe [| stats count | where count=0 | eval _status="Awaiting telemetry data", field1=0, field2=0]
+    ```
+    The `appendpipe` only produces a row when the main search has zero results (`where count=0`). When real data is flowing, it adds nothing. Include dummy values for required fields so `formatData` doesn't throw a column-missing error.
+
+    **In `formatData`** — detect the `_status` field early and return a sentinel object:
+    ```javascript
+    // Check for status message from appendpipe fallback
+    if (colIdx._status !== undefined) {
+        var statusRow = data.rows[data.rows.length - 1];
+        var statusVal = statusRow[colIdx._status];
+        if (statusVal) {
+            return { _status: statusVal };
+        }
+    }
+    ```
+
+    **In `updateView`** — intercept the sentinel before normal rendering:
+    ```javascript
+    if (data && data._status) {
+        this._ensureCanvas();
+        this._drawStatusMessage(data._status);
+        return;
+    }
+    ```
+
+    **`_drawStatusMessage` method** — renders the message centered on the canvas with auto-scaling text and an optional emoji icon above it:
+    ```javascript
+    _ensureCanvas: function() {
+        if (!this.canvas) {
+            this.el.innerHTML = '';
+            this.canvas = document.createElement('canvas');
+            this.canvas.style.width = '100%';
+            this.canvas.style.height = '100%';
+            this.canvas.style.display = 'block';
+            this.el.appendChild(this.canvas);
+        }
+        var rect = this.el.getBoundingClientRect();
+        var dpr = window.devicePixelRatio || 1;
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+    },
+
+    _drawStatusMessage: function(message) {
+        var rect = this.el.getBoundingClientRect();
+        var dpr = window.devicePixelRatio || 1;
+        var ctx = this.canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        var w = rect.width;
+        var h = rect.height;
+        ctx.clearRect(0, 0, w, h);
+
+        var maxTextW = w * 0.85;
+        var fontSize = Math.max(10, Math.min(32, Math.min(w, h) * 0.09));
+        var emojiSize = Math.round(fontSize * 1.6);
+        var gap = fontSize * 0.5;
+
+        ctx.font = '500 ' + fontSize + 'px sans-serif';
+        while (ctx.measureText(message).width > maxTextW && fontSize > 8) {
+            fontSize -= 1;
+            emojiSize = Math.round(fontSize * 1.6);
+            ctx.font = '500 ' + fontSize + 'px sans-serif';
+        }
+
+        // Emoji above text, full opacity (use any relevant Unicode emoji)
+        ctx.font = emojiSize + 'px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = 'rgba(255,255,255,1)';
+        ctx.fillText('\u23F3', w / 2, h / 2 - fontSize * 0.5 - gap);
+
+        // Message text below emoji, dimmed
+        ctx.font = '500 ' + fontSize + 'px sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.30)';
+        ctx.fillText(message, w / 2, h / 2 + emojiSize * 0.3);
+
+        ctx.textAlign = 'start';
+        ctx.textBaseline = 'alphabetic';
+    }
+    ```
+
+    **Key design points:**
+    - The text auto-scales down to fit 85% of the container width, preventing overflow on small panels
+    - The emoji renders at full opacity above the dimmed text for visual hierarchy
+    - The message string comes from the SPL `_status` field, so it can be changed without rebuilding the viz
+    - If using a custom font (e.g., Formula1), replace `sans-serif` in the `_drawStatusMessage` with the custom font family
+    - The `_ensureCanvas` helper is needed because `updateView` may be called before the canvas exists (e.g., on first load with the status fallback)
+
+    **When NOT to use this pattern**: If the viz's SPL search uses `| stats` commands that always return a row (e.g., `| stats count` returns 0 instead of empty), Dashboard Studio will always pass data to the viz and the default placeholder never appears. In that case, `_status`/`appendpipe` is unnecessary.
 
 ## Step 3: Generate Build Script
 
@@ -1020,7 +1186,7 @@ When the user describes what they want, map their description to one of these co
 | **Bar / Column** | Filled rects, axis lines, labels | `category, value` |
 | **Radial / Donut** | Arc segments, center text, legend | `label, value` |
 
-For any viz type, always include a "no data" state that draws a helpful message on the canvas explaining what SPL columns are expected.
+For any viz type, always include a "no data" state. Ask the user whether they want a custom canvas-rendered message (rule 27 `_status` pattern) or the default Dashboard Studio placeholder (`VisualizationError`). If custom, the message text is defined in the SPL `appendpipe` fallback and rendered by `_drawStatusMessage`.
 
 ## Step 4: Verify Completeness
 
@@ -1036,6 +1202,7 @@ Before presenting the generated code, verify:
 - [ ] `visualization_source.js` uses ES5 syntax only (var, function, for)
 - [ ] `visualization_source.js` handles HiDPI, null ctx, zero-size canvas
 - [ ] `visualization_source.js` formatData validates required columns and throws VisualizationError
+- [ ] If custom no-data message requested: `formatData` detects `_status` field, `updateView` intercepts it, `_ensureCanvas` and `_drawStatusMessage` methods exist
 - [ ] `visualization.css` exists (transparent background by default)
 - [ ] `metadata/default.meta` exists with `export = system`
 - [ ] `.gitignore` excludes `node_modules`
