@@ -223,7 +223,7 @@ tailwind.config = {
 
         <div class="flex-1 flex items-center justify-center bg-gh-card border border-gh-border rounded-md overflow-hidden relative min-h-0" x-ref="vizWrapper">
             <div class="relative" :style="'width:' + vizWidth + 'px;height:' + vizHeight + 'px'">
-                <div class="w-full h-full overflow-hidden rounded" :style="'background:transparent;border:1px solid ' + (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.12)')">
+                <div class="w-full h-full overflow-hidden rounded p-3" :style="'background:transparent;border:1px solid ' + (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.12)')">
                     <div id="vizRoot" class="w-full h-full relative overflow-hidden"></div>
                 </div>
                 <div class="resize-handle" @mousedown="startResize($event)">
