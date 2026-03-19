@@ -12,14 +12,14 @@ tailwind.config = {
         extend: {
             colors: {
                 gh: {
-                    bg: '#0d1117',
-                    card: '#161b22',
-                    border: '#30363d',
-                    text: '#e6edf3',
-                    muted: '#8b949e',
-                    subtle: '#c9d1d9',
-                    accent: '#58a6ff',
-                    btn: '#21262d'
+                    bg: 'var(--bg)',
+                    card: 'var(--card)',
+                    border: 'var(--border)',
+                    text: 'var(--text)',
+                    muted: 'var(--muted)',
+                    subtle: 'var(--subtle)',
+                    accent: 'var(--accent)',
+                    btn: 'var(--btn)'
                 }
             }
         }
@@ -28,18 +28,49 @@ tailwind.config = {
 </script>
 <style>
     [x-cloak] { display: none !important; }
-    input[type="range"] { accent-color: #58a6ff; }
+    input[type="range"] { accent-color: var(--accent); }
+
+    .theme-dark {
+        --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #e6edf3;
+        --muted: #8b949e; --subtle: #c9d1d9; --accent: #58a6ff; --btn: #21262d;
+    }
+    .theme-light {
+        --bg: #ffffff; --card: #f6f8fa; --border: #d0d7de; --text: #1f2328;
+        --muted: #656d76; --subtle: #424a53; --accent: #0969da; --btn: #f0f0f0;
+    }
 </style>
 </head>
-<body class="h-screen bg-gh-bg text-gh-text font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif]">
+<body class="h-screen font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif]">
 
-<div x-data="harness()" x-init="init()" class="flex h-screen overflow-hidden">
+<div x-data="harness()" x-init="init()" class="flex h-screen overflow-hidden bg-gh-bg text-gh-text" :class="isDark ? 'theme-dark' : 'theme-light'">
 
     <!-- Sidebar -->
     <div class="w-80 min-w-[320px] bg-gh-card border-r border-gh-border flex flex-col overflow-y-auto">
-        <div class="p-4 border-b border-gh-border">
-            <h1 class="text-sm font-semibold text-gh-accent tracking-wide">SPLUNK VIZ TEST HARNESS</h1>
-            <p class="text-[11px] text-gh-muted mt-1">Local testing without Splunk deployment</p>
+        <div class="p-4 border-b border-gh-border flex items-center justify-between">
+            <div>
+                <h1 class="text-sm font-semibold text-gh-accent tracking-wide">SPLUNK VIZ TEST HARNESS</h1>
+                <p class="text-[11px] text-gh-muted mt-1">Local testing without Splunk deployment</p>
+            </div>
+            <div class="flex gap-1">
+                <!-- Theme toggle -->
+                <button @click="toggleTheme()" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                    class="w-8 h-8 flex items-center justify-center border border-gh-border rounded bg-gh-btn text-gh-subtle cursor-pointer hover:border-gh-muted transition-all">
+                    <svg x-show="isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <svg x-show="!isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+                <!-- Help toggle -->
+                <button @click="showHelp = !showHelp" title="Help"
+                    class="w-8 h-8 flex items-center justify-center border border-gh-border rounded bg-gh-btn text-gh-subtle cursor-pointer hover:border-gh-muted transition-all"
+                    :class="showHelp && 'border-gh-accent text-gh-accent bg-gh-accent/10'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- Viz picker -->
@@ -181,7 +212,7 @@ tailwind.config = {
         </div>
 
         <div class="flex-1 flex items-center justify-center bg-gh-card border border-gh-border rounded-md overflow-hidden relative min-h-0" x-ref="vizWrapper">
-            <div class="relative overflow-hidden bg-gh-bg" :style="'width:' + vizWidth + 'px;height:' + vizHeight + 'px'">
+            <div class="relative overflow-hidden" :style="'width:' + vizWidth + 'px;height:' + vizHeight + 'px;background:' + (isDark ? '#0d1117' : '#ffffff')">
                 <div id="vizRoot" class="w-full h-full relative overflow-hidden"></div>
             </div>
         </div>
@@ -192,6 +223,82 @@ tailwind.config = {
             <span class="text-[11px] text-gh-muted" x-text="statusText"></span>
         </div>
     </div>
+
+    <!-- Help slide-out panel -->
+    <div x-show="showHelp" x-cloak
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="translate-x-full"
+        class="w-96 min-w-[384px] bg-gh-card border-l border-gh-border flex flex-col overflow-y-auto">
+
+        <div class="p-4 border-b border-gh-border flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-gh-text">Help</h2>
+            <button @click="showHelp = false"
+                class="w-6 h-6 flex items-center justify-center text-gh-muted hover:text-gh-text cursor-pointer transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-4 text-xs text-gh-subtle leading-relaxed space-y-4">
+            <div>
+                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Getting Started</h3>
+                <ol class="list-decimal list-inside space-y-1 text-gh-subtle">
+                    <li>Select a visualization from the dropdown</li>
+                    <li>Adjust data fields using sliders, dropdowns, and text inputs</li>
+                    <li>Tweak formatter settings &mdash; the canvas re-renders in real-time</li>
+                    <li>Click <strong class="text-gh-text">Test No Data</strong> to verify the no-data message</li>
+                    <li>Resize the panel to test responsive behaviour</li>
+                </ol>
+            </div>
+
+            <div>
+                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Theme</h3>
+                <p>Use the <strong class="text-gh-text">sun/moon</strong> icon to toggle between light and dark mode. This changes both the harness UI and the theme reported to the visualization via <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">getCurrentTheme()</code>, so your viz renders in the correct mode.</p>
+            </div>
+
+            <div>
+                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Panel Size</h3>
+                <p>Set exact dimensions with the width &times; height inputs, or click <strong class="text-gh-text">Fit</strong> to fill the available space. The visualization receives a <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">reflow()</code> call on resize.</p>
+            </div>
+
+            <div>
+                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Data Fields</h3>
+                <p>These controls inject values into the Splunk-format data passed to the viz. Slider values update in real-time. Fields starting with <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">_</code> are control fields (e.g., row count) that affect data generation but aren't data columns.</p>
+            </div>
+
+            <div>
+                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Formatter Settings</h3>
+                <p>These mirror the viz's <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">formatter.html</code> settings. They map to <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">config[ns + 'settingName']</code> in the viz JS. Defaults must match the JS fallback values.</p>
+            </div>
+
+            <div>
+                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Adding a New Viz</h3>
+                <ol class="list-decimal list-inside space-y-1 text-gh-subtle">
+                    <li>Create a <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">harness.json</code> alongside your viz's <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">formatter.html</code></li>
+                    <li>Add the viz name to <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">harness-manifest.json</code></li>
+                </ol>
+                <p class="mt-1.5">No changes to this HTML file needed.</p>
+            </div>
+
+            <div>
+                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Limitations</h3>
+                <ul class="list-disc list-inside space-y-1 text-gh-subtle">
+                    <li>Data is static or slider-driven, not from live SPL</li>
+                    <li><code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">this.drilldown()</code> is a no-op in the mock</li>
+                    <li>Source loads via <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">eval()</code> &mdash; check the console for errors</li>
+                </ul>
+            </div>
+
+            <div class="pt-2 border-t border-gh-border">
+                <p class="text-gh-muted text-[10px]">See <strong>TEST-HARNESS.md</strong> for full documentation including harness.json schema, data modes, and troubleshooting.</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -200,6 +307,7 @@ tailwind.config = {
 // ══════════════════════════════════════════════════════════
 
 var _modules = {};
+var _currentTheme = 'dark';
 
 (function() {
     var VisualizationError = function(msg) { this.message = msg; this.name = 'VisualizationError'; };
@@ -241,7 +349,7 @@ var _modules = {};
     _modules['api/SplunkVisualizationUtils'] = {
         escapeHtml: function(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; },
         makeSafeUrl: function(u) { return u; },
-        getCurrentTheme: function() { return 'dark'; },
+        getCurrentTheme: function() { return _currentTheme; },
         normalizeBoolean: function(v) { return v === true || v === 'true' || v === '1'; }
     };
 })();
@@ -344,6 +452,8 @@ function harness() {
         config: {},
         dataValues: {},
         isNoData: false,
+        isDark: true,
+        showHelp: false,
         statusType: 'nodata',
         statusText: 'Loading manifest...',
         vizWidth: 600,
@@ -386,6 +496,12 @@ function harness() {
                     self.statusType = 'err';
                     self.statusText = 'Failed to load manifest: ' + e.message;
                 });
+        },
+
+        toggleTheme: function() {
+            this.isDark = !this.isDark;
+            _currentTheme = this.isDark ? 'dark' : 'light';
+            this.triggerUpdate();
         },
 
         switchViz: function(name) {
