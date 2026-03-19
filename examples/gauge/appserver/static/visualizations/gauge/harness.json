@@ -1,0 +1,30 @@
+{
+  "label": "Gauge",
+  "defaultSize": { "width": 400, "height": 300 },
+  "noDataMessage": "Gauge \u2014 Waiting for data",
+  "dependencies": [],
+  "fields": [
+    { "name": "value", "label": "Value", "type": "slider", "min": 0, "max": 1000, "step": 1, "default": 75 },
+    { "name": "led_percent", "label": "LED Indicator %", "type": "slider", "min": 0, "max": 100, "step": 1, "default": 0 }
+  ],
+  "formatter": [
+    { "name": "displayMode", "label": "Display Mode", "type": "select", "options": ["arc", "donut", "bar", "status"], "default": "arc" },
+    { "name": "field", "label": "Field Name", "type": "text", "default": "value" },
+    { "name": "maxValue", "label": "Max Value", "type": "text", "default": "100" },
+    { "name": "unit", "label": "Unit", "type": "text", "default": "%" },
+    { "name": "label", "label": "Label", "type": "text", "default": "" },
+    { "name": "labelAlign", "label": "Label Align", "type": "radio", "options": ["left", "center", "right"], "default": "center" },
+    { "name": "colorScheme", "label": "Color Scheme", "type": "select", "options": ["teal_red", "green_red_stepped", "green_red", "green_red_early", "blue_red", "blue_green_red", "red_green", "severity"], "default": "teal_red" },
+    { "name": "showLeds", "label": "Show LEDs", "type": "radio", "options": ["true", "false"], "default": "false" },
+    { "name": "ledField", "label": "LED Field", "type": "text", "default": "led_percent" },
+    { "name": "showTicks", "label": "Show Ticks", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "fontSize", "label": "Font Size (0=auto)", "type": "text", "default": "0" },
+    { "name": "alignment", "label": "Value Align", "type": "radio", "options": ["left", "center", "right"], "default": "center" }
+  ],
+  "data": {
+    "mode": "single_row",
+    "columns": ["value", "led_percent"],
+    "dynamicColumnName": { "column": "value", "configKey": "field" }
+  }
+}

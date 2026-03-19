@@ -1,0 +1,80 @@
+<form class="splunk-formatter-section" section-label="Gauge Settings">
+    <splunk-control-group label="Display Mode" help="Arc (full gauge), Donut (thick ring), Bar (horizontal), Status (on/off indicator)">
+        <splunk-select name="{{VIZ_NAMESPACE}}.displayMode" value="arc">
+            <option value="arc">Arc</option>
+            <option value="donut">Donut</option>
+            <option value="bar">Bar</option>
+            <option value="status">Status</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Field Name" help="Column name from your search to display">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.field" value="value">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Max Value" help="Maximum value for the gauge scale">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.maxValue" value="100">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Unit" help="Unit label shown below the value">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.unit" value="%">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Label" help="Title shown above the gauge">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.label" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Label Align" help="Horizontal alignment of the label text">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.labelAlign" value="center">
+            <option value="left">Left</option>
+            <option value="center">Centre</option>
+            <option value="right">Right</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Colour Scheme" help="Predefined colour gradient for the gauge">
+        <splunk-select name="{{VIZ_NAMESPACE}}.colorScheme" value="teal_red">
+            <option value="teal_red">Teal to Red</option>
+            <option value="green_red_stepped">Green to Red (stepped)</option>
+            <option value="green_red">Green to Red (gradual)</option>
+            <option value="green_red_early">Green to Red (early)</option>
+            <option value="blue_red">Blue to Red</option>
+            <option value="blue_green_red">Blue-Green to Red</option>
+            <option value="red_green">Red to Green (inverted)</option>
+            <option value="severity">Severity (green to magenta)</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Show LED Indicators" help="Row of LED dots above the arc gauge">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLeds" value="false">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="LED Indicator Field" help="Column name for LED indicator percentage (0-100)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.ledField" value="led_percent">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Appearance">
+    <splunk-control-group label="Show Tick Marks">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showTicks" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Glow Effect">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Font Size" help="Override value font size in pixels (0 = auto-scale)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.fontSize" value="0">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Alignment" help="Horizontal alignment for Status mode">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.alignment" value="center">
+            <option value="left">Left</option>
+            <option value="center">Centre</option>
+            <option value="right">Right</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>

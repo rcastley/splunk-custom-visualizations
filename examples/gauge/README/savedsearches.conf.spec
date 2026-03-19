@@ -1,0 +1,13 @@
+display.visualizations.custom.gauge.gauge.displayMode = <string>
+display.visualizations.custom.gauge.gauge.field = <string>
+display.visualizations.custom.gauge.gauge.maxValue = <string>
+display.visualizations.custom.gauge.gauge.unit = <string>
+display.visualizations.custom.gauge.gauge.label = <string>
+display.visualizations.custom.gauge.gauge.labelAlign = <string>
+display.visualizations.custom.gauge.gauge.colorScheme = <string>
+display.visualizations.custom.gauge.gauge.showLeds = <boolean>
+display.visualizations.custom.gauge.gauge.ledField = <string>
+display.visualizations.custom.gauge.gauge.showTicks = <boolean>
+display.visualizations.custom.gauge.gauge.showGlow = <boolean>
+display.visualizations.custom.gauge.gauge.fontSize = <string>
+display.visualizations.custom.gauge.gauge.alignment = <string>

@@ -1,5 +1,5 @@
 []
 access = read : [ * ], write : [ admin ]
 
-[visualizations/component_status_board]
+[visualizations/gauge]
 export = system

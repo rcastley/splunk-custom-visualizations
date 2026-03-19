@@ -1,2 +1,5 @@
+[]
+access = read : [ * ], write : [ admin ]
+
 [visualizations/custom_single_value]
 export = system
