@@ -4,21 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Splunk Custom Viz Test Harness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>
 tailwind.config = {
     theme: {
         extend: {
+            fontFamily: {
+                mono: ['JetBrains Mono', 'monospace'],
+                sans: ['Outfit', 'sans-serif']
+            },
             colors: {
-                gh: {
+                id: {
                     bg: 'var(--bg)',
                     card: 'var(--card)',
+                    'card-hi': 'var(--card-hi)',
                     border: 'var(--border)',
+                    'border-hi': 'var(--border-hi)',
                     text: 'var(--text)',
                     muted: 'var(--muted)',
                     subtle: 'var(--subtle)',
                     accent: 'var(--accent)',
+                    'accent-lo': 'var(--accent-lo)',
                     btn: 'var(--btn)'
                 }
             }
@@ -28,89 +38,230 @@ tailwind.config = {
 </script>
 <style>
     [x-cloak] { display: none !important; }
-    input[type="range"] { accent-color: var(--accent); }
 
     .theme-dark {
-        --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #e6edf3;
-        --muted: #8b949e; --subtle: #c9d1d9; --accent: #58a6ff; --btn: #21262d;
+        --bg: #0b0f19; --card: #111827; --card-hi: #1a2235; --border: #1e293b;
+        --border-hi: #334155; --text: #e2e8f0; --muted: #64748b; --subtle: #94a3b8;
+        --accent: #f59e0b; --accent-lo: rgba(245,158,11,0.10); --btn: #1e293b;
+        --viz-bg: #0b0f19;
     }
     .theme-light {
-        --bg: #ffffff; --card: #f6f8fa; --border: #d0d7de; --text: #1f2328;
-        --muted: #656d76; --subtle: #424a53; --accent: #0969da; --btn: #f0f0f0;
+        --bg: #f8fafc; --card: #ffffff; --card-hi: #f1f5f9; --border: #e2e8f0;
+        --border-hi: #cbd5e1; --text: #0f172a; --muted: #64748b; --subtle: #475569;
+        --accent: #d97706; --accent-lo: rgba(217,119,6,0.10); --btn: #f1f5f9;
+        --viz-bg: #ffffff;
     }
+
+    /* Noise texture overlay */
+    .noise::after {
+        content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+        opacity: 0.035;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 256px 256px;
+    }
+
+    /* Custom range slider */
+    input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
+    input[type="range"]::-webkit-slider-track {
+        height: 2px; background: var(--border-hi); border-radius: 1px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+        background: var(--accent); border: 2px solid var(--card); margin-top: -6px;
+        box-shadow: 0 0 0 2px var(--accent), 0 0 8px rgba(245,158,11,0.25);
+        transition: box-shadow 0.2s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+        box-shadow: 0 0 0 2px var(--accent), 0 0 14px rgba(245,158,11,0.4);
+    }
+    input[type="range"]::-moz-range-track {
+        height: 2px; background: var(--border-hi); border-radius: 1px; border: none;
+    }
+    input[type="range"]::-moz-range-thumb {
+        width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--card);
+        background: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent), 0 0 8px rgba(245,158,11,0.25);
+    }
+
+    /* Form inputs — visible, boxed, readable */
+    .ctrl-input {
+        width: 100%; padding: 6px 10px; background: var(--bg); border: 1px solid var(--border);
+        border-radius: 5px; color: var(--text); font-size: 13px; outline: none;
+        font-family: 'Outfit', sans-serif; transition: border-color 0.2s;
+    }
+    .ctrl-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-lo); }
+    .ctrl-input-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+    /* Select dropdown */
+    .ctrl-select {
+        width: 100%; padding: 6px 10px; background: var(--bg); border: 1px solid var(--border);
+        border-left: 3px solid var(--accent); border-radius: 5px;
+        color: var(--text); font-size: 13px; outline: none; cursor: pointer;
+        font-family: 'Outfit', sans-serif; transition: border-color 0.2s;
+    }
+    .ctrl-select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-lo); }
+
+    /* Segmented radio control */
+    .seg-group { display: flex; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
+    .seg-group label {
+        font-size: 12px; padding: 5px 12px; cursor: pointer; transition: all 0.15s;
+        background: var(--btn); color: var(--subtle); border-right: 1px solid var(--border);
+        font-family: 'Outfit', sans-serif; font-weight: 500;
+    }
+    .seg-group label:last-child { border-right: none; }
+    .seg-group label:hover { background: var(--card-hi); }
+    .seg-group input { display: none; }
+    .seg-group label.seg-active {
+        background: var(--accent); color: #0b0f19; font-weight: 600;
+    }
+
+    /* Color picker */
+    .color-swatch {
+        width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 5px;
+        background: none; cursor: pointer; padding: 0; transition: box-shadow 0.2s;
+    }
+    .color-swatch:hover { box-shadow: 0 0 12px var(--accent-lo); }
+
+    /* Status pulse */
+    @keyframes pulse-ok { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); } 50% { box-shadow: 0 0 0 4px rgba(34,197,94,0); } }
+    @keyframes pulse-err { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); } 50% { box-shadow: 0 0 0 4px rgba(239,68,68,0); } }
+    .dot-ok { background: #22c55e; animation: pulse-ok 2s ease-in-out infinite; }
+    .dot-nodata { background: #f97316; }
+    .dot-err { background: #ef4444; animation: pulse-err 1s ease-in-out infinite; }
+
+    /* Stagger reveal */
+    @keyframes reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .stagger { animation: reveal 0.3s ease-out both; }
+    .stagger-1 { animation-delay: 0ms; }
+    .stagger-2 { animation-delay: 75ms; }
+    .stagger-3 { animation-delay: 150ms; }
+    .stagger-4 { animation-delay: 225ms; }
+
+    /* Corner brackets on viz frame */
+    .viz-brackets { position: relative; }
+    .viz-brackets::before, .viz-brackets::after,
+    .viz-brackets > .bracket-bl, .viz-brackets > .bracket-br {
+        position: absolute; width: 16px; height: 16px; pointer-events: none;
+        border-color: var(--accent); opacity: 0.35; transition: opacity 0.3s;
+    }
+    .viz-brackets::before {
+        content: ''; top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid;
+    }
+    .viz-brackets::after {
+        content: ''; top: -1px; right: -1px; border-top: 2px solid; border-right: 2px solid;
+    }
+    .viz-brackets > .bracket-bl {
+        content: ''; bottom: -1px; left: -1px; border-bottom: 2px solid; border-left: 2px solid;
+    }
+    .viz-brackets > .bracket-br {
+        content: ''; bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid;
+    }
+    .viz-brackets:hover::before, .viz-brackets:hover::after,
+    .viz-brackets:hover > .bracket-bl, .viz-brackets:hover > .bracket-br {
+        opacity: 0.7;
+    }
+
+    /* Gradient separator */
+    .grad-sep {
+        height: 1px; background: linear-gradient(90deg, transparent, var(--border-hi), transparent);
+    }
+
+    /* Drag resize handle */
+    .resize-handle {
+        position: absolute; bottom: 0; right: 0; width: 20px; height: 20px;
+        cursor: nwse-resize; display: flex; align-items: center; justify-content: center;
+        z-index: 10; transition: opacity 0.2s;
+    }
+    .resize-handle:hover svg { opacity: 1 !important; }
+
+    /* Help scroll fade */
+    .help-scroll { mask-image: linear-gradient(to bottom, transparent 0px, black 20px); -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 20px); }
 </style>
 </head>
-<body class="h-screen font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif]">
+<body class="h-screen font-sans">
 
-<div x-data="harness()" x-init="init()" class="flex h-screen overflow-hidden bg-gh-bg text-gh-text" :class="isDark ? 'theme-dark' : 'theme-light'">
+<div x-data="harness()" x-init="init()" class="noise flex h-screen overflow-hidden bg-id-bg text-id-text" :class="isDark ? 'theme-dark' : 'theme-light'">
 
     <!-- Sidebar -->
-    <div class="w-80 min-w-[320px] bg-gh-card border-r border-gh-border flex flex-col overflow-y-auto">
-        <div class="p-4 border-b border-gh-border flex items-center justify-between">
-            <div>
-                <h1 class="text-sm font-semibold text-gh-accent tracking-wide">SPLUNK VIZ TEST HARNESS</h1>
-                <p class="text-[11px] text-gh-muted mt-1">Local testing without Splunk deployment</p>
+    <div class="w-80 min-w-[320px] flex flex-col overflow-y-auto" style="background: linear-gradient(180deg, var(--card) 0%, var(--bg) 100%);">
+
+        <!-- Header -->
+        <div class="p-4 pb-3 stagger stagger-1">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <img src="images/splunk-logo-white.png" alt="Splunk" class="h-5" :style="!isDark && 'filter: brightness(0) saturate(100%)'">
+                    <div class="w-px h-6 bg-id-border"></div>
+                    <div>
+                        <p class="text-xs font-semibold text-id-accent tracking-[0.1em]">VIZ TEST</p>
+                        <p class="text-[10px] text-id-muted tracking-wider">HARNESS</p>
+                    </div>
+                </div>
+                <div class="flex gap-1.5">
+                    <button @click="toggleTheme()" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                        class="w-7 h-7 flex items-center justify-center border border-id-border rounded bg-id-btn text-id-muted cursor-pointer hover:text-id-accent hover:border-id-accent hover:rotate-12 transition-all duration-200">
+                        <svg x-show="isDark" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <svg x-show="!isDark" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                    </button>
+                    <button @click="showHelp = !showHelp" title="Help"
+                        class="w-7 h-7 flex items-center justify-center border border-id-border rounded bg-id-btn text-id-muted cursor-pointer hover:text-id-accent hover:border-id-accent hover:rotate-12 transition-all duration-200"
+                        :class="showHelp && 'border-id-accent text-id-accent bg-id-accent-lo'">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <div class="flex gap-1">
-                <!-- Theme toggle -->
-                <button @click="toggleTheme()" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-                    class="w-8 h-8 flex items-center justify-center border border-gh-border rounded bg-gh-btn text-gh-subtle cursor-pointer hover:border-gh-muted transition-all">
-                    <svg x-show="isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    <svg x-show="!isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                    </svg>
-                </button>
-                <!-- Help toggle -->
-                <button @click="showHelp = !showHelp" title="Help"
-                    class="w-8 h-8 flex items-center justify-center border border-gh-border rounded bg-gh-btn text-gh-subtle cursor-pointer hover:border-gh-muted transition-all"
-                    :class="showHelp && 'border-gh-accent text-gh-accent bg-gh-accent/10'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </button>
-            </div>
+            <div class="grad-sep mt-3"></div>
         </div>
 
         <!-- Viz picker -->
-        <div class="p-3 px-4 border-b border-gh-border">
-            <div class="text-[11px] font-semibold text-gh-muted uppercase tracking-wider mb-2.5">Visualization</div>
-            <select x-model="selectedViz" @change="switchViz($el.value)"
-                class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs cursor-pointer focus:border-gh-accent outline-none">
+        <div class="px-4 pb-3 stagger stagger-2">
+            <div class="flex items-center gap-2 mb-2.5">
+                <div class="w-0.5 h-3 bg-id-accent rounded-full"></div>
+                <span class="text-[11px] font-semibold text-id-muted tracking-[0.12em] uppercase">Visualization</span>
+            </div>
+            <select x-model="selectedViz" @change="switchViz($el.value)" class="ctrl-select">
                 <option value="">— Select a viz —</option>
                 <template x-for="v in vizList" :key="v.name">
                     <option :value="v.name" x-text="v.label"></option>
                 </template>
             </select>
-            <div class="flex gap-1.5 mt-2">
+            <div class="flex gap-1.5 mt-2.5">
                 <button @click="toggleNoData()"
-                    class="px-3 py-1.5 border rounded text-xs cursor-pointer transition-all"
-                    :class="isNoData ? 'border-gh-accent text-gh-accent bg-gh-accent/10' : 'border-gh-border bg-gh-btn text-gh-subtle hover:border-gh-muted'">
+                    class="px-3 py-1 border rounded text-[11px] font-medium cursor-pointer transition-all duration-200"
+                    :class="isNoData ? 'border-id-accent text-id-bg bg-id-accent' : 'border-id-border bg-id-btn text-id-subtle hover:border-id-border-hi'">
                     Test No Data
                 </button>
                 <button @click="resetDefaults()"
-                    class="px-3 py-1.5 border border-gh-border rounded bg-gh-btn text-gh-subtle text-xs cursor-pointer hover:border-gh-muted transition-all">
-                    Reset Defaults
+                    class="px-3 py-1 border border-id-border rounded bg-id-btn text-id-subtle text-[11px] font-medium cursor-pointer hover:border-id-border-hi transition-all duration-200">
+                    Reset
                 </button>
             </div>
+            <div class="grad-sep mt-3"></div>
         </div>
 
         <!-- Data fields -->
-        <div x-show="currentHarness && currentHarness.fields.length > 0" x-cloak class="p-3 px-4 border-b border-gh-border">
-            <div class="text-[11px] font-semibold text-gh-muted uppercase tracking-wider mb-2.5">Data Fields</div>
+        <div x-show="currentHarness && currentHarness.fields.length > 0" x-cloak class="px-4 pb-3 stagger stagger-3">
+            <div class="flex items-center gap-2 mb-2.5">
+                <div class="w-0.5 h-3 bg-id-accent rounded-full"></div>
+                <span class="text-[11px] font-semibold text-id-muted tracking-[0.12em] uppercase">Data Fields</span>
+            </div>
             <template x-for="f in (currentHarness ? currentHarness.fields : [])" :key="f.name">
-                <div class="mb-2.5">
-                    <label class="block text-xs text-gh-subtle mb-1" x-text="f.label"></label>
+                <div class="mb-3">
+                    <label class="block text-xs text-id-subtle mb-1.5 font-medium" x-text="f.label"></label>
 
                     <!-- Slider -->
                     <template x-if="f.type === 'slider'">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-3">
                             <input type="range" :min="f.min" :max="f.max" :step="f.step || 1"
                                 :value="dataValues[f.name]"
                                 @input="dataValues[f.name] = $el.value; triggerUpdate()"
                                 class="flex-1">
-                            <span class="text-xs text-gh-accent font-semibold min-w-[48px] text-right tabular-nums"
+                            <span class="font-mono text-xs text-id-accent font-medium min-w-[48px] text-right tabular-nums"
                                 x-text="dataValues[f.name]"></span>
                         </div>
                     </template>
@@ -118,7 +269,7 @@ tailwind.config = {
                     <!-- Select -->
                     <template x-if="f.type === 'select'">
                         <select @change="dataValues[f.name] = $el.value; triggerUpdate()"
-                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs cursor-pointer focus:border-gh-accent outline-none">
+                            class="ctrl-select">
                             <template x-for="o in f.options" :key="typeof o === 'object' ? o.v : o">
                                 <option :value="typeof o === 'object' ? o.v : o"
                                     :selected="(typeof o === 'object' ? o.v : o) === String(dataValues[f.name])"
@@ -131,26 +282,29 @@ tailwind.config = {
                     <template x-if="f.type === 'text' || (!f.type && f.type !== 'slider' && f.type !== 'select')">
                         <input type="text" :value="dataValues[f.name] || ''"
                             @change="dataValues[f.name] = $el.value; triggerUpdate()"
-                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                            class="ctrl-input">
                     </template>
                 </div>
             </template>
+            <div class="grad-sep mt-1"></div>
         </div>
 
         <!-- Formatter settings -->
-        <div x-show="currentHarness && currentHarness.formatter.length > 0" x-cloak class="p-3 px-4 border-b border-gh-border">
-            <div class="text-[11px] font-semibold text-gh-muted uppercase tracking-wider mb-2.5">Formatter Settings</div>
+        <div x-show="currentHarness && currentHarness.formatter.length > 0" x-cloak class="px-4 pb-3 stagger stagger-4">
+            <div class="flex items-center gap-2 mb-2.5">
+                <div class="w-0.5 h-3 bg-id-accent rounded-full"></div>
+                <span class="text-[11px] font-semibold text-id-muted tracking-[0.12em] uppercase">Formatter Settings</span>
+            </div>
             <template x-for="s in (currentHarness ? currentHarness.formatter : [])" :key="s.name">
-                <div class="mb-2.5">
-                    <label class="block text-xs text-gh-subtle mb-1" x-text="s.label"></label>
+                <div class="mb-3">
+                    <label class="block text-xs text-id-subtle mb-1.5 font-medium" x-text="s.label"></label>
 
-                    <!-- Radio -->
+                    <!-- Radio → Segmented control -->
                     <template x-if="s.type === 'radio'">
-                        <div class="flex gap-1 flex-wrap">
+                        <div class="seg-group">
                             <template x-for="o in s.options" :key="o">
-                                <label class="text-[11px] px-2 py-0.5 border rounded cursor-pointer transition-all"
-                                    :class="config[ns + s.name] === o ? 'border-gh-accent bg-gh-accent/10 text-gh-accent' : 'border-gh-border text-gh-subtle'">
-                                    <input type="radio" :name="'fmt_' + s.name" :value="o" class="hidden"
+                                <label :class="config[ns + s.name] === o && 'seg-active'">
+                                    <input type="radio" :name="'fmt_' + s.name" :value="o"
                                         :checked="config[ns + s.name] === o"
                                         @change="config[ns + s.name] = o; triggerUpdate()">
                                     <span x-text="o"></span>
@@ -162,7 +316,7 @@ tailwind.config = {
                     <!-- Select -->
                     <template x-if="s.type === 'select'">
                         <select @change="config[ns + s.name] = $el.value; triggerUpdate()"
-                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs cursor-pointer focus:border-gh-accent outline-none">
+                            class="ctrl-select">
                             <template x-for="o in s.options" :key="typeof o === 'object' ? o.v : o">
                                 <option :value="typeof o === 'object' ? o.v : o"
                                     :selected="(typeof o === 'object' ? o.v : o) === config[ns + s.name]"
@@ -176,10 +330,10 @@ tailwind.config = {
                         <div class="flex items-center gap-2">
                             <input type="color" :value="config[ns + s.name]"
                                 @input="config[ns + s.name] = $el.value; $refs['ctxt_' + s.name] && ($refs['ctxt_' + s.name].value = $el.value); triggerUpdate()"
-                                class="w-7 h-7 border border-gh-border rounded bg-transparent cursor-pointer p-0">
+                                class="color-swatch">
                             <input type="text" :value="config[ns + s.name]" :ref="'ctxt_' + s.name"
                                 @change="config[ns + s.name] = $el.value; triggerUpdate()"
-                                class="flex-1 p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                                class="ctrl-input ctrl-input-mono flex-1">
                         </div>
                     </template>
 
@@ -187,7 +341,7 @@ tailwind.config = {
                     <template x-if="s.type === 'text'">
                         <input type="text" :value="config[ns + s.name] || ''"
                             @change="config[ns + s.name] = $el.value; triggerUpdate()"
-                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                            class="ctrl-input">
                     </template>
                 </div>
             </template>
@@ -195,33 +349,47 @@ tailwind.config = {
     </div>
 
     <!-- Main panel -->
-    <div class="flex-1 flex flex-col p-4 gap-3 overflow-hidden">
+    <div class="flex-1 flex flex-col p-5 gap-3 overflow-hidden">
+
+        <!-- Toolbar -->
         <div class="flex items-center gap-3 shrink-0">
-            <label class="text-xs text-gh-muted">Panel Size:</label>
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full shrink-0 transition-colors duration-300"
+                    :class="{ 'dot-ok': statusType === 'ok', 'dot-nodata': statusType === 'nodata', 'dot-err': statusType === 'err' }"></div>
+                <span class="font-mono text-[11px] text-id-muted tracking-wide truncate max-w-[300px]" x-text="statusText"></span>
+            </div>
             <div class="flex items-center gap-2 ml-auto">
                 <input type="number" x-model="vizWidth" @change="resizeViz()" min="100" max="2000" step="10"
-                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
-                <span class="text-xs text-gh-muted">&times;</span>
+                    class="ctrl-input ctrl-input-mono w-[70px] text-center">
+                <span class="font-mono text-xs text-id-muted">&times;</span>
                 <input type="number" x-model="vizHeight" @change="resizeViz()" min="100" max="1200" step="10"
-                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                    class="ctrl-input ctrl-input-mono w-[70px] text-center">
                 <button @click="fitToContainer()"
-                    class="px-3 py-1.5 border border-gh-border rounded bg-gh-btn text-gh-subtle text-xs cursor-pointer hover:border-gh-muted transition-all">
+                    class="px-3 py-1 border border-id-border rounded bg-id-btn text-id-subtle text-[11px] font-medium cursor-pointer hover:border-id-border-hi hover:scale-[1.03] transition-all duration-200 ml-1">
                     Fit
                 </button>
             </div>
         </div>
 
-        <div class="flex-1 flex items-center justify-center bg-gh-card border border-gh-border rounded-md overflow-hidden relative min-h-0" x-ref="vizWrapper">
-            <div class="relative overflow-hidden" :style="'width:' + vizWidth + 'px;height:' + vizHeight + 'px;background:' + (isDark ? '#0d1117' : '#ffffff')">
-                <div id="vizRoot" class="w-full h-full relative overflow-hidden"></div>
+        <!-- Viz frame -->
+        <div class="flex-1 flex items-center justify-center rounded-lg overflow-hidden relative min-h-0" x-ref="vizWrapper"
+            style="background: radial-gradient(ellipse at center, var(--card-hi) 0%, var(--bg) 70%);">
+            <div class="viz-brackets" :style="'width:' + vizWidth + 'px;height:' + vizHeight + 'px'">
+                <div class="bracket-bl" style="position:absolute;bottom:-1px;left:-1px;width:16px;height:16px;border-bottom:2px solid;border-left:2px solid;border-color:var(--accent);opacity:inherit;pointer-events:none;"></div>
+                <div class="bracket-br" style="position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid;border-right:2px solid;border-color:var(--accent);opacity:inherit;pointer-events:none;"></div>
+                <div class="relative overflow-hidden w-full h-full" style="background: var(--viz-bg); box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px var(--border);">
+                    <div id="vizRoot" class="w-full h-full relative overflow-hidden"></div>
+                </div>
+                <!-- Drag resize handle -->
+                <div class="resize-handle" @mousedown="startResize($event)">
+                    <svg width="10" height="10" viewBox="0 0 10 10" class="text-id-accent" style="opacity:0.5">
+                        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5"/>
+                        <line x1="9" y1="5" x2="5" y2="9" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                </div>
             </div>
         </div>
 
-        <div class="flex items-center gap-3 shrink-0">
-            <div class="w-2 h-2 rounded-full"
-                :class="{ 'bg-green-500': statusType === 'ok', 'bg-orange-400': statusType === 'nodata', 'bg-red-500': statusType === 'err' }"></div>
-            <span class="text-[11px] text-gh-muted" x-text="statusText"></span>
-        </div>
     </div>
 
     <!-- Help slide-out panel -->
@@ -232,70 +400,94 @@ tailwind.config = {
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="translate-x-0"
         x-transition:leave-end="translate-x-full"
-        class="w-96 min-w-[384px] bg-gh-card border-l border-gh-border flex flex-col overflow-y-auto">
+        class="w-96 min-w-[384px] bg-id-card border-l border-id-border flex flex-col overflow-hidden">
 
-        <div class="p-4 border-b border-gh-border flex items-center justify-between">
-            <h2 class="text-sm font-semibold text-gh-text">Help</h2>
+        <div class="p-4 border-b border-id-border flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-2">
+                <div class="w-0.5 h-3 bg-id-accent rounded-full"></div>
+                <h2 class="text-sm font-semibold text-id-text tracking-wider uppercase">Help</h2>
+            </div>
             <button @click="showHelp = false"
-                class="w-6 h-6 flex items-center justify-center text-gh-muted hover:text-gh-text cursor-pointer transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                class="w-6 h-6 flex items-center justify-center text-id-muted hover:text-id-accent cursor-pointer transition-all duration-200 hover:rotate-90">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
 
-        <div class="p-4 text-xs text-gh-subtle leading-relaxed space-y-4">
+        <div class="p-4 pt-5 text-xs text-id-subtle leading-relaxed space-y-5 overflow-y-auto help-scroll">
             <div>
-                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Getting Started</h3>
-                <ol class="list-decimal list-inside space-y-1 text-gh-subtle">
+                <h3 class="flex items-center gap-2 mb-2">
+                    <span class="w-0.5 h-2.5 bg-id-accent rounded-full"></span>
+                    <span class="text-[11px] font-semibold text-id-accent tracking-[0.12em] uppercase">Getting Started</span>
+                </h3>
+                <ol class="list-decimal list-inside space-y-1 text-id-subtle ml-3">
                     <li>Select a visualization from the dropdown</li>
                     <li>Adjust data fields using sliders, dropdowns, and text inputs</li>
                     <li>Tweak formatter settings &mdash; the canvas re-renders in real-time</li>
-                    <li>Click <strong class="text-gh-text">Test No Data</strong> to verify the no-data message</li>
+                    <li>Click <strong class="text-id-text">Test No Data</strong> to verify the no-data message</li>
                     <li>Resize the panel to test responsive behaviour</li>
                 </ol>
             </div>
 
             <div>
-                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Theme</h3>
-                <p>Use the <strong class="text-gh-text">sun/moon</strong> icon to toggle between light and dark mode. This changes both the harness UI and the theme reported to the visualization via <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">getCurrentTheme()</code>, so your viz renders in the correct mode.</p>
+                <h3 class="flex items-center gap-2 mb-2">
+                    <span class="w-0.5 h-2.5 bg-id-accent rounded-full"></span>
+                    <span class="text-[11px] font-semibold text-id-accent tracking-[0.12em] uppercase">Theme</span>
+                </h3>
+                <p>Use the <strong class="text-id-text">sun/moon</strong> icon to toggle between light and dark mode. This changes both the harness UI and the theme reported to the visualization via <code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">getCurrentTheme()</code>, so your viz renders in the correct mode.</p>
             </div>
 
             <div>
-                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Panel Size</h3>
-                <p>Set exact dimensions with the width &times; height inputs, or click <strong class="text-gh-text">Fit</strong> to fill the available space. The visualization receives a <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">reflow()</code> call on resize.</p>
+                <h3 class="flex items-center gap-2 mb-2">
+                    <span class="w-0.5 h-2.5 bg-id-accent rounded-full"></span>
+                    <span class="text-[11px] font-semibold text-id-accent tracking-[0.12em] uppercase">Panel Size</span>
+                </h3>
+                <p>Set exact dimensions with the width &times; height inputs, or click <strong class="text-id-text">Fit</strong> to fill the available space. The visualization receives a <code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">reflow()</code> call on resize.</p>
             </div>
 
             <div>
-                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Data Fields</h3>
-                <p>These controls inject values into the Splunk-format data passed to the viz. Slider values update in real-time. Fields starting with <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">_</code> are control fields (e.g., row count) that affect data generation but aren't data columns.</p>
+                <h3 class="flex items-center gap-2 mb-2">
+                    <span class="w-0.5 h-2.5 bg-id-accent rounded-full"></span>
+                    <span class="text-[11px] font-semibold text-id-accent tracking-[0.12em] uppercase">Data Fields</span>
+                </h3>
+                <p>These controls inject values into the Splunk-format data passed to the viz. Slider values update in real-time. Fields starting with <code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">_</code> are control fields (e.g., row count) that affect data generation but aren't data columns.</p>
             </div>
 
             <div>
-                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Formatter Settings</h3>
-                <p>These mirror the viz's <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">formatter.html</code> settings. They map to <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">config[ns + 'settingName']</code> in the viz JS. Defaults must match the JS fallback values.</p>
+                <h3 class="flex items-center gap-2 mb-2">
+                    <span class="w-0.5 h-2.5 bg-id-accent rounded-full"></span>
+                    <span class="text-[11px] font-semibold text-id-accent tracking-[0.12em] uppercase">Formatter Settings</span>
+                </h3>
+                <p>These mirror the viz's <code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">formatter.html</code> settings. They map to <code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">config[ns + 'settingName']</code> in the viz JS. Defaults must match the JS fallback values.</p>
             </div>
 
             <div>
-                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Adding a New Viz</h3>
-                <ol class="list-decimal list-inside space-y-1 text-gh-subtle">
-                    <li>Create a <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">harness.json</code> alongside your viz's <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">formatter.html</code></li>
-                    <li>Add the viz name to <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">harness-manifest.json</code></li>
+                <h3 class="flex items-center gap-2 mb-2">
+                    <span class="w-0.5 h-2.5 bg-id-accent rounded-full"></span>
+                    <span class="text-[11px] font-semibold text-id-accent tracking-[0.12em] uppercase">Adding a New Viz</span>
+                </h3>
+                <ol class="list-decimal list-inside space-y-1 text-id-subtle ml-3">
+                    <li>Create a <code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">harness.json</code> alongside your viz's <code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">formatter.html</code></li>
+                    <li>Add the viz name to <code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">harness-manifest.json</code></li>
                 </ol>
-                <p class="mt-1.5">No changes to this HTML file needed.</p>
+                <p class="mt-1.5 ml-3">No changes to this HTML file needed.</p>
             </div>
 
             <div>
-                <h3 class="text-gh-accent font-semibold mb-1.5 text-[11px] uppercase tracking-wider">Limitations</h3>
-                <ul class="list-disc list-inside space-y-1 text-gh-subtle">
+                <h3 class="flex items-center gap-2 mb-2">
+                    <span class="w-0.5 h-2.5 bg-id-accent rounded-full"></span>
+                    <span class="text-[11px] font-semibold text-id-accent tracking-[0.12em] uppercase">Limitations</span>
+                </h3>
+                <ul class="list-disc list-inside space-y-1 text-id-subtle ml-3">
                     <li>Data is static or slider-driven, not from live SPL</li>
-                    <li><code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">this.drilldown()</code> is a no-op in the mock</li>
-                    <li>Source loads via <code class="bg-gh-bg px-1 py-0.5 rounded text-[11px]">eval()</code> &mdash; check the console for errors</li>
+                    <li><code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">this.drilldown()</code> is a no-op in the mock</li>
+                    <li>Source loads via <code class="font-mono text-[11px] text-id-accent bg-id-bg px-1.5 py-0.5 rounded border border-id-border">eval()</code> &mdash; check the console for errors</li>
                 </ul>
             </div>
 
-            <div class="pt-2 border-t border-gh-border">
-                <p class="text-gh-muted text-[10px]">See <strong>TEST-HARNESS.md</strong> for full documentation including harness.json schema, data modes, and troubleshooting.</p>
+            <div class="pt-3 border-t border-id-border">
+                <p class="text-id-muted text-[10px]">See <strong class="text-id-subtle">TEST-HARNESS.md</strong> for full documentation including harness.json schema, data modes, and troubleshooting.</p>
             </div>
         </div>
     </div>
@@ -470,26 +662,29 @@ function harness() {
                     var names = manifest.vizs;
                     var pending = names.length;
 
-                    names.forEach(function(name) {
-                        var pathTemplate = manifest.pathTemplate || '{name}/appserver/static/visualizations/{name}';
+                    var pathTemplate = manifest.pathTemplate || '{name}/appserver/static/visualizations/{name}';
+                    var fetches = names.map(function(name) {
                         var basePath = pathTemplate.replace(/\{name\}/g, name);
-
-                        fetch(basePath + '/harness.json')
+                        return fetch(basePath + '/harness.json')
                             .then(function(r) { if (!r.ok) throw new Error('No harness.json'); return r.json(); })
                             .then(function(h) {
-                                self.vizDefs[name] = { name: name, path: basePath, harness: h };
-                                var newList = self.vizList.slice();
-                                newList.push({ name: name, label: h.label || name });
-                                newList.sort(function(a, b) { return a.label.localeCompare(b.label); });
-                                self.vizList = newList;
+                                return { name: name, path: basePath, harness: h, label: h.label || name };
                             })
-                            .catch(function(e) { console.warn('Skipping ' + name + ': ' + e.message); })
-                            .finally(function() {
-                                if (--pending === 0) {
-                                    self.statusType = 'ok';
-                                    self.statusText = 'Loaded ' + Object.keys(self.vizDefs).length + ' vizs \u2014 select one to begin';
-                                }
-                            });
+                            .catch(function(e) { console.warn('Skipping ' + name + ': ' + e.message); return null; });
+                    });
+
+                    Promise.all(fetches).then(function(results) {
+                        var list = [];
+                        for (var i = 0; i < results.length; i++) {
+                            if (!results[i]) continue;
+                            var r = results[i];
+                            self.vizDefs[r.name] = { name: r.name, path: r.path, harness: r.harness };
+                            list.push({ name: r.name, label: r.label });
+                        }
+                        list.sort(function(a, b) { return a.label.localeCompare(b.label); });
+                        self.vizList = list;
+                        self.statusType = 'ok';
+                        self.statusText = 'Loaded ' + list.length + ' vizs \u2014 select one to begin';
                     });
                 })
                 .catch(function(e) {
@@ -631,6 +826,27 @@ function harness() {
             this.vizWidth = Math.floor(rect.width - 32);
             this.vizHeight = Math.floor(rect.height - 32);
             this.resizeViz();
+        },
+
+        startResize: function(e) {
+            e.preventDefault();
+            var self = this;
+            var startX = e.clientX;
+            var startY = e.clientY;
+            var startW = self.vizWidth;
+            var startH = self.vizHeight;
+
+            function onMove(ev) {
+                self.vizWidth = Math.max(200, startW + ev.clientX - startX);
+                self.vizHeight = Math.max(100, startH + ev.clientY - startY);
+                self.resizeViz();
+            }
+            function onUp() {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+            }
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
         },
 
         setStatus: function(type, msg) {
