@@ -185,8 +185,12 @@ Valid types: `<integer>`, `<float>`, `<string>`, `<boolean>`
 
 #### metadata/default.meta
 
-Required for Splunk to export the visualization to other apps/users:
+Required for Splunk to export the visualization to other apps/users.
+The global `[]` stanza is **mandatory for Splunk Cloud vetting** — without it the upload is blocked with `check_meta_default_write_access`.
 ```
+[]
+access = read : [ * ], write : [ admin ]
+
 [visualizations/{app_name}]
 export = system
 ```
@@ -1204,7 +1208,7 @@ Before presenting the generated code, verify:
 - [ ] `visualization_source.js` formatData validates required columns and throws VisualizationError
 - [ ] If custom no-data message requested: `formatData` detects `_status` field, `updateView` intercepts it, `_ensureCanvas` and `_drawStatusMessage` methods exist
 - [ ] `visualization.css` exists (transparent background by default)
-- [ ] `metadata/default.meta` exists with `export = system`
+- [ ] `metadata/default.meta` exists with global `[]` access stanza and `export = system`
 - [ ] `.gitignore` excludes `node_modules`
 - [ ] Build script excludes src/, node_modules/, package.json, webpack.config.js from tarball
 
