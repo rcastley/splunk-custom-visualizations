@@ -11,6 +11,7 @@ Splunk's built-in charts cover the basics, but sometimes your data deserves some
 examples/
   custom_single_value/         Working example: configurable single value display
   component_status_board/      Working example: NOC-style component health grid
+  gauge/                       Working example: multi-mode gauge (arc, donut, bar, status)
 build.sh                       Build and package any viz into an installable .tar.gz
 test-harness.html              Browser-based testing without Splunk deployment
 harness-manifest.json          Registry of vizs for the test harness
@@ -82,6 +83,27 @@ index=_internal sourcetype=splunkd log_level=* component=*
         count(eval(log_level="WARN")) as warns by component
 | eval status=if(errors>0,"critical",if(warns>0,"warning","ok"))
 ```
+
+## Example: Gauge
+
+The `examples/gauge/` directory is a multi-mode gauge visualization with four display modes and eight colour schemes. Features:
+
+- **Arc** — full 270-degree segmented gauge with needle, tick marks, and centre readout
+- **Donut** — compact ring gauge with centre value
+- **Bar** — horizontal segmented bar with label and value
+- **Status** — on/off pill indicator for binary states
+- Eight colour schemes (teal-red, green-red, blue-red, severity, and more)
+- Optional LED indicator row above the arc
+- Configurable glow effect on the leading edge
+- Auto-scaling text and layout
+
+![Gauge](screenshots/gauge.png)
+
+```spl
+| makeresults | eval value=75
+```
+
+Works with any numeric field — CPU usage, memory, disk, response times, queue depth, or any metric you want to visualise as a gauge.
 
 ## Test Harness
 
