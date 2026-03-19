@@ -596,10 +596,11 @@ define([
             // ── Donut mode ──
             if (displayMode === 'donut') {
                 var dcx = w / 2;
+                var dLabelReserve = label ? 28 : 0;
                 var dMargin = Math.max(10, Math.min(w, h) * 0.08);
-                var dRadius = Math.max(30, (Math.min(w, h) / 2) - dMargin);
+                var dRadius = Math.max(30, (Math.min(w, h) / 2) - dMargin - dLabelReserve / 2);
                 var dArcW = Math.max(12, dRadius * 0.25);
-                var dcy = h / 2;
+                var dcy = h / 2 + dLabelReserve / 2;
 
                 drawSegmentedArc(ctx, dcx, dcy, dRadius, dArcW, 0, stops, 40, false);
                 drawSegmentedArc(ctx, dcx, dcy, dRadius, dArcW, pct, stops, 40, showGlow);
@@ -624,14 +625,14 @@ define([
                 ctx.fillText(unit, dcx, dcy + dValFS * 0.55 + dUnitFS * 0.5);
 
                 if (label) {
-                    var dLabelFS = Math.max(8, dValFS * 0.3);
+                    var dLabelFS = Math.max(8, Math.min(20, dRadius * 0.13));
                     ctx.font = dLabelFS + 'px ' + GAUGE_FONT;
                     ctx.fillStyle = 'rgba(255,255,255,0.5)';
-                    ctx.textBaseline = 'bottom';
+                    ctx.textBaseline = 'top';
                     ctx.textAlign = labelAlign;
                     var dLabelPad = Math.max(10, w * 0.04);
                     var dLabelX = labelAlign === 'left' ? dLabelPad : labelAlign === 'right' ? w - dLabelPad : dcx;
-                    ctx.fillText(label.toUpperCase(), dLabelX, dcy - dRadius - dArcW / 2 - 8);
+                    ctx.fillText(label.toUpperCase(), dLabelX, 4);
                 }
                 return;
             }
