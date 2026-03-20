@@ -1,0 +1,63 @@
+{
+  "label": "Line Trend Chart",
+  "defaultSize": { "width": 800, "height": 450 },
+  "noDataMessage": "Line Trend Chart — Waiting for data",
+  "dependencies": [],
+  "fields": [
+    { "name": "_numRows", "label": "Number of Rows", "type": "slider", "min": 3, "max": 19, "step": 1, "default": 19 }
+  ],
+  "formatter": [
+    { "name": "title", "label": "Title", "type": "text", "default": "Distribution of Electricity" },
+    { "name": "xField", "label": "X-Axis Field", "type": "text", "default": "hour" },
+    { "name": "xFormat", "label": "X-Axis Format", "type": "text", "default": "auto" },
+    { "name": "seriesFields", "label": "Series Fields", "type": "text", "default": "consumption,generation" },
+    { "name": "zoneField", "label": "Zone Field", "type": "text", "default": "zone" },
+    { "name": "lineStyle", "label": "Line Style", "type": "radio", "options": ["smooth", "straight"], "default": "smooth" },
+    { "name": "lineWidth", "label": "Line Width", "type": "select", "options": ["1", "2", "3", "4", "5", "6"], "default": "2" },
+    { "name": "lineDash", "label": "Line Dash", "type": "radio", "options": ["solid", "dashed", "dotted"], "default": "solid" },
+    { "name": "showArea", "label": "Area Fill", "type": "radio", "options": ["true", "false"], "default": "false" },
+    { "name": "showPoints", "label": "Show Points", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "pointSize", "label": "Point Size", "type": "select", "options": ["2", "3", "4", "5", "6", "8", "10"], "default": "4" },
+    { "name": "pointShape", "label": "Point Shape", "type": "radio", "options": ["circle", "square", "diamond", "triangle"], "default": "circle" },
+    { "name": "pointFill", "label": "Point Fill", "type": "color", "default": "#ffffff" },
+    { "name": "trendColorMode", "label": "Trend Color", "type": "radio", "options": ["off", "on"], "default": "off" },
+    { "name": "risingColor", "label": "Rising Color", "type": "color", "default": "#22c55e" },
+    { "name": "fallingColor", "label": "Falling Color", "type": "color", "default": "#ef4444" },
+    { "name": "showTooltip", "label": "Show Tooltip", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showLegend", "label": "Show Legend", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "legendPosition", "label": "Legend Position", "type": "radio", "options": ["top", "bottom", "left", "right"], "default": "top" },
+    { "name": "yUnit", "label": "Y-Axis Unit", "type": "text", "default": "W" },
+    { "name": "maxY", "label": "Max Y (0=auto)", "type": "text", "default": "0" },
+    { "name": "colorTheme", "label": "Color Theme", "type": "select", "options": ["warm", "cool", "green", "neon", "pastel", "earth"], "default": "warm" },
+    { "name": "colorOverrides", "label": "Color Overrides", "type": "text", "default": "consumption:#67a348, generation:#ff4500" },
+    { "name": "zoneLineColor", "label": "Zone Line Color", "type": "color", "default": "#ff4500" },
+    { "name": "zoneColor", "label": "Zone Color", "type": "text", "default": "rgba(255,180,180,0.3)" },
+    { "name": "zoneColorOverrides", "label": "Zone Color Overrides", "type": "text", "default": "" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "rowCountField": "_numRows",
+    "columns": ["hour", "consumption", "generation", "zone"],
+    "sampleRows": [
+      ["00:00", "260", "0", ""],
+      ["01:15", "240", "0", ""],
+      ["02:30", "220", "0", ""],
+      ["03:45", "230", "0", ""],
+      ["05:00", "240", "0", ""],
+      ["06:15", "250", "0", ""],
+      ["07:30", "280", "50", "Morning Peak"],
+      ["08:45", "460", "350", "Morning Peak"],
+      ["10:00", "500", "400", "Morning Peak"],
+      ["11:15", "380", "380", ""],
+      ["12:30", "390", "360", ""],
+      ["13:45", "370", "350", ""],
+      ["15:00", "380", "340", ""],
+      ["16:15", "400", "380", ""],
+      ["17:30", "410", "450", ""],
+      ["18:45", "600", "750", "Evening Peak"],
+      ["20:00", "610", "800", "Evening Peak"],
+      ["21:15", "780", "680", "Evening Peak"],
+      ["23:45", "400", "0", ""]
+    ]
+  }
+}

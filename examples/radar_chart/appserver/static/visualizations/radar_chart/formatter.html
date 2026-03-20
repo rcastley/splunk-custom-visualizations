@@ -1,0 +1,52 @@
+<form class="splunk-formatter-section" section-label="Radar Settings">
+
+    <splunk-control-group label="Title" help="Chart title displayed at the top">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Max Axis Value" help="Maximum value for all axes (0 = auto-detect from data)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.maxValue" value="0">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Grid Rings" help="Number of concentric grid rings">
+        <splunk-select name="{{VIZ_NAMESPACE}}.gridRings" value="4">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Legend" help="Click legend items to toggle series on/off">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLegend" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Animation" help="Entrance animation duration">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.animDuration" value="800">
+            <option value="0">Off</option>
+            <option value="400">Fast</option>
+            <option value="800">Normal</option>
+            <option value="1200">Slow</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Color Theme" help="Default palette for unmatched series">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.colorTheme" value="warm">
+            <option value="warm">Warm</option>
+            <option value="cool">Cool</option>
+            <option value="green">Green</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Color Overrides" help="name:#hex, name:#hex (e.g. Red Team:#FF5040, Blue Team:#50A0FF)">
+        <splunk-text-area name="{{VIZ_NAMESPACE}}.colorOverrides">
+        </splunk-text-area>
+    </splunk-control-group>
+
+</form>
