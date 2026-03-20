@@ -479,11 +479,13 @@ function harness() {
         vizHeight: 400,
 
         init: function() {
+            if (this._initialized) return;
+            this._initialized = true;
             var self = this;
             _currentTheme = this.isDark ? 'dark' : 'light';
             window._harnessUpdate = function() { self.triggerUpdate(); };
 
-            fetch('harness-manifest.json')
+            fetch('harness-manifest.json', { cache: 'no-store' })
                 .then(function(r) { return r.json(); })
                 .then(function(manifest) {
                     self.manifestConfig = manifest;
@@ -491,7 +493,7 @@ function harness() {
                     var pathTemplate = manifest.pathTemplate || '{name}/appserver/static/visualizations/{name}';
                     var fetches = names.map(function(name) {
                         var basePath = pathTemplate.replace(/\{name\}/g, name);
-                        return fetch(basePath + '/harness.json')
+                        return fetch(basePath + '/harness.json', { cache: 'no-store' })
                             .then(function(r) { if (!r.ok) throw new Error('No harness.json'); return r.json(); })
                             .then(function(h) { return { name: name, path: basePath, harness: h, label: h.label || name }; })
                             .catch(function(e) { console.warn('Skipping ' + name + ': ' + e.message); return null; });
@@ -563,7 +565,7 @@ function harness() {
             this.setStatus('nodata', 'Loading ' + name + '...');
 
             self.loadDependencies(def, function() {
-                fetch(def.path + '/src/visualization_source.js')
+                fetch(def.path + '/src/visualization_source.js', { cache: 'no-store' })
                     .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
                     .then(function(code) {
                         window._VizClass = null;
@@ -607,7 +609,7 @@ function harness() {
 
             for (var i = 0; i < deps.length; i++) {
                 (function(dep) {
-                    fetch(def.path + '/' + dep)
+                    fetch(def.path + '/' + dep, { cache: 'no-store' })
                         .then(function(r) { return r.json(); })
                         .then(function(data) {
                             _modules['../' + dep] = data;
