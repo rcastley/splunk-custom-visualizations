@@ -295,7 +295,7 @@ define([
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(badgeText, badgeX + badgeW / 2, cy);
+            ctx.fillText(badgeText, badgeX + badgeW / 2, badgeY + badgeH / 2 + badgeFontSize * 0.05);
 
             // ── Separator line ──
             var sepX = titleSectionW;
