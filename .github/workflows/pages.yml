@@ -1,0 +1,51 @@
+name: Deploy Test Harness to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Prepare site
+        run: |
+          mkdir _site
+          cp test-harness.html _site/index.html
+          cp harness-manifest.json _site/
+          # Copy viz source and harness descriptors
+          for viz in examples/*/; do
+            viz_name=$(basename "$viz")
+            viz_dir="examples/$viz_name/appserver/static/visualizations/$viz_name"
+            if [ -f "$viz_dir/harness.json" ]; then
+              dest="_site/$viz_dir"
+              mkdir -p "$dest/src"
+              cp "$viz_dir/harness.json" "$dest/"
+              cp "$viz_dir/src/visualization_source.js" "$dest/src/"
+              # Copy visualization.css if it exists
+              [ -f "$viz_dir/visualization.css" ] && cp "$viz_dir/visualization.css" "$dest/"
+            fi
+          done
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -70,10 +70,15 @@ build_app() {
     # Step 4: Package tarball
     echo "[3/3] Packaging $TARBALL..."
 
-    # Clean macOS extended attributes
-    xattr -rc "$APP_DIR" 2>/dev/null || true
+    # Build tar flags (macOS needs extra flags to suppress resource forks)
+    local TAR_FLAGS=()
+    if [[ "$(uname)" == "Darwin" ]]; then
+        xattr -rc "$APP_DIR" 2>/dev/null || true
+        export COPYFILE_DISABLE=1
+        TAR_FLAGS+=(--disable-copyfile --no-xattrs --no-mac-metadata)
+    fi
 
-    COPYFILE_DISABLE=1 tar --disable-copyfile --no-xattrs --no-mac-metadata \
+    tar "${TAR_FLAGS[@]}" \
         --exclude='.*' --exclude='._*' --exclude='__MACOSX' \
         --exclude="$APP_NAME/appserver/static/visualizations/$APP_NAME/node_modules" \
         --exclude="$APP_NAME/appserver/static/visualizations/$APP_NAME/src" \
