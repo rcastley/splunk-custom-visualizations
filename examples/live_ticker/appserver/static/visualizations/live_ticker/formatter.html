@@ -1,0 +1,93 @@
+<form class="splunk-formatter-section" section-label="General">
+    <splunk-control-group label="Title" help="Event or brand name shown on the left (e.g. .conf25)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value=".conf25">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Scroll Speed" help="How fast entries scroll across the ticker">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.scrollSpeed" value="medium">
+            <option value="slow">Slow</option>
+            <option value="medium">Medium</option>
+            <option value="fast">Fast</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Fields">
+    <splunk-control-group label="Field 1" help="Column name from your search">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.field1" value="size">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Label 1" help="Text shown before the field value">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.label1" value="Size">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Field 2" help="Column name from your search">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.field2" value="lanyard">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Label 2" help="Text shown before the field value">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.label2" value="Lanyard">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Field 3" help="Column name from your search (leave empty to skip)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.field3" value="host">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Label 3" help="Text shown before the field value">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.label3" value="Host">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Field 4" help="Column name from your search (leave empty to skip)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.field4" value="location">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Label 4" help="Text shown before the field value">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.label4" value="Location">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Colors">
+    <splunk-control-group label="Background" help="Ticker strip background color">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.bgColor" type="custom" value="#1a1a2e">
+            <splunk-color>#1a1a2e</splunk-color>
+            <splunk-color>#000000</splunk-color>
+            <splunk-color>#16213e</splunk-color>
+            <splunk-color>#0d1117</splunk-color>
+            <splunk-color>#1b1b2f</splunk-color>
+            <splunk-color>transparent</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Text Color" help="Color of the scrolling text">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.textColor" type="custom" value="#ffffff">
+            <splunk-color>#ffffff</splunk-color>
+            <splunk-color>#e6edf3</splunk-color>
+            <splunk-color>#c9d1d9</splunk-color>
+            <splunk-color>#8b949e</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Accent Color" help="Color of the LIVE badge and title">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.accentColor" type="custom" value="#e20082">
+            <splunk-color>#e20082</splunk-color>
+            <splunk-color>#ff0040</splunk-color>
+            <splunk-color>#65a637</splunk-color>
+            <splunk-color>#58a6ff</splunk-color>
+            <splunk-color>#f0ab00</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Separator Color" help="Color of the dot separators between entries">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.separatorColor" type="custom" value="#444466">
+            <splunk-color>#444466</splunk-color>
+            <splunk-color>#30363d</splunk-color>
+            <splunk-color>#666666</splunk-color>
+            <splunk-color>#888888</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>

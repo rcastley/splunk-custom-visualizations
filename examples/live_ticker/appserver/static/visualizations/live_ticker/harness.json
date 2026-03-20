@@ -1,0 +1,52 @@
+{
+  "label": "Live Ticker",
+  "defaultSize": { "width": 900, "height": 70 },
+  "noDataMessage": "Awaiting giveaway data",
+  "fields": [
+    { "name": "_numRows", "label": "Number of Entries", "type": "slider", "min": 1, "max": 20, "step": 1, "default": 8 }
+  ],
+  "formatter": [
+    { "name": "title", "label": "Title", "type": "text", "default": ".conf25" },
+    { "name": "scrollSpeed", "label": "Scroll Speed", "type": "radio", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "field1", "label": "Field 1", "type": "text", "default": "size" },
+    { "name": "label1", "label": "Label 1", "type": "text", "default": "Size" },
+    { "name": "field2", "label": "Field 2", "type": "text", "default": "lanyard" },
+    { "name": "label2", "label": "Label 2", "type": "text", "default": "Lanyard" },
+    { "name": "field3", "label": "Field 3", "type": "text", "default": "host" },
+    { "name": "label3", "label": "Label 3", "type": "text", "default": "Host" },
+    { "name": "field4", "label": "Field 4", "type": "text", "default": "location" },
+    { "name": "label4", "label": "Label 4", "type": "text", "default": "Location" },
+    { "name": "bgColor", "label": "Background", "type": "color", "default": "#1a1a2e" },
+    { "name": "textColor", "label": "Text Color", "type": "color", "default": "#ffffff" },
+    { "name": "accentColor", "label": "Accent Color", "type": "color", "default": "#e20082" },
+    { "name": "separatorColor", "label": "Separator", "type": "color", "default": "#444466" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["_time", "size", "lanyard", "host", "location"],
+    "relativeTimeColumn": "_time",
+    "rowCountField": "_numRows",
+    "sampleRows": [
+      ["30", "Medium", "Green", "kiosk-01", "Booth A"],
+      ["90", "Large", "Yellow", "kiosk-02", "Booth B"],
+      ["150", "XS", "Orange", "kiosk-01", "Booth A"],
+      ["240", "2XL", "Green", "kiosk-03", "Booth C"],
+      ["360", "Medium", "Yellow", "kiosk-01", "Booth A"],
+      ["480", "Large", "Green", "kiosk-02", "Booth B"],
+      ["600", "XS", "Orange", "kiosk-03", "Booth C"],
+      ["780", "Medium", "Yellow", "kiosk-01", "Booth A"],
+      ["900", "Large", "Green", "kiosk-02", "Booth B"],
+      ["1080", "2XL", "Orange", "kiosk-03", "Booth C"],
+      ["1200", "Medium", "Yellow", "kiosk-01", "Booth A"],
+      ["1380", "XS", "Green", "kiosk-02", "Booth B"],
+      ["1500", "Large", "Orange", "kiosk-01", "Booth A"],
+      ["1680", "Medium", "Yellow", "kiosk-03", "Booth C"],
+      ["1800", "2XL", "Green", "kiosk-02", "Booth B"],
+      ["1980", "XS", "Orange", "kiosk-01", "Booth A"],
+      ["2100", "Large", "Yellow", "kiosk-03", "Booth C"],
+      ["2280", "Medium", "Green", "kiosk-02", "Booth B"],
+      ["2400", "2XL", "Orange", "kiosk-01", "Booth A"],
+      ["2580", "XS", "Yellow", "kiosk-03", "Booth C"]
+    ]
+  }
+}

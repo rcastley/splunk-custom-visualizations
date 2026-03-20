@@ -1,0 +1,5 @@
+[]
+access = read : [ * ], write : [ admin ]
+
+[visualizations/live_ticker]
+export = system

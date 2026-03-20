@@ -3,6 +3,7 @@
   "vizs": [
     "custom_single_value",
     "component_status_board",
-    "gauge"
+    "gauge",
+    "live_ticker"
   ]
 }
