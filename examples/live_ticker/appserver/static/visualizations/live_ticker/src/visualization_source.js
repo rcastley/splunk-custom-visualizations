@@ -253,9 +253,9 @@ define([
             }
 
             // ── Layout ──
-            var fontSize = Math.max(10, Math.min(16, h * 0.28));
-            var titleFontSize = Math.max(11, Math.min(18, h * 0.32));
-            var badgeFontSize = Math.max(8, Math.min(11, h * 0.18));
+            var fontSize = Math.max(10, Math.min(48, h * 0.28));
+            var titleFontSize = Math.max(11, Math.min(56, h * 0.32));
+            var badgeFontSize = Math.max(8, Math.min(32, h * 0.18));
             var titlePadX = Math.max(10, w * 0.015);
             var cy = h / 2;
 
