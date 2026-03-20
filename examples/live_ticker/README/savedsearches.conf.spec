@@ -1,0 +1,14 @@
+display.visualizations.custom.live_ticker.live_ticker.title = <string>
+display.visualizations.custom.live_ticker.live_ticker.field1 = <string>
+display.visualizations.custom.live_ticker.live_ticker.label1 = <string>
+display.visualizations.custom.live_ticker.live_ticker.field2 = <string>
+display.visualizations.custom.live_ticker.live_ticker.label2 = <string>
+display.visualizations.custom.live_ticker.live_ticker.field3 = <string>
+display.visualizations.custom.live_ticker.live_ticker.label3 = <string>
+display.visualizations.custom.live_ticker.live_ticker.field4 = <string>
+display.visualizations.custom.live_ticker.live_ticker.label4 = <string>
+display.visualizations.custom.live_ticker.live_ticker.bgColor = <string>
+display.visualizations.custom.live_ticker.live_ticker.textColor = <string>
+display.visualizations.custom.live_ticker.live_ticker.accentColor = <string>
+display.visualizations.custom.live_ticker.live_ticker.separatorColor = <string>
+display.visualizations.custom.live_ticker.live_ticker.scrollSpeed = <string>

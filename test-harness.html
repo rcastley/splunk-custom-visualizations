@@ -514,6 +514,21 @@ function buildMultiRow(harness, vals) {
         allRows = allRows.slice(0, parseInt(vals[data.rowCountField], 10) || allRows.length);
     }
 
+    // Replace relative time columns with now - offset (in seconds)
+    var relCol = data.relativeTimeColumn;
+    if (relCol) {
+        var relIdx = data.columns.indexOf(relCol);
+        if (relIdx !== -1) {
+            var nowSec = Math.floor(Date.now() / 1000);
+            allRows = allRows.map(function(row) {
+                var newRow = row.slice();
+                var offset = parseInt(newRow[relIdx], 10) || 0;
+                newRow[relIdx] = String(nowSec - offset);
+                return newRow;
+            });
+        }
+    }
+
     var overrides = {};
     for (var key in vals) {
         if (key.charAt(0) === '_') continue;

@@ -6,5 +6,6 @@
     "gauge",
     "radar_chart",
     "line_trend_chart"
+    "live_ticker"
   ]
 }
