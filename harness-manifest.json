@@ -4,6 +4,8 @@
     "custom_single_value",
     "component_status_board",
     "gauge",
+    "radar_chart",
+    "line_trend_chart"
     "live_ticker"
   ]
 }

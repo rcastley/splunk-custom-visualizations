@@ -1,0 +1,215 @@
+<form class="splunk-formatter-section" section-label="General">
+
+    <splunk-control-group label="Title" help="Chart title displayed above the graph">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Y-Axis Unit" help="Unit label on the Y axis (e.g. W, %, ms)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.yUnit" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Max Y Value" help="0 = auto-detect from data">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.maxY" value="0">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Line Style">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.lineStyle" value="smooth">
+            <option value="smooth">Smooth</option>
+            <option value="straight">Straight</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Area Fill" help="Semi-transparent fill under lines">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showArea" value="false">
+            <option value="true">On</option>
+            <option value="false">Off</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Line Width">
+        <splunk-select name="{{VIZ_NAMESPACE}}.lineWidth" value="2">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Line Dash">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.lineDash" value="solid">
+            <option value="solid">Solid</option>
+            <option value="dashed">Dashed</option>
+            <option value="dotted">Dotted</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Data Points">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showPoints" value="true">
+            <option value="true">On</option>
+            <option value="false">Off</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Point Size">
+        <splunk-select name="{{VIZ_NAMESPACE}}.pointSize" value="4">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Point Shape">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.pointShape" value="circle">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="diamond">Diamond</option>
+            <option value="triangle">Triangle</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Point Fill Color" help="Empty = white">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.pointFill" type="custom" value="">
+            <splunk-color>#ffffff</splunk-color>
+            <splunk-color>#1e1e2e</splunk-color>
+            <splunk-color>#0d1117</splunk-color>
+            <splunk-color>transparent</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Trend Color" help="Color line segments by rising/falling trend">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.trendColorMode" value="off">
+            <option value="off">Off</option>
+            <option value="on">On</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Rising Color" help="Line color when value is increasing. 0 or empty = use series color.">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.risingColor" type="custom" value="#22c55e">
+            <splunk-color>#22c55e</splunk-color>
+            <splunk-color>#16a34a</splunk-color>
+            <splunk-color>#10b981</splunk-color>
+            <splunk-color>#84cc16</splunk-color>
+            <splunk-color>#3b82f6</splunk-color>
+            <splunk-color>#0ea5e9</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Falling Color" help="Line color when value is decreasing. 0 or empty = use series color.">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.fallingColor" type="custom" value="#ef4444">
+            <splunk-color>#ef4444</splunk-color>
+            <splunk-color>#dc2626</splunk-color>
+            <splunk-color>#f97316</splunk-color>
+            <splunk-color>#eab308</splunk-color>
+            <splunk-color>#f43f5e</splunk-color>
+            <splunk-color>#e11d48</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Tooltip" help="Hover crosshair and value tooltip">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showTooltip" value="true">
+            <option value="true">On</option>
+            <option value="false">Off</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+</form>
+
+<form class="splunk-formatter-section" section-label="Fields">
+
+    <splunk-control-group label="X-Axis Field" help="Column for the X axis (default: _time)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.xField" value="_time">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="X-Axis Format" help="auto, time, date, datetime, short, raw — or strftime: %H:%M, %m/%d %H:%M, %b %d, etc.">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.xFormat" value="auto">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Series Fields" help="Comma-separated column names for lines. Empty = all numeric columns.">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.seriesFields" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Zone Field" help="Column that defines background highlight zones. Empty = no zones.">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.zoneField" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+
+</form>
+
+<form class="splunk-formatter-section" section-label="Legend">
+
+    <splunk-control-group label="Show Legend">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLegend" value="true">
+            <option value="true">On</option>
+            <option value="false">Off</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Legend Position">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.legendPosition" value="top">
+            <option value="top">Top</option>
+            <option value="bottom">Bottom</option>
+            <option value="left">Left</option>
+            <option value="right">Right</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+</form>
+
+<form class="splunk-formatter-section" section-label="Colors">
+
+    <splunk-control-group label="Color Theme">
+        <splunk-select name="{{VIZ_NAMESPACE}}.colorTheme" value="warm">
+            <option value="warm">Warm</option>
+            <option value="cool">Cool</option>
+            <option value="green">Green</option>
+            <option value="neon">Neon</option>
+            <option value="pastel">Pastel</option>
+            <option value="earth">Earth</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Color Overrides" help="Per-series colors: series1:#FF0000, series2:#00AA00">
+        <splunk-text-area name="{{VIZ_NAMESPACE}}.colorOverrides">
+        </splunk-text-area>
+    </splunk-control-group>
+
+    <splunk-control-group label="Zone Line Color" help="Line color when inside a zone. Empty = keep series color.">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.zoneLineColor" type="custom" value="">
+            <splunk-color>#ff4500</splunk-color>
+            <splunk-color>#ef4444</splunk-color>
+            <splunk-color>#f97316</splunk-color>
+            <splunk-color>#eab308</splunk-color>
+            <splunk-color>#3b82f6</splunk-color>
+            <splunk-color>#8b5cf6</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Zone Background Color" help="Default background color for zones">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.zoneColor" type="custom" value="rgba(255,180,180,0.3)">
+            <splunk-color>rgba(255,180,180,0.3)</splunk-color>
+            <splunk-color>rgba(180,180,255,0.3)</splunk-color>
+            <splunk-color>rgba(255,220,150,0.3)</splunk-color>
+            <splunk-color>rgba(180,255,180,0.3)</splunk-color>
+            <splunk-color>rgba(200,180,255,0.3)</splunk-color>
+            <splunk-color>rgba(150,150,150,0.3)</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Zone Color Overrides" help="Per-zone colors: Morning Peak:rgba(255,180,180,0.3), Evening Peak:rgba(180,180,255,0.3)">
+        <splunk-text-area name="{{VIZ_NAMESPACE}}.zoneColorOverrides">
+        </splunk-text-area>
+    </splunk-control-group>
+
+</form>

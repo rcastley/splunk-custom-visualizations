@@ -37,6 +37,18 @@ tailwind.config = {
     }
     .resize-handle:hover { opacity: 0.8; }
 
+    .data-grid { border-collapse: collapse; width: 100%; font-size: 11px; font-family: monospace; }
+    .data-grid th { background: var(--btn); color: var(--muted); font-weight: 600; padding: 3px 6px;
+        border: 1px solid var(--border); text-align: left; font-size: 10px; text-transform: uppercase;
+        letter-spacing: 0.03em; position: sticky; top: 0; z-index: 1; }
+    .data-grid td { padding: 2px 5px; border: 1px solid var(--border); color: var(--text);
+        min-width: 50px; max-width: 160px; white-space: nowrap; overflow: hidden; cursor: text; }
+    .data-grid td:focus { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--bg); }
+    .data-grid tr:hover td { background: rgba(88,166,255,0.04); }
+    .data-grid .row-num { color: var(--muted); font-size: 9px; text-align: right; min-width: 22px;
+        max-width: 22px; padding: 2px 4px; cursor: default; user-select: none; }
+    .data-grid .row-num:focus { outline: none; }
+
     .theme-dark {
         --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #e6edf3;
         --muted: #8b949e; --subtle: #c9d1d9; --accent: #58a6ff; --btn: #21262d;
@@ -107,8 +119,76 @@ tailwind.config = {
             </div>
         </div>
 
+        <!-- Data Editor -->
+        <div x-show="currentHarness" x-cloak class="p-3 px-4 border-b border-gh-border">
+            <div class="flex items-center justify-between mb-2.5">
+                <div class="text-[11px] font-semibold text-gh-muted uppercase tracking-wider">Data</div>
+                <div class="flex gap-1">
+                    <button @click="showDataEditor = !showDataEditor; if(showDataEditor) initDataGrid()"
+                        class="px-2 py-0.5 border rounded text-[10px] cursor-pointer transition-all"
+                        :class="showDataEditor ? 'border-gh-accent text-gh-accent bg-gh-accent/10' : 'border-gh-border text-gh-subtle hover:border-gh-muted'">
+                        Edit
+                    </button>
+                </div>
+            </div>
+            <div x-show="showDataEditor" x-cloak>
+                <div class="overflow-auto max-h-[350px] border border-gh-border rounded" style="scrollbar-width:thin">
+                    <table class="data-grid">
+                        <thead>
+                            <tr>
+                                <th class="row-num">#</th>
+                                <template x-for="(col, ci) in gridColumns" :key="ci">
+                                    <th x-text="col"></th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(row, ri) in gridRows" :key="ri">
+                                <tr>
+                                    <td class="row-num" x-text="ri + 1"></td>
+                                    <template x-for="(cell, ci) in row" :key="ci">
+                                        <td contenteditable="true"
+                                            x-text="cell"
+                                            @blur="updateGridCell(ri, ci, $el.textContent)"
+                                            @keydown.enter.prevent="$el.blur()"
+                                            @keydown.tab.prevent="focusNextCell($el, ri, ci, $event.shiftKey)"
+                                        ></td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex gap-1.5 mt-2">
+                    <button @click="addGridRow()"
+                        class="px-2 py-1 border border-gh-border rounded bg-gh-btn text-gh-subtle text-[10px] cursor-pointer hover:border-gh-muted transition-all"
+                        title="Add row">+ Row</button>
+                    <button @click="removeGridRow()"
+                        class="px-2 py-1 border border-gh-border rounded bg-gh-btn text-gh-subtle text-[10px] cursor-pointer hover:border-gh-muted transition-all"
+                        title="Remove last row">&minus; Row</button>
+                    <button @click="addGridColumn()"
+                        class="px-2 py-1 border border-gh-border rounded bg-gh-btn text-gh-subtle text-[10px] cursor-pointer hover:border-gh-muted transition-all"
+                        title="Add column">+ Col</button>
+                    <button @click="removeGridColumn()"
+                        class="px-2 py-1 border border-gh-border rounded bg-gh-btn text-gh-subtle text-[10px] cursor-pointer hover:border-gh-muted transition-all"
+                        title="Remove last column">&minus; Col</button>
+                    <span class="text-[10px] text-gh-muted ml-auto self-center" x-text="gridRows.length + ' rows'"></span>
+                </div>
+                <div class="flex gap-1.5 mt-1.5">
+                    <button @click="initDataGrid()"
+                        class="px-2 py-1 border border-gh-border rounded bg-gh-btn text-gh-subtle text-[10px] cursor-pointer hover:border-gh-muted transition-all">
+                        Reset
+                    </button>
+                    <button @click="pasteCSVPrompt()"
+                        class="px-2 py-1 border border-gh-border rounded bg-gh-btn text-gh-subtle text-[10px] cursor-pointer hover:border-gh-muted transition-all">
+                        Paste CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Data fields -->
-        <div x-show="currentHarness && currentHarness.fields.length > 0" x-cloak class="p-3 px-4 border-b border-gh-border">
+        <div x-show="currentHarness && currentHarness.fields.length > 0 && !showDataEditor" x-cloak class="p-3 px-4 border-b border-gh-border">
             <div class="text-[11px] font-semibold text-gh-muted uppercase tracking-wider mb-2.5">Data Fields</div>
             <template x-for="f in (currentHarness ? currentHarness.fields : [])" :key="f.name">
                 <div class="mb-2.5">
@@ -392,8 +472,12 @@ window.require = function(deps, callback) {
 // Data Builders
 // ══════════════════════════════════════════════════════════
 
-function buildSplunkData(harness, vals, config) {
+function buildSplunkData(harness, vals, config, customColumns, customSampleRows) {
     var data = harness.data;
+    if (customColumns && customSampleRows) {
+        var fields = customColumns.map(function(c) { return { name: c }; });
+        return { fields: fields, rows: customSampleRows };
+    }
     if (data.mode === 'multi_row') return buildMultiRow(harness, vals);
     return buildSingleRow(harness, vals, config);
 }
@@ -492,6 +576,11 @@ function harness() {
         statusText: 'Loading manifest...',
         vizWidth: 600,
         vizHeight: 400,
+        showDataEditor: false,
+        gridColumns: [],
+        gridRows: [],
+        customSampleRows: null,
+        customColumns: null,
 
         init: function() {
             if (this._initialized) return;
@@ -561,6 +650,9 @@ function harness() {
             this.config = {};
             this.dataValues = {};
             this.isNoData = false;
+            this.showDataEditor = false;
+            this.customSampleRows = null;
+            this.customColumns = null;
             this.currentHarness = def.harness;
 
             if (def.harness.defaultSize) {
@@ -647,7 +739,7 @@ function harness() {
                     var msg = this.currentHarness.noDataMessage || 'No data available';
                     rawData = { fields: [{ name: '_status' }], rows: [[msg]] };
                 } else {
-                    rawData = buildSplunkData(this.currentHarness, this.dataValues, this.config);
+                    rawData = buildSplunkData(this.currentHarness, this.dataValues, this.config, this.customColumns, this.customSampleRows);
                 }
                 var formatted = this.currentInstance.formatData(rawData, this.config);
                 this.currentInstance.updateView(formatted, this.config);
@@ -668,7 +760,96 @@ function harness() {
         },
 
         resetDefaults: function() {
+            this.customSampleRows = null;
+            this.customColumns = null;
+            this.showDataEditor = false;
             if (this.selectedViz) this.switchViz(this.selectedViz);
+        },
+
+        initDataGrid: function() {
+            if (!this.currentHarness || !this.currentHarness.data) return;
+            var data = this.currentHarness.data;
+            this.gridColumns = (data.columns || []).slice();
+            this.gridRows = (data.sampleRows || []).map(function(r) { return r.slice(); });
+            this.customSampleRows = null;
+            this.customColumns = null;
+            this.triggerUpdate();
+        },
+
+        updateGridCell: function(ri, ci, val) {
+            this.gridRows[ri][ci] = val;
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        addGridRow: function() {
+            var empty = [];
+            for (var i = 0; i < this.gridColumns.length; i++) empty.push('');
+            this.gridRows.push(empty);
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        removeGridRow: function() {
+            if (this.gridRows.length <= 1) return;
+            this.gridRows.pop();
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        addGridColumn: function() {
+            var name = prompt('Column name:');
+            if (!name) return;
+            this.gridColumns.push(name.trim());
+            for (var i = 0; i < this.gridRows.length; i++) this.gridRows[i].push('');
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        removeGridColumn: function() {
+            if (this.gridColumns.length <= 1) return;
+            this.gridColumns.pop();
+            for (var i = 0; i < this.gridRows.length; i++) this.gridRows[i].pop();
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        focusNextCell: function(el, ri, ci, reverse) {
+            var table = el.closest('table');
+            if (!table) return;
+            var nextCi = reverse ? ci - 1 : ci + 1;
+            var nextRi = ri;
+            var numCols = this.gridColumns.length;
+            if (nextCi >= numCols) { nextCi = 0; nextRi++; }
+            if (nextCi < 0) { nextCi = numCols - 1; nextRi--; }
+            if (nextRi < 0 || nextRi >= this.gridRows.length) return;
+            var rows = table.querySelectorAll('tbody tr');
+            if (rows[nextRi]) {
+                var cells = rows[nextRi].querySelectorAll('td[contenteditable]');
+                if (cells[nextCi]) cells[nextCi].focus();
+            }
+        },
+
+        pasteCSVPrompt: function() {
+            var csv = prompt('Paste CSV data (header row + data rows):');
+            if (!csv) return;
+            var lines = csv.trim().split('\n');
+            if (lines.length < 2) return;
+            this.gridColumns = lines[0].split(',').map(function(s) { return s.trim(); });
+            this.gridRows = [];
+            for (var i = 1; i < lines.length; i++) {
+                var line = lines[i].trim();
+                if (!line) continue;
+                this.gridRows.push(line.split(',').map(function(s) { return s.trim(); }));
+            }
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
         },
 
         resizeViz: function() {
