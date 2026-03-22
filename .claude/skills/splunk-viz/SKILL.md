@@ -1216,7 +1216,9 @@ Before presenting the generated code, verify:
 - [ ] `harness.json` sampleRows use strings only (Splunk passes strings)
 - [ ] Viz name added to `harness-manifest.json`
 
-## Step 5: Generate Test Harness Config
+## Step 5: Generate Test Harness Config (MANDATORY)
+
+**This step is NOT optional.** Every new viz MUST have a `harness.json` file and MUST be added to `harness-manifest.json`. Generate these files as part of the scaffolding — do not skip them or defer them. When modifying an existing viz (adding/removing fields or settings), update its `harness.json` to match.
 
 Every viz app includes a `harness.json` file that enables local browser testing without deploying to Splunk. A generic `test-harness.html` (containing zero viz-specific code) reads these files and renders any viz with interactive controls.
 
