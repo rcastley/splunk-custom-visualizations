@@ -1195,6 +1195,8 @@ For any viz type, always include a "no data" state. Ask the user whether they wa
 
 ## Step 4: Verify Completeness
 
+**For new vizs**, verify all files are generated. **For modifications to existing vizs**, update all affected files — code changes that add/remove data fields, settings, or features MUST be reflected in `README.md`, `savedsearches.conf`, `savedsearches.conf.spec`, `harness.json`, and `formatter.html`. Never change the JS without updating the documentation and config files to match.
+
 Before presenting the generated code, verify:
 
 - [ ] `README.md` exists with description, install, columns, search, configuration, drilldown (if applicable), time range, and build sections
@@ -1215,6 +1217,9 @@ Before presenting the generated code, verify:
 - [ ] `harness.json` exists with correct fields, formatter (matching JS defaults), and data mode
 - [ ] `harness.json` sampleRows use strings only (Splunk passes strings)
 - [ ] Viz name added to `harness-manifest.json`
+- [ ] **If modifying an existing viz**: `README.md` updated to reflect new/changed columns, settings, and features
+- [ ] **If modifying an existing viz**: `savedsearches.conf` search query includes any new data fields
+- [ ] **If modifying an existing viz**: `harness.json` updated with new field controls and data columns
 
 ## Step 5: Generate Test Harness Config (MANDATORY)
 
