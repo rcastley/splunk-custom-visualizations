@@ -1,0 +1,12 @@
+display.visualizations.custom.network_topology.network_topology.nodeColor = <string>
+display.visualizations.custom.network_topology.network_topology.edgeColor = <string>
+display.visualizations.custom.network_topology.network_topology.nodeSize = <integer>
+display.visualizations.custom.network_topology.network_topology.showLabels = <boolean>
+display.visualizations.custom.network_topology.network_topology.labelSize = <integer>
+display.visualizations.custom.network_topology.network_topology.edgeThickness = <float>
+display.visualizations.custom.network_topology.network_topology.layoutIterations = <integer>
+display.visualizations.custom.network_topology.network_topology.showArrows = <boolean>
+display.visualizations.custom.network_topology.network_topology.statusColors = <boolean>
+display.visualizations.custom.network_topology.network_topology.okColor = <string>
+display.visualizations.custom.network_topology.network_topology.warnColor = <string>
+display.visualizations.custom.network_topology.network_topology.critColor = <string>

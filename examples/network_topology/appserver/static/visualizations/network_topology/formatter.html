@@ -1,0 +1,81 @@
+<form class="splunk-formatter-section" section-label="Node Settings">
+
+    <splunk-control-group label="Node Color" help="Default fill color for nodes">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.nodeColor" value="#4FC3F7">
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Node Size" help="Base radius of nodes in pixels">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.nodeSize" value="8">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Labels" help="Display node name labels">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLabels" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Label Size" help="Font size for node labels">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.labelSize" value="10">
+        </splunk-text-input>
+    </splunk-control-group>
+
+</form>
+
+<form class="splunk-formatter-section" section-label="Edge Settings">
+
+    <splunk-control-group label="Edge Color" help="Default color for edges/links">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.edgeColor" value="#555555">
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Edge Thickness" help="Base width of edges in pixels">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.edgeThickness" value="1.5">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Arrows" help="Display directional arrows on edges">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showArrows" value="false">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+</form>
+
+<form class="splunk-formatter-section" section-label="Layout Settings">
+
+    <splunk-control-group label="Layout Iterations" help="Number of force simulation iterations (higher = more stable layout)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.layoutIterations" value="100">
+        </splunk-text-input>
+    </splunk-control-group>
+
+</form>
+
+<form class="splunk-formatter-section" section-label="Status Colors">
+
+    <splunk-control-group label="Status Colors" help="Enable status-based node coloring when status column is present">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.statusColors" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="OK Color" help="Node color for ok status">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.okColor" value="#4CAF50">
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Warning Color" help="Node color for warning status">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.warnColor" value="#FF9800">
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Critical Color" help="Node color for critical status">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.critColor" value="#F44336">
+        </splunk-color-picker>
+    </splunk-control-group>
+
+</form>
