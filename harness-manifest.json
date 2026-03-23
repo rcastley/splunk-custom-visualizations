@@ -6,6 +6,7 @@
     "gauge",
     "radar_chart",
     "line_trend_chart",
-    "live_ticker"
+    "live_ticker",
+    "network_topology"
   ]
 }
