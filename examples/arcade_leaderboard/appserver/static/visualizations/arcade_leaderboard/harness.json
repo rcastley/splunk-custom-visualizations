@@ -1,0 +1,46 @@
+{
+  "label": "Arcade Leaderboard",
+  "defaultSize": { "width": 700, "height": 500 },
+  "noDataMessage": "INSERT COIN",
+  "fields": [
+    { "name": "_numPlayers", "label": "Players", "type": "slider", "min": 1, "max": 20, "step": 1, "default": 10 }
+  ],
+  "formatter": [
+    { "name": "title", "label": "Title", "type": "text", "default": "HIGH SCORES" },
+    { "name": "maxRows", "label": "Max Rows", "type": "select", "options": ["3", "5", "10", "15", "20"], "default": "10" },
+    { "name": "scoreDigits", "label": "Score Digits", "type": "select", "options": [{"v": "0", "l": "No padding"}, {"v": "6", "l": "6 digits"}, {"v": "8", "l": "8 digits"}, {"v": "10", "l": "10 digits"}], "default": "8" },
+    { "name": "titleColor", "label": "Title Color", "type": "color", "default": "#00fff5" },
+    { "name": "showScanlines", "label": "Scanlines", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showGlow", "label": "Neon Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "rankFieldName", "label": "Rank Field", "type": "text", "default": "rank" },
+    { "name": "nameFieldName", "label": "Name Field", "type": "text", "default": "player_name" },
+    { "name": "scoreFieldName", "label": "Score Field", "type": "text", "default": "score" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["rank", "player_name", "score"],
+    "rowCountField": "_numPlayers",
+    "sampleRows": [
+      ["1", "ACE", "99250"],
+      ["2", "NEON", "87430"],
+      ["3", "BLAZE", "76100"],
+      ["4", "VIPER", "65890"],
+      ["5", "SHADOW", "54320"],
+      ["6", "CYBER", "43210"],
+      ["7", "GLITCH", "32100"],
+      ["8", "PIXEL", "21050"],
+      ["9", "ZERO", "15420"],
+      ["10", "NOVA", "10080"],
+      ["11", "BYTE", "8540"],
+      ["12", "FLUX", "7200"],
+      ["13", "RAID", "6100"],
+      ["14", "PULSE", "5050"],
+      ["15", "GRID", "4020"],
+      ["16", "VOLT", "3010"],
+      ["17", "SPARK", "2500"],
+      ["18", "DRIFT", "1800"],
+      ["19", "WAVE", "1200"],
+      ["20", "ECHO", "750"]
+    ]
+  }
+}

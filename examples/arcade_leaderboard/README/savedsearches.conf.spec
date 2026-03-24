@@ -1,0 +1,9 @@
+display.visualizations.custom.arcade_leaderboard.arcade_leaderboard.title = <string>
+display.visualizations.custom.arcade_leaderboard.arcade_leaderboard.maxRows = <integer>
+display.visualizations.custom.arcade_leaderboard.arcade_leaderboard.scoreDigits = <integer>
+display.visualizations.custom.arcade_leaderboard.arcade_leaderboard.showScanlines = <boolean>
+display.visualizations.custom.arcade_leaderboard.arcade_leaderboard.showGlow = <boolean>
+display.visualizations.custom.arcade_leaderboard.arcade_leaderboard.titleColor = <string>
+display.visualizations.custom.arcade_leaderboard.arcade_leaderboard.rankFieldName = <string>
+display.visualizations.custom.arcade_leaderboard.arcade_leaderboard.nameFieldName = <string>
+display.visualizations.custom.arcade_leaderboard.arcade_leaderboard.scoreFieldName = <string>

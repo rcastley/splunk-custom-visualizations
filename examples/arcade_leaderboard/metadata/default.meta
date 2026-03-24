@@ -1,0 +1,5 @@
+[]
+access = read : [ * ], write : [ admin ]
+
+[visualizations/arcade_leaderboard]
+export = system

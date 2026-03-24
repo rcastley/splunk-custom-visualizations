@@ -16,8 +16,7 @@ EXAMPLES_DIR="$SCRIPT_DIR/examples"
 OUTPUT_DIR="$SCRIPT_DIR/dist"
 
 # Optional: path to shared font CSS to prepend to visualization.css
-# Uncomment and set this if you have a shared font file:
-# FONT_CSS="$SCRIPT_DIR/shared/fonts.css"
+FONT_CSS="$SCRIPT_DIR/shared/fonts.css"
 
 mkdir -p "$OUTPUT_DIR"
 

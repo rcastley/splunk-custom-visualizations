@@ -1,0 +1,69 @@
+<form class="splunk-formatter-section" section-label="Display">
+    <splunk-control-group label="Title" help="Title text displayed at the top (uses arcade pixel font)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value="HIGH SCORES">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Max Rows" help="Maximum number of leaderboard entries to display">
+        <splunk-select name="{{VIZ_NAMESPACE}}.maxRows" value="10">
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Score Digits" help="Number of leading-zero digits for score display (e.g. 8 = 00042350)">
+        <splunk-select name="{{VIZ_NAMESPACE}}.scoreDigits" value="8">
+            <option value="0">No padding</option>
+            <option value="6">6 digits</option>
+            <option value="8">8 digits</option>
+            <option value="10">10 digits</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Title Color" help="Neon color for the title text">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.titleColor" type="custom" value="#00fff5">
+            <splunk-color>#00fff5</splunk-color>
+            <splunk-color>#ff00ff</splunk-color>
+            <splunk-color>#ffff00</splunk-color>
+            <splunk-color>#00ff41</splunk-color>
+            <splunk-color>#ff3366</splunk-color>
+            <splunk-color>#7b68ee</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Effects">
+    <splunk-control-group label="Scanlines" help="CRT scanline overlay effect">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showScanlines" value="true">
+            <option value="true">On</option>
+            <option value="false">Off</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Neon Glow" help="Neon glow effect on text">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">On</option>
+            <option value="false">Off</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Fields">
+    <splunk-control-group label="Rank Field" help="Column name for the rank number">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.rankFieldName" value="rank">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Name Field" help="Column name for the player name">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.nameFieldName" value="player_name">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Score Field" help="Column name for the score value">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.scoreFieldName" value="score">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
