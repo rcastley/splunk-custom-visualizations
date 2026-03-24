@@ -325,36 +325,24 @@ define([
                 // Rank number
                 var rankStr = entry.rank < 10 ? '0' + entry.rank : String(entry.rank);
                 ctx.textAlign = 'left';
-                if (showGlow && entry.rank <= 3) {
-                    drawGlowText(ctx, rankStr, rankColX, centerY, rankColor, 12);
-                } else {
-                    ctx.fillStyle = rankColor;
-                    ctx.fillText(rankStr, rankColX, centerY);
-                }
+                ctx.fillStyle = rankColor;
+                ctx.fillText(rankStr, rankColX, centerY);
 
                 // Player name
                 var displayName = entry.name.toUpperCase();
                 var nameFontSize = fitTextSize(ctx, displayName, (scoreColX - nameColX) * 0.55, rowFontSize, FONT_FAMILY);
                 ctx.font = nameFontSize + 'px ' + FONT_FAMILY;
                 ctx.textAlign = 'left';
-                if (showGlow && entry.rank <= 3) {
-                    drawGlowText(ctx, displayName, nameColX, centerY, rankColor, 8);
-                } else {
-                    ctx.fillStyle = rankColor;
-                    ctx.fillText(displayName, nameColX, centerY);
-                }
+                ctx.fillStyle = rankColor;
+                ctx.fillText(displayName, nameColX, centerY);
 
                 // Score with leading zeros
                 var scoreStr = padScore(entry.score, scoreDigits);
                 var scoreFontSize = fitTextSize(ctx, scoreStr, (scoreColX - nameColX) * 0.4, rowFontSize, FONT_FAMILY);
                 ctx.font = scoreFontSize + 'px ' + FONT_FAMILY;
                 ctx.textAlign = 'right';
-                if (showGlow && entry.rank <= 3) {
-                    drawGlowText(ctx, scoreStr, scoreColX, centerY, rankColor, 10);
-                } else {
-                    ctx.fillStyle = rankColor;
-                    ctx.fillText(scoreStr, scoreColX, centerY);
-                }
+                ctx.fillStyle = rankColor;
+                ctx.fillText(scoreStr, scoreColX, centerY);
 
                 // Dot leaders between name and score
                 ctx.save();

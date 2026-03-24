@@ -1,5 +1,6 @@
 {
   "pathTemplate": "examples/{name}/appserver/static/visualizations/{name}",
+  "fontCSS": "shared/fonts.css",
   "vizs": [
     "custom_single_value",
     "component_status_board",
