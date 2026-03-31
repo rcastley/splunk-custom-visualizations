@@ -64,13 +64,10 @@ define([
 
     function drawScanlines(ctx, w, h, opacity) {
         ctx.save();
-        ctx.globalAlpha = opacity;
-        var lineSpacing = 3;
-        ctx.fillStyle = '#000000';
-        for (var y = 0; y < h; y += lineSpacing) {
+        ctx.fillStyle = 'rgba(0,0,0,' + opacity + ')';
+        for (var y = 0; y < h; y += 2) {
             ctx.fillRect(0, y, w, 1);
         }
-        ctx.globalAlpha = 1.0;
         ctx.restore();
     }
 
@@ -368,7 +365,7 @@ define([
 
             // ── CRT Effects ──
             if (showScanlines) {
-                drawScanlines(ctx, w, h, 0.08);
+                drawScanlines(ctx, w, h, 0.18);
             }
 
             // Vignette
