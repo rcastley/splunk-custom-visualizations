@@ -1,6 +1,88 @@
-# Embedding a Custom Visualization in an Existing Splunk App
+# Embedding Custom Visualizations in a Splunk App
 
-By default, each visualization in this repo is a standalone Splunk app. But you can also embed a visualization directly into an existing app — useful when you want to ship a viz alongside dashboards, saved searches, or other app content without requiring a separate install.
+By default, each visualization in this repo is a standalone Splunk app. But you can also embed visualizations into an existing app — useful when you want to ship vizs alongside dashboards, saved searches, or other app content without requiring separate installs.
+
+There are two approaches:
+
+| Approach | Best for |
+|----------|----------|
+| **[Automated build pipeline](#automated-build-pipeline)** | New apps or apps that will bundle multiple vizs. Handles building, merging configs, version bumping, and packaging automatically. |
+| **[Manual embedding](#manual-embedding)** | Adding a single viz to an existing app quickly. |
+
+---
+
+## Automated Build Pipeline
+
+Use the `/splunk-viz` skill to scaffold a complete Dashboard Studio app with a `vizs/` build pipeline. This generates:
+
+```text
+your_app/
+  .gitignore
+  default/
+    app.conf
+    visualizations.conf           ← populated by build.sh
+    savedsearches.conf            ← populated by build.sh
+    data/ui/views/                ← your dashboards
+  metadata/
+    default.meta                  ← viz exports added by build.sh
+  README/
+    savedsearches.conf.spec       ← populated by build.sh
+  vizs/
+    build.sh                      ← builds, merges, packages
+    harness-manifest.json         ← test harness registry
+    test-harness.html             ← browser-based testing
+    my_first_viz/                 ← standalone viz app (source)
+    my_second_viz/                ← standalone viz app (source)
+  appserver/
+    static/
+      visualizations/
+        my_first_viz/             ← build output (merged)
+        my_second_viz/            ← build output (merged)
+```
+
+### How it works
+
+Each viz lives under `vizs/` as a standalone Splunk app with its own `default/`, `metadata/`, and source code. The `vizs/build.sh` script:
+
+1. **Builds** each viz (npm install + webpack)
+2. **Merges** the compiled output (`visualization.js`, `visualization.css`, `formatter.html`) into the parent app's `appserver/static/visualizations/`
+3. **Consolidates** config stanzas from each viz into the parent app's `visualizations.conf`, `savedsearches.conf`, `savedsearches.conf.spec`, and `default.meta`
+4. **Bumps** the app version in `app.conf`
+5. **Packages** the app into a `.tar.gz` tarball (excluding `vizs/`, `node_modules/`, and dev files)
+
+### Scaffolding a new app
+
+```text
+Using /splunk-viz, scaffold a Splunk Dashboard Studio app called "my_app"
+with custom visualization support.
+```
+
+### Adding vizs to an existing app
+
+Scaffold individual vizs into the `vizs/` directory using the normal `/splunk-viz` workflow, then add the viz name to the `APPS` array in `vizs/build.sh` and the `vizs` array in `vizs/harness-manifest.json`.
+
+### Building
+
+```bash
+./vizs/build.sh              # Build and merge all vizs
+./vizs/build.sh my_first_viz # Build and merge one viz
+```
+
+The tarball is output to the parent directory: `../{app_name}.tar.gz`
+
+### Testing locally
+
+```bash
+cd vizs && python3 -m http.server 8080
+```
+
+Open `http://localhost:8080/test-harness.html` — the harness discovers all vizs from `harness-manifest.json`.
+
+---
+
+## Manual Embedding
+
+For adding a single viz to an existing app without the full build pipeline.
 
 ## Directory Structure
 

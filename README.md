@@ -46,11 +46,12 @@ See [QUICKSTART.md](QUICKSTART.md) for a step-by-step tutorial or [INSTRUCTIONS.
 The `.claude/skills/splunk-viz/` directory contains a Claude Code skill that knows how to:
 
 - Scaffold a complete Splunk viz app (config files, formatter UI, webpack, build script)
+- Scaffold a Dashboard Studio app with a `vizs/` build pipeline for bundling multiple custom vizs
 - Generate Canvas 2D rendering code following Splunk's AMD module pattern
 - Handle HiDPI displays, real-time data, responsive sizing, and font embedding
 - Apply 24 battle-tested rules learned from building production visualizations
 
-The skill is automatically available when you use Claude Code in this repo. Just describe what you want to visualize and it will generate the full app.
+The skill is automatically available when you use Claude Code in this repo. Just describe what you want to visualize and it will generate the full app. You can also ask it to scaffold a full Dashboard Studio app — it generates the app skeleton, build script, test harness, and the `vizs/` directory structure for managing multiple visualizations.
 
 ## Example: Custom Single Value
 
@@ -136,7 +137,7 @@ Each visualization is a standalone Splunk app:
 
 The build script handles npm install, webpack bundling, and tarball packaging — excluding dev files from the final package.
 
-Each viz is a standalone app by default, but you can also embed visualizations into an existing Splunk app. See [EMBEDDING.md](EMBEDDING.md) for instructions.
+Each viz is a standalone app by default, but you can also embed visualizations into an existing Splunk app — either [manually](EMBEDDING.md) or by scaffolding a Dashboard Studio app with an automated build pipeline (see [EMBEDDING.md](EMBEDDING.md)).
 
 ## Contributing
 

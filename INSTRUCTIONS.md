@@ -98,7 +98,18 @@ Each change updates the source files in place. Rebuild with:
 ./build.sh status_board
 ```
 
-## 6. Development Workflow
+## 6. Scaffold a Dashboard Studio App
+
+If you're building a Splunk app that bundles dashboards and multiple custom visualizations together, you can scaffold the entire app structure:
+
+```text
+Using /splunk-viz, scaffold a Splunk Dashboard Studio app called "my_monitoring_app"
+with custom visualization support.
+```
+
+This generates a complete app with a `vizs/` build pipeline — see [EMBEDDING.md](EMBEDDING.md) for the full details. Individual vizs are then created under `vizs/` using the normal `/splunk-viz` workflow and merged into the app automatically by the build script.
+
+## 7. Development Workflow
 
 ### Fast Iteration (no restart needed)
 
@@ -121,7 +132,7 @@ $SPLUNK_HOME/bin/splunk btool check
 
 If you see "Invalid key" errors, ensure every `display.visualizations.custom.*` setting used in `savedsearches.conf` is also listed in `README/savedsearches.conf.spec`.
 
-## 7. Custom Fonts
+## 8. Custom Fonts
 
 To use a custom font in your visualization:
 
@@ -158,7 +169,7 @@ To use a custom font in your visualization:
    // See the skill documentation for the full font-loading pattern
    ```
 
-## 8. Directory Structure Reference
+## 9. Directory Structure Reference
 
 ```text
 splunk-custom-visualizations/

@@ -136,10 +136,13 @@ Run a search that produces the expected columns:
 
 ## What Next?
 
+- **Scaffold a full app** — use `/splunk-viz` to scaffold a Dashboard Studio
+  app with a `vizs/` build pipeline that bundles multiple custom visualizations,
+  dashboards, and saved searches into a single installable package
 - Read [TEST-HARNESS.md](TEST-HARNESS.md) for the full harness documentation
   including `harness.json` schema and data modes
-- Read [EMBEDDING.md](EMBEDDING.md) to learn how to embed a visualization
-  into an existing Splunk app
+- Read [EMBEDDING.md](EMBEDDING.md) to learn how to embed visualizations
+  into an existing Splunk app (manual or automated build pipeline)
 - Read [CONTRIBUTING.md](CONTRIBUTING.md) for the project rules and how to
   submit changes
 - Browse the existing examples in `examples/` to see patterns for different
