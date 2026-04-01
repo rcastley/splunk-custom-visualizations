@@ -1,0 +1,37 @@
+{
+  "label": "Index Universe",
+  "defaultSize": { "width": 700, "height": 500 },
+  "noDataMessage": "Awaiting index data",
+  "dependencies": [],
+  "fields": [],
+  "formatter": [
+    { "name": "showLabels", "label": "Show Labels", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "colorScheme", "label": "Colour Scheme", "type": "select", "options": ["cool", "warm", "neon"], "default": "cool" },
+    { "name": "minBubbleSize", "label": "Min Bubble Size", "type": "text", "default": "8" },
+    { "name": "maxBubbleSize", "label": "Max Bubble Size", "type": "text", "default": "50" },
+    { "name": "showOrbits", "label": "Show Orbits", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showLegend", "label": "Show Legend", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["title", "totalEventCount", "currentDBSizeMB", "maxTotalDataSizeMB", "retention_days"],
+    "sampleRows": [
+      ["_internal", "28500000", "1250", "500000", "30"],
+      ["_audit", "3200000", "420", "500000", "90"],
+      ["_introspection", "1800000", "680", "500000", "30"],
+      ["main", "95000000", "8500", "500000", "365"],
+      ["web_logs", "42000000", "3200", "500000", "180"],
+      ["security", "15000000", "2100", "500000", "365"],
+      ["metrics", "120000000", "12000", "500000", "90"],
+      ["network", "8500000", "950", "500000", "180"],
+      ["app_logs", "55000000", "4800", "500000", "365"],
+      ["dns", "22000000", "1800", "500000", "30"],
+      ["firewall", "38000000", "5200", "500000", "365"],
+      ["os_logs", "6700000", "780", "500000", "90"],
+      ["email", "2100000", "340", "500000", "1095"],
+      ["compliance", "950000", "180", "500000", "1095"],
+      ["backup", "420000", "95", "500000", "3650"]
+    ]
+  }
+}

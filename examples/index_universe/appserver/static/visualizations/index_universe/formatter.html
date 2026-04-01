@@ -1,0 +1,43 @@
+<form class="splunk-formatter-section" section-label="Display">
+    <splunk-control-group label="Show Labels" help="Display index names on each bubble">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLabels" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Orbit Rings" help="Display concentric retention tier rings">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showOrbits" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Legend" help="Display color and size legends">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLegend" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Glow" help="Glow effect on bubbles based on activity">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Sizing">
+    <splunk-control-group label="Colour Scheme" help="Colour gradient for event count intensity">
+        <splunk-select name="{{VIZ_NAMESPACE}}.colorScheme" value="cool">
+            <option value="cool">Cool (Blue to Orange)</option>
+            <option value="warm">Warm (Teal to Red)</option>
+            <option value="neon">Neon (Cyan to Magenta)</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Min Bubble Size" help="Minimum bubble radius in pixels">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.minBubbleSize" value="8">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Max Bubble Size" help="Maximum bubble radius in pixels">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.maxBubbleSize" value="50">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
