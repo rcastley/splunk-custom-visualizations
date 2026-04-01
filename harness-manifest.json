@@ -11,6 +11,7 @@
     "network_topology",
     "arcade_leaderboard",
     "indexing_pipeline_flow",
-    "index_universe"
+    "index_universe",
+    "worldcup_bets"
   ]
 }

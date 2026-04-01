@@ -67,31 +67,27 @@ tailwind.config = {
     <div class="w-80 min-w-[320px] bg-gh-card border-r border-gh-border flex flex-col overflow-y-auto">
         <div class="p-4 border-b border-gh-border flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAQCAYAAABk1z2tAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAKKADAAQAAAABAAAAEAAAAADrt5XrAAADU0lEQVRIDcWVW2jOYRjA97HNac6aHBaJHC4ISZI0rZVdKDlEOV84XDC5kAtyIXJhSLIkNhfIscwhFzK15HOzrJwimrNEmOOcPr/ff9/7+VpmI+WpX+/zvO/zvP/nfd7DPyPjDySRSMQgDif/ICzlSlwbuA6HUp3NKK2aGf/VcEc6O/xqoIV9xrdvoW9GKkFW1QVyDKRtBbGkbn+7xhM6Dq3T/FJ2cizEd8T+6wWZSDZsJ4GLUIE+lnY9nEPfQnsWatCXxmKxBLpSD6OhGiaAMhy0J8IqqCJmG20c3NbFtF8gJfSthXLIhGGwDnqmHFCs4GAohuMwFa7BICiEWzAFzkMpweNpP8N3cKtMqgsoVinYeej63oNp8AQ2Qw8wtp655tCuhmMs/Cvtc+gLZxnbAL3QowRraStB56k4v6d1e55COfYL2j2g5EOoQqimH1TSbfUPsJ94F3kBPD4u4hOMgzIoZvw0bYbfgSWoFsnvV5Lkrkw636JMpqMEytD9oJN8g/DRTHTF/iDRGcPQTwm+DVZDpUKcvo6LfXfgISzke0fIwaIE6YTSGfxWnWewH8pQ2Ahun1tj2wdmMq7zUjDgDFiFbHgFShE+A2kXaCAem9aQpZGUYJtoW3gNc2EU7CPe5ycXDmLvhVrIJ/E1TjYAdsEpuAJbwUnc4klwDsbAbAJu0rr6++BZ3Q0zwIldgH1v4BHUQKiuZ/AqeLn0ecxcd2mXQX+wSJ7pS1DAWAmEAlD3nytwhdqH4S5YYVdmxSJB92mxIsHuhh09I7TeRp8b48L2hmcrsulvHB99M8zXopZJTsBTSN+mFsX+a6fUKhtNHMe2xF7//yq/LS8V7EZ2dZyHr+gT0GdBKYyAGzAPNkERDIEdUAzOu9lzRJy/Nc/0R2gH3tjO4GtRB37Dp8zbq90VfKL0z26qgp4bHRfBbaiAFbATnsFyqIXBMBKmwxIoBC+Ll8+kD4APdS34CHtpukNIWNuEfX5ywUtkn3jTnzhRU+LKXUDY5qPo88Hn5xa8g5fgSqtgJVwGx3uDfYrjnmUTN5FHEAdvtTfXZM1DTLAanH8YPICmhSr6PqWOQdKOFoWepR2i0d2+cGMjn6TtrY3mSfdPjuXRZ+WMS58rB7sAYj8AfXnPEwnceaQAAAAASUVORK5CYII=" alt="Splunk" class="h-5" :style="!isDark && 'filter: brightness(0) saturate(100%)'">
+                <img class="h-7" src="data:image/png;base64,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" alt="Splunk" :style="isDark ? '' : 'filter: invert(1)'" />
                 <div class="w-px h-6 bg-gh-border"></div>
                 <div>
                     <p class="text-xs font-semibold text-gh-accent tracking-wide">VIZ TEST HARNESS</p>
                     <p class="text-[10px] text-gh-muted">Local testing without Splunk</p>
                 </div>
             </div>
-            <div class="flex gap-1">
-                <!-- Theme toggle -->
-                <button @click="toggleTheme()" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-                    class="w-8 h-8 flex items-center justify-center border border-gh-border rounded bg-gh-btn text-gh-subtle cursor-pointer hover:border-gh-muted transition-all">
-                    <svg x-show="isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    <svg x-show="!isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                    </svg>
-                </button>
-                <!-- Help toggle -->
-                <button @click="showHelp = !showHelp" title="Help"
-                    class="w-8 h-8 flex items-center justify-center border border-gh-border rounded bg-gh-btn text-gh-subtle cursor-pointer hover:border-gh-muted transition-all"
-                    :class="showHelp && 'border-gh-accent text-gh-accent bg-gh-accent/10'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+        </div>
+
+        <!-- Panel Size -->
+        <div class="p-3 px-4 border-b border-gh-border">
+            <div class="text-[11px] font-semibold text-gh-muted uppercase tracking-wider mb-2.5">Panel Size</div>
+            <div class="flex items-center gap-2">
+                <input type="number" x-model="vizWidth" @change="resizeViz()" min="100" max="2000" step="10"
+                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                <span class="text-xs text-gh-muted">&times;</span>
+                <input type="number" x-model="vizHeight" @change="resizeViz()" min="100" max="1200" step="10"
+                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
+                <button @click="fitToContainer()"
+                    class="px-3 py-1.5 border border-gh-border rounded bg-gh-btn text-gh-subtle text-xs cursor-pointer hover:border-gh-muted transition-all ml-auto">
+                    Fit
                 </button>
             </div>
         </div>
@@ -287,19 +283,32 @@ tailwind.config = {
 
     <!-- Main panel -->
     <div class="flex-1 flex flex-col p-4 gap-3 overflow-hidden">
-        <div class="flex items-center gap-3 shrink-0">
-            <label class="text-xs text-gh-muted">Panel Size:</label>
-            <div class="flex items-center gap-2 ml-auto">
-                <input type="number" x-model="vizWidth" @change="resizeViz()" min="100" max="2000" step="10"
-                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
-                <span class="text-xs text-gh-muted">&times;</span>
-                <input type="number" x-model="vizHeight" @change="resizeViz()" min="100" max="1200" step="10"
-                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded text-gh-text text-xs focus:border-gh-accent outline-none">
-                <button @click="fitToContainer()"
-                    class="px-3 py-1.5 border border-gh-border rounded bg-gh-btn text-gh-subtle text-xs cursor-pointer hover:border-gh-muted transition-all">
-                    Fit
-                </button>
-            </div>
+        <div class="flex items-center justify-end gap-1 shrink-0">
+            <!-- Theme toggle -->
+            <button @click="toggleTheme()" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                class="w-8 h-8 flex items-center justify-center border border-gh-border rounded bg-gh-btn text-gh-subtle cursor-pointer hover:border-gh-muted transition-all">
+                <svg x-show="isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <svg x-show="!isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </button>
+            <!-- GitHub link -->
+            <a href="https://github.com/rcastley/splunk-custom-visualizations" target="_blank" rel="noopener" title="View on GitHub"
+                class="w-8 h-8 flex items-center justify-center border border-gh-border rounded bg-gh-btn text-gh-subtle cursor-pointer hover:border-gh-muted transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+            </a>
+            <!-- Help toggle -->
+            <button @click="showHelp = !showHelp" title="Help"
+                class="w-8 h-8 flex items-center justify-center border border-gh-border rounded bg-gh-btn text-gh-subtle cursor-pointer hover:border-gh-muted transition-all"
+                :class="showHelp && 'border-gh-accent text-gh-accent bg-gh-accent/10'">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </button>
         </div>
 
         <div class="flex-1 flex items-center justify-center bg-gh-card border border-gh-border rounded-md overflow-hidden relative min-h-0" x-ref="vizWrapper">
