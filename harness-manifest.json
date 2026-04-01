@@ -12,6 +12,14 @@
     "arcade_leaderboard",
     "indexing_pipeline_flow",
     "index_universe",
-    "worldcup_bets"
+    "worldcup_bets",
+    "odds_ticker",
+    "match_heatmap",
+    "bet_radar",
+    "wc_bracket",
+    "liability_gauge",
+    "bet_flow_map",
+    "goal_timeline",
+    "market_donut"
   ]
 }
