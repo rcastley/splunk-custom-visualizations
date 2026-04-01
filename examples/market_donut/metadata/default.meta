@@ -1,0 +1,5 @@
+[]
+access = read : [ * ], write : [ admin, sc_admin ]
+
+[visualizations/market_donut]
+export = system

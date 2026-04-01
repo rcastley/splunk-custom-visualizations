@@ -1,0 +1,58 @@
+<form class="splunk-formatter-section" section-label="Ticker Settings">
+    <splunk-control-group label="Scroll Speed" help="Speed of the horizontal scrolling animation">
+        <splunk-select name="{{VIZ_NAMESPACE}}.scrollSpeed" value="medium">
+            <option value="slow">Slow</option>
+            <option value="medium">Medium</option>
+            <option value="fast">Fast</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Font Size" help="Size of text in ticker items">
+        <splunk-select name="{{VIZ_NAMESPACE}}.fontSize" value="medium">
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Item Spacing" help="Pixels between ticker items">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.itemSpacing" value="40">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Volume" help="Display bet volume count on each item">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showVolume" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Appearance">
+    <splunk-control-group label="Background Color" help="Ticker strip background color">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.bgColor" type="custom" value="#0d0d1a">
+            <splunk-color>#0d0d1a</splunk-color>
+            <splunk-color>#1a1a2e</splunk-color>
+            <splunk-color>#0a0a14</splunk-color>
+            <splunk-color>#16213e</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Up Color (Shortening Odds)" help="Color for odds that are shortening (more bets)">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.upColor" type="custom" value="#00cc66">
+            <splunk-color>#00cc66</splunk-color>
+            <splunk-color>#00ff88</splunk-color>
+            <splunk-color>#00e676</splunk-color>
+            <splunk-color>#4caf50</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Down Color (Lengthening Odds)" help="Color for odds that are lengthening (fewer bets)">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.downColor" type="custom" value="#ff4444">
+            <splunk-color>#ff4444</splunk-color>
+            <splunk-color>#ff0000</splunk-color>
+            <splunk-color>#e53935</splunk-color>
+            <splunk-color>#ff5252</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>

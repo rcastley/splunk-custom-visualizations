@@ -1,0 +1,47 @@
+{
+  "label": "Goal Event Timeline",
+  "defaultSize": { "width": 900, "height": 350 },
+  "noDataMessage": "Goal Event Timeline — Waiting for data",
+  "dependencies": [],
+  "fields": [],
+  "formatter": [
+    { "name": "areaColor", "label": "Area Color", "type": "color", "default": "#0088ff" },
+    { "name": "goalColor", "label": "Goal Color", "type": "color", "default": "#00cc66" },
+    { "name": "cardColor", "label": "Red Card Color", "type": "color", "default": "#ff3333" },
+    { "name": "varColor", "label": "VAR Color", "type": "color", "default": "#3399ff" },
+    { "name": "penaltyColor", "label": "Penalty Color", "type": "color", "default": "#ffcc00" },
+    { "name": "showGrid", "label": "Show Grid", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showLabels", "label": "Show Labels", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "smoothing", "label": "Smoothing", "type": "radio", "options": ["true", "false"], "default": "true" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["minute", "volume", "event", "event_type"],
+    "sampleRows": [
+      ["0", "1200", "", ""],
+      ["5", "1800", "", ""],
+      ["10", "2100", "", ""],
+      ["15", "2400", "", ""],
+      ["20", "3100", "", ""],
+      ["23", "8500", "Goal - Kane", "goal"],
+      ["25", "12000", "", ""],
+      ["30", "4200", "", ""],
+      ["35", "3800", "", ""],
+      ["40", "3200", "", ""],
+      ["45", "5500", "", ""],
+      ["50", "3900", "", ""],
+      ["55", "4100", "", ""],
+      ["58", "2800", "Red Card - Silva", "red_card"],
+      ["60", "9200", "", ""],
+      ["65", "5100", "", ""],
+      ["67", "11000", "VAR Review - Penalty", "var"],
+      ["68", "15000", "Penalty - Mbapp\u00e9", "penalty"],
+      ["70", "13000", "", ""],
+      ["75", "6200", "", ""],
+      ["80", "4800", "", ""],
+      ["85", "7500", "Goal - Saka", "goal"],
+      ["87", "11500", "", ""],
+      ["90", "8900", "", ""]
+    ]
+  }
+}

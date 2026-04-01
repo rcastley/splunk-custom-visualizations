@@ -1,0 +1,32 @@
+{
+  "label": "Geographic Bet Flow Map",
+  "defaultSize": { "width": 800, "height": 500 },
+  "noDataMessage": "Awaiting betting data",
+  "dependencies": [],
+  "fields": [],
+  "formatter": [
+    { "name": "arcColor", "label": "Arc Color", "type": "color", "default": "#0088ff" },
+    { "name": "venueColor", "label": "Venue Color", "type": "color", "default": "#ff6600" },
+    { "name": "showLabels", "label": "Show Labels", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showMap", "label": "Show Map", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "mapColor", "label": "Map Color", "type": "color", "default": "#1a2a3a" },
+    { "name": "animSpeed", "label": "Animation Speed", "type": "select", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "particleDensity", "label": "Particle Density", "type": "select", "options": ["low", "medium", "high"], "default": "medium" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["country", "lat", "lon", "volume", "venue_lat", "venue_lon"],
+    "sampleRows": [
+      ["United Kingdom", "51.5", "-0.1", "45000", "25.3", "51.5"],
+      ["France", "48.9", "2.3", "38000", "25.3", "51.5"],
+      ["Germany", "52.5", "13.4", "22000", "25.3", "51.5"],
+      ["Brazil", "-15.8", "-47.9", "31000", "25.3", "51.5"],
+      ["United States", "38.9", "-77.0", "28000", "25.3", "51.5"],
+      ["Australia", "-33.9", "151.2", "12000", "25.3", "51.5"],
+      ["Japan", "35.7", "139.7", "9500", "25.3", "51.5"],
+      ["India", "28.6", "77.2", "18000", "25.3", "51.5"],
+      ["Nigeria", "9.1", "7.5", "8200", "25.3", "51.5"],
+      ["Argentina", "-34.6", "-58.4", "15000", "25.3", "51.5"]
+    ]
+  }
+}

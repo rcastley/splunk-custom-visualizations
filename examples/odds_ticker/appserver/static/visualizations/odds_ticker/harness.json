@@ -1,0 +1,37 @@
+{
+  "label": "Live Odds Ticker",
+  "defaultSize": { "width": 900, "height": 120 },
+  "noDataMessage": "Awaiting odds data",
+  "dependencies": [],
+  "fields": [
+    { "name": "market", "label": "Market", "type": "text", "default": "England to Win" },
+    { "name": "odds", "label": "Odds", "type": "text", "default": "2.50" },
+    { "name": "prev_odds", "label": "Previous Odds", "type": "text", "default": "2.80" },
+    { "name": "bet_volume", "label": "Bet Volume", "type": "text", "default": "45230" }
+  ],
+  "formatter": [
+    { "name": "scrollSpeed", "label": "Scroll Speed", "type": "select", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "bgColor", "label": "Background Color", "type": "color", "default": "#0d0d1a" },
+    { "name": "upColor", "label": "Up Color (Shortening)", "type": "color", "default": "#00cc66" },
+    { "name": "downColor", "label": "Down Color (Lengthening)", "type": "color", "default": "#ff4444" },
+    { "name": "showVolume", "label": "Show Volume", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "itemSpacing", "label": "Item Spacing (px)", "type": "text", "default": "40" },
+    { "name": "fontSize", "label": "Font Size", "type": "select", "options": ["small", "medium", "large"], "default": "medium" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["market", "odds", "prev_odds", "bet_volume"],
+    "sampleRows": [
+      ["England to Win", "2.50", "2.80", "45230"],
+      ["France to Win", "3.10", "2.90", "38100"],
+      ["Draw", "3.40", "3.40", "12500"],
+      ["Mbappé First Goal", "6.50", "7.00", "8900"],
+      ["Kane Anytime Scorer", "2.80", "2.60", "22100"],
+      ["Over 2.5 Goals", "1.85", "1.90", "31000"],
+      ["Under 2.5 Goals", "2.00", "1.95", "18700"],
+      ["Both Teams to Score", "1.75", "1.80", "27500"],
+      ["England Clean Sheet", "3.25", "3.00", "9800"],
+      ["First Half Draw", "2.10", "2.15", "14200"]
+    ]
+  }
+}

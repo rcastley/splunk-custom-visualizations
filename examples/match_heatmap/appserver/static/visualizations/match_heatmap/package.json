@@ -1,0 +1,13 @@
+{
+  "name": "match-heatmap-viz",
+  "version": "1.0.0",
+  "description": "Grid visualization showing World Cup matches with cells colored by betting volume intensity",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch"
+  },
+  "devDependencies": {
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

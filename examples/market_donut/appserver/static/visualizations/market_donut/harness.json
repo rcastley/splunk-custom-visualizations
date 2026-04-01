@@ -1,0 +1,41 @@
+{
+  "label": "Market Depth Donut",
+  "defaultSize": { "width": 600, "height": 500 },
+  "noDataMessage": "Awaiting betting data",
+  "dependencies": [],
+  "fields": [
+    { "name": "category", "label": "Category", "type": "text", "default": "Match Result" },
+    { "name": "market", "label": "Market", "type": "text", "default": "England Win" },
+    { "name": "volume", "label": "Volume", "type": "slider", "min": 0, "max": 20000, "step": 100, "default": 5000 }
+  ],
+  "formatter": [
+    { "name": "palette", "label": "Color Palette", "type": "select", "options": ["vibrant", "pastel", "neon"], "default": "vibrant" },
+    { "name": "showLabels", "label": "Show Labels", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showCenter", "label": "Show Center", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showInnerLabels", "label": "Show Inner Labels", "type": "radio", "options": ["true", "false"], "default": "false" },
+    { "name": "gapAngle", "label": "Gap Angle", "type": "text", "default": "1" },
+    { "name": "ringRatio", "label": "Ring Ratio", "type": "text", "default": "0.6" },
+    { "name": "outerThickness", "label": "Outer Thickness", "type": "text", "default": "0" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["category", "market", "volume"],
+    "sampleRows": [
+      ["Match Result", "England Win", "12000"],
+      ["Match Result", "France Win", "9500"],
+      ["Match Result", "Draw", "4200"],
+      ["Goal Scorer", "Kane First Goal", "3800"],
+      ["Goal Scorer", "Mbappe First Goal", "4100"],
+      ["Goal Scorer", "Kane Anytime", "6200"],
+      ["Goal Scorer", "Mbappe Anytime", "5800"],
+      ["Over/Under", "Over 2.5", "8900"],
+      ["Over/Under", "Under 2.5", "5400"],
+      ["Both Teams Score", "Yes", "7200"],
+      ["Both Teams Score", "No", "3100"],
+      ["Corners", "Over 10.5", "2800"],
+      ["Corners", "Under 10.5", "2200"],
+      ["Cards", "Over 3.5", "1900"],
+      ["Cards", "Under 3.5", "1500"]
+    ]
+  }
+}

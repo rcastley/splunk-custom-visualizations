@@ -1,0 +1,47 @@
+<form class="splunk-formatter-section" section-label="Donut Settings">
+    <splunk-control-group label="Color Palette" help="Color palette for category segments">
+        <splunk-select name="{{VIZ_NAMESPACE}}.palette" value="vibrant">
+            <option value="vibrant">Vibrant</option>
+            <option value="pastel">Pastel</option>
+            <option value="neon">Neon</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Gap Angle" help="Degrees of gap between segments (0-5)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.gapAngle" value="1">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Ring Ratio" help="Inner ring radius as fraction of outer (0.3-0.9)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.ringRatio" value="0.6">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Outer Thickness" help="Outer ring thickness in pixels (0 = auto)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.outerThickness" value="0">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Labels">
+    <splunk-control-group label="Show Category Labels" help="Display labels around the outer ring">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLabels" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Center Total" help="Display total volume in the center">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showCenter" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Inner Labels" help="Display market labels on the inner ring">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showInnerLabels" value="false">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>

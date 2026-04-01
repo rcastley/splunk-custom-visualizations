@@ -1,0 +1,30 @@
+{
+  "label": "Bet Type Radar Chart",
+  "defaultSize": { "width": 600, "height": 500 },
+  "noDataMessage": "Bet Type Radar Chart — Waiting for data",
+  "dependencies": [],
+  "fields": [],
+  "formatter": [
+    { "name": "fillColor", "label": "Fill Color", "type": "color", "default": "#0088ff" },
+    { "name": "avgColor", "label": "Average Color", "type": "color", "default": "#ff8800" },
+    { "name": "showAverage", "label": "Show Average", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showValues", "label": "Show Values", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showGrid", "label": "Show Grid", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "maxValue", "label": "Max Value (0=auto)", "type": "text", "default": "0" },
+    { "name": "fillOpacity", "label": "Fill Opacity", "type": "text", "default": "0.25" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["bet_type", "volume", "avg_volume"],
+    "sampleRows": [
+      ["Match Result", "8500", "7200"],
+      ["First Goal Scorer", "4200", "3800"],
+      ["Correct Score", "2100", "2500"],
+      ["Over/Under Goals", "6800", "6100"],
+      ["Both Teams Score", "5400", "4900"],
+      ["Corners", "1800", "2200"],
+      ["Cards", "1200", "1500"],
+      ["Half-Time Result", "3600", "3100"]
+    ]
+  }
+}

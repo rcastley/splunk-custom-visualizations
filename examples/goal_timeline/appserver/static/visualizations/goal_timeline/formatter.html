@@ -1,0 +1,83 @@
+<form class="splunk-formatter-section" section-label="Colors">
+
+    <splunk-control-group label="Area Color" help="Fill color for the betting volume area chart">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.areaColor" type="custom" value="#0088ff">
+            <splunk-color>#0088ff</splunk-color>
+            <splunk-color>#00aaff</splunk-color>
+            <splunk-color>#6633cc</splunk-color>
+            <splunk-color>#ff6600</splunk-color>
+            <splunk-color>#00cc99</splunk-color>
+            <splunk-color>#ff0066</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Goal Color" help="Marker color for goal events">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.goalColor" type="custom" value="#00cc66">
+            <splunk-color>#00cc66</splunk-color>
+            <splunk-color>#22c55e</splunk-color>
+            <splunk-color>#10b981</splunk-color>
+            <splunk-color>#16a34a</splunk-color>
+            <splunk-color>#34d399</splunk-color>
+            <splunk-color>#4ade80</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Red Card Color" help="Marker color for red card events">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.cardColor" type="custom" value="#ff3333">
+            <splunk-color>#ff3333</splunk-color>
+            <splunk-color>#ef4444</splunk-color>
+            <splunk-color>#dc2626</splunk-color>
+            <splunk-color>#f87171</splunk-color>
+            <splunk-color>#b91c1c</splunk-color>
+            <splunk-color>#ff0000</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="VAR Review Color" help="Marker color for VAR review events">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.varColor" type="custom" value="#3399ff">
+            <splunk-color>#3399ff</splunk-color>
+            <splunk-color>#3b82f6</splunk-color>
+            <splunk-color>#2563eb</splunk-color>
+            <splunk-color>#60a5fa</splunk-color>
+            <splunk-color>#1d4ed8</splunk-color>
+            <splunk-color>#0ea5e9</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Penalty Color" help="Marker color for penalty events">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.penaltyColor" type="custom" value="#ffcc00">
+            <splunk-color>#ffcc00</splunk-color>
+            <splunk-color>#eab308</splunk-color>
+            <splunk-color>#facc15</splunk-color>
+            <splunk-color>#fbbf24</splunk-color>
+            <splunk-color>#f59e0b</splunk-color>
+            <splunk-color>#fde047</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+</form>
+
+<form class="splunk-formatter-section" section-label="Display">
+
+    <splunk-control-group label="Show Grid" help="Show subtle grid lines for volume scale">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGrid" value="true">
+            <option value="true">On</option>
+            <option value="false">Off</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Labels" help="Show event labels above markers">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLabels" value="true">
+            <option value="true">On</option>
+            <option value="false">Off</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Smoothing" help="Smooth area chart curves using bezier interpolation">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.smoothing" value="true">
+            <option value="true">Smooth</option>
+            <option value="false">Stepped</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+</form>

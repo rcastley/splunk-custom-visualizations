@@ -1,0 +1,52 @@
+<form class="splunk-formatter-section" section-label="Colors">
+    <splunk-control-group label="Low Volume Color" help="Color for low betting volume cells">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.colorLow" type="custom" value="#0a1628">
+            <splunk-color>#0a1628</splunk-color>
+            <splunk-color>#0d1b2a</splunk-color>
+            <splunk-color>#1b2838</splunk-color>
+            <splunk-color>#000000</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Mid Volume Color" help="Color for medium betting volume cells">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.colorMid" type="custom" value="#1a6baa">
+            <splunk-color>#1a6baa</splunk-color>
+            <splunk-color>#0088ff</splunk-color>
+            <splunk-color>#2196f3</splunk-color>
+            <splunk-color>#00bcd4</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="High Volume Color" help="Color for high betting volume cells">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.colorHigh" type="custom" value="#ff3333">
+            <splunk-color>#ff3333</splunk-color>
+            <splunk-color>#ff0000</splunk-color>
+            <splunk-color>#ff6600</splunk-color>
+            <splunk-color>#ff0066</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Display">
+    <splunk-control-group label="Show Values" help="Overlay volume numbers on cells">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showValues" value="false">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Cell Radius" help="Corner radius for cell rectangles (px)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.cellRadius" value="4">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Cell Gap" help="Gap between cells (px)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.cellGap" value="3">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Label Width" help="Width of left label column (px)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.labelWidth" value="120">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>

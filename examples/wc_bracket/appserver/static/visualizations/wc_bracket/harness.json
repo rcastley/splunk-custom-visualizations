@@ -1,0 +1,39 @@
+{
+  "label": "World Cup Bracket",
+  "defaultSize": { "width": 1000, "height": 600 },
+  "noDataMessage": "Awaiting bracket data",
+  "dependencies": [],
+  "fields": [
+    { "name": "_numMatches", "label": "Matches", "type": "slider", "min": 1, "max": 15, "step": 1, "default": 15 }
+  ],
+  "formatter": [
+    { "name": "colorLow", "label": "Low Volume Color", "type": "color", "default": "#1a2a4a" },
+    { "name": "colorHigh", "label": "High Volume Color", "type": "color", "default": "#ff6600" },
+    { "name": "showVolume", "label": "Show Volume", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "cardWidth", "label": "Card Width", "type": "text", "default": "0" },
+    { "name": "showConnectors", "label": "Show Connectors", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "accentColor", "label": "Accent Color", "type": "color", "default": "#00ff88" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["round", "position", "team1", "team2", "volume", "winner"],
+    "rowCountField": "_numMatches",
+    "sampleRows": [
+      ["R16", "1", "England", "Japan", "8500", "England"],
+      ["R16", "2", "France", "Poland", "7200", "France"],
+      ["R16", "3", "Brazil", "South Korea", "9100", "Brazil"],
+      ["R16", "4", "Argentina", "Australia", "6800", "Argentina"],
+      ["R16", "5", "Spain", "Morocco", "5400", "Spain"],
+      ["R16", "6", "Germany", "Denmark", "4900", ""],
+      ["R16", "7", "Netherlands", "USA", "6200", ""],
+      ["R16", "8", "Portugal", "Switzerland", "5800", ""],
+      ["QF", "1", "England", "France", "12500", ""],
+      ["QF", "2", "Brazil", "Argentina", "15000", ""],
+      ["QF", "3", "Spain", "TBD", "3200", ""],
+      ["QF", "4", "TBD", "TBD", "1800", ""],
+      ["SF", "1", "TBD", "TBD", "800", ""],
+      ["SF", "2", "TBD", "TBD", "600", ""],
+      ["F", "1", "TBD", "TBD", "400", ""]
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "label": "Match Heatmap Grid",
+  "defaultSize": { "width": 800, "height": 500 },
+  "noDataMessage": "Awaiting betting data",
+  "dependencies": [],
+  "fields": [
+    { "name": "_numRows", "label": "Data Rows", "type": "slider", "min": 1, "max": 24, "step": 1, "default": 24 }
+  ],
+  "formatter": [
+    { "name": "colorLow", "label": "Color Low", "type": "color", "default": "#0a1628" },
+    { "name": "colorMid", "label": "Color Mid", "type": "color", "default": "#1a6baa" },
+    { "name": "colorHigh", "label": "Color High", "type": "color", "default": "#ff3333" },
+    { "name": "showValues", "label": "Show Values", "type": "radio", "options": ["true", "false"], "default": "false" },
+    { "name": "cellRadius", "label": "Cell Radius", "type": "text", "default": "4" },
+    { "name": "cellGap", "label": "Cell Gap", "type": "text", "default": "3" },
+    { "name": "labelWidth", "label": "Label Width", "type": "text", "default": "120" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["match", "time_slot", "volume"],
+    "rowCountField": "_numRows",
+    "sampleRows": [
+      ["ENG vs FRA", "0-15", "2340"],
+      ["ENG vs FRA", "15-30", "4521"],
+      ["ENG vs FRA", "30-45", "8900"],
+      ["ENG vs FRA", "45-60", "12100"],
+      ["ENG vs FRA", "60-75", "6500"],
+      ["ENG vs FRA", "75-90", "9800"],
+      ["BRA vs GER", "0-15", "3100"],
+      ["BRA vs GER", "15-30", "5200"],
+      ["BRA vs GER", "30-45", "4100"],
+      ["BRA vs GER", "45-60", "15000"],
+      ["BRA vs GER", "60-75", "7200"],
+      ["BRA vs GER", "75-90", "11500"],
+      ["ARG vs NED", "0-15", "1800"],
+      ["ARG vs NED", "15-30", "2900"],
+      ["ARG vs NED", "30-45", "6700"],
+      ["ARG vs NED", "45-60", "8400"],
+      ["ARG vs NED", "60-75", "5100"],
+      ["ARG vs NED", "75-90", "7800"],
+      ["ESP vs POR", "0-15", "2100"],
+      ["ESP vs POR", "15-30", "3400"],
+      ["ESP vs POR", "30-45", "5500"],
+      ["ESP vs POR", "45-60", "9200"],
+      ["ESP vs POR", "60-75", "4800"],
+      ["ESP vs POR", "75-90", "6900"]
+    ]
+  }
+}

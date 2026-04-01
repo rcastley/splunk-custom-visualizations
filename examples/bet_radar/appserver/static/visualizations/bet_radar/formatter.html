@@ -1,0 +1,44 @@
+<form class="splunk-formatter-section" section-label="Radar Settings">
+
+    <splunk-control-group label="Fill Color" help="Primary polygon color for current match data">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.fillColor" value="#0088ff">
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Average Color" help="Polygon color for tournament average overlay">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.avgColor" value="#ff8800">
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Average" help="Show tournament average overlay polygon">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showAverage" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Values" help="Show numeric values at polygon vertices">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showValues" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Grid" help="Show concentric grid rings and spokes">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGrid" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Max Value" help="Maximum axis value (0 = auto-scale from data)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.maxValue" value="0">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Fill Opacity" help="Opacity of the polygon fill (0.0 to 1.0)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.fillOpacity" value="0.25">
+        </splunk-text-input>
+    </splunk-control-group>
+
+</form>

@@ -1,0 +1,49 @@
+<form class="splunk-formatter-section" section-label="Bracket Colors">
+    <splunk-control-group label="Low Volume Color" help="Color for cards with low betting volume">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.colorLow" type="custom" value="#1a2a4a">
+            <splunk-color>#1a2a4a</splunk-color>
+            <splunk-color>#0d1b2a</splunk-color>
+            <splunk-color>#1b263b</splunk-color>
+            <splunk-color>#2a3a5a</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="High Volume Color" help="Color for cards with high betting volume">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.colorHigh" type="custom" value="#ff6600">
+            <splunk-color>#ff6600</splunk-color>
+            <splunk-color>#ff3300</splunk-color>
+            <splunk-color>#ff9900</splunk-color>
+            <splunk-color>#ff0000</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Winner Accent Color" help="Highlight color for winning team">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.accentColor" type="custom" value="#00ff88">
+            <splunk-color>#00ff88</splunk-color>
+            <splunk-color>#00ffcc</splunk-color>
+            <splunk-color>#00ff44</splunk-color>
+            <splunk-color>#44ff88</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Display Options">
+    <splunk-control-group label="Show Volume" help="Display betting volume numbers on cards">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showVolume" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Card Width" help="Fixed card width in pixels (0 = auto)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.cardWidth" value="0">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Connectors" help="Draw connecting lines between rounds">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showConnectors" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>

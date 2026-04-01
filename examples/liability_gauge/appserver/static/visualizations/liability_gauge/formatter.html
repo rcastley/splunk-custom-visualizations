@@ -1,0 +1,61 @@
+<form class="splunk-formatter-section" section-label="Colors">
+    <splunk-control-group label="Safe Color" help="Color for safe exposure levels">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.safeColor" type="custom" value="#00cc66">
+            <splunk-color>#00cc66</splunk-color>
+            <splunk-color>#00ff88</splunk-color>
+            <splunk-color>#33cc33</splunk-color>
+            <splunk-color>#009944</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Warning Color" help="Color for warning exposure levels">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.warnColor" type="custom" value="#ffaa00">
+            <splunk-color>#ffaa00</splunk-color>
+            <splunk-color>#ffcc00</splunk-color>
+            <splunk-color>#ff9900</splunk-color>
+            <splunk-color>#ff6600</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Danger Color" help="Color for danger exposure levels">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.dangerColor" type="custom" value="#ff3333">
+            <splunk-color>#ff3333</splunk-color>
+            <splunk-color>#ff0000</splunk-color>
+            <splunk-color>#cc0000</splunk-color>
+            <splunk-color>#ff0066</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Thresholds & Display">
+    <splunk-control-group label="Warning Threshold (%)" help="Percentage of threshold at which warning color begins">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.warnThreshold" value="70">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Values" help="Display exposure values on each ring">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showValues" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Labels" help="Display category labels on each ring">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLabels" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Ring Gap (px)" help="Pixel gap between concentric rings">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.ringGap" value="8">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Pulse" help="Pulsing glow on rings exceeding warning threshold">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showPulse" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>

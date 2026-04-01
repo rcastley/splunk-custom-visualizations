@@ -1,0 +1,33 @@
+{
+  "label": "Liability Exposure Gauge",
+  "defaultSize": { "width": 600, "height": 500 },
+  "noDataMessage": "Awaiting liability data",
+  "dependencies": [],
+  "fields": [
+    { "name": "category", "label": "Category", "type": "text", "default": "Match Result" },
+    { "name": "exposure", "label": "Exposure", "type": "slider", "min": 0, "max": 5000000, "step": 50000, "default": 2400000 },
+    { "name": "threshold", "label": "Threshold", "type": "slider", "min": 0, "max": 5000000, "step": 50000, "default": 3000000 }
+  ],
+  "formatter": [
+    { "name": "safeColor", "label": "Safe Color", "type": "color", "default": "#00cc66" },
+    { "name": "warnColor", "label": "Warning Color", "type": "color", "default": "#ffaa00" },
+    { "name": "dangerColor", "label": "Danger Color", "type": "color", "default": "#ff3333" },
+    { "name": "warnThreshold", "label": "Warning Threshold (%)", "type": "text", "default": "70" },
+    { "name": "showValues", "label": "Show Values", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showLabels", "label": "Show Labels", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "ringGap", "label": "Ring Gap (px)", "type": "text", "default": "8" },
+    { "name": "showPulse", "label": "Show Pulse", "type": "radio", "options": ["true", "false"], "default": "true" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["category", "exposure", "threshold"],
+    "sampleRows": [
+      ["Match Result", "2400000", "3000000"],
+      ["Goal Scorers", "1850000", "2000000"],
+      ["Correct Score", "420000", "800000"],
+      ["Over/Under", "1200000", "1500000"],
+      ["Both Teams Score", "780000", "1000000"],
+      ["Corners & Cards", "190000", "500000"]
+    ]
+  }
+}

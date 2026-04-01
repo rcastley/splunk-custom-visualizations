@@ -1,0 +1,60 @@
+<form class="splunk-formatter-section" section-label="Flow Settings">
+    <splunk-control-group label="Arc Color" help="Color of the flow arcs from origin to venue">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.arcColor" type="custom" value="#0088ff">
+            <splunk-color>#0088ff</splunk-color>
+            <splunk-color>#00ccff</splunk-color>
+            <splunk-color>#0066cc</splunk-color>
+            <splunk-color>#00ff88</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Venue Color" help="Color of the destination venue marker">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.venueColor" type="custom" value="#ff6600">
+            <splunk-color>#ff6600</splunk-color>
+            <splunk-color>#ff3300</splunk-color>
+            <splunk-color>#ffcc00</splunk-color>
+            <splunk-color>#ff0066</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="Animation Speed" help="Speed of particle flow animation">
+        <splunk-select name="{{VIZ_NAMESPACE}}.animSpeed" value="medium">
+            <option value="slow">Slow</option>
+            <option value="medium">Medium</option>
+            <option value="fast">Fast</option>
+        </splunk-select>
+    </splunk-control-group>
+
+    <splunk-control-group label="Particle Density" help="Number of particles per flow arc">
+        <splunk-select name="{{VIZ_NAMESPACE}}.particleDensity" value="medium">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+        </splunk-select>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Appearance">
+    <splunk-control-group label="Show Labels" help="Display country name labels at origin points">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLabels" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Map" help="Display world map outline background">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showMap" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Map Color" help="Color of the world map outline strokes">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.mapColor" type="custom" value="#1a2a3a">
+            <splunk-color>#1a2a3a</splunk-color>
+            <splunk-color>#2a3a4a</splunk-color>
+            <splunk-color>#0d1a2a</splunk-color>
+            <splunk-color>#1a3a2a</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>
