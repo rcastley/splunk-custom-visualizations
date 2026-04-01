@@ -27,15 +27,31 @@ A Splunk custom visualization is a standalone Splunk app that renders search res
 
 Before generating code, ask the user (or extract from context):
 
-1. **Viz name**: short lowercase identifier (e.g., `network_graph`, `heatmap_grid`). Used as both the app ID and the visualization stanza name.
-2. **Display label**: human-readable name for the Splunk UI (e.g., "Network Graph", "Heatmap Grid").
-3. **Description**: one-line description of what the visualization does.
-4. **Expected SPL columns**: which fields the search must produce (e.g., `_time, source, dest, value`). Distinguish required vs optional columns. Ask if the viz will share a base search with other panels — if so, use configurable field names (see rule 18) instead of hardcoding column names like `value`.
-5. **Configurable settings**: what the user should be able to tweak from the formatter panel (e.g., colors, sizes, toggles, units). For each setting, determine: name, type (text/radio/dropdown), default value.
-6. **Rendering approach**: what to draw on the canvas (shapes, lines, text, gradients, animations).
-7. **Custom no-data message**: ask the user if they want a custom "awaiting data" message rendered on the canvas when no data is flowing (e.g., "Awaiting telemetry data"). If yes, the viz will detect a `_status` field from an SPL `appendpipe` fallback and render the message centered on the canvas. Optionally, an emoji can be displayed above the text for visual flair. If no, the viz falls back to Dashboard Studio's default placeholder (grey bar chart icon or `VisualizationError` text).
+1. **Target platform**: Splunk Cloud, Splunk Enterprise, or both. This determines which vetting constraints apply (see **Platform Differences** below). When in doubt, default to **both** — this produces an app that passes Splunk Cloud vetting and also works on Enterprise.
+2. **Viz name**: short lowercase identifier (e.g., `network_graph`, `heatmap_grid`). Used as both the app ID and the visualization stanza name.
+3. **Display label**: human-readable name for the Splunk UI (e.g., "Network Graph", "Heatmap Grid").
+4. **Description**: one-line description of what the visualization does.
+5. **Expected SPL columns**: which fields the search must produce (e.g., `_time, source, dest, value`). Distinguish required vs optional columns. Ask if the viz will share a base search with other panels — if so, use configurable field names (see rule 18) instead of hardcoding column names like `value`.
+6. **Configurable settings**: what the user should be able to tweak from the formatter panel (e.g., colors, sizes, toggles, units). For each setting, determine: name, type (text/radio/dropdown), default value.
+7. **Rendering approach**: what to draw on the canvas (shapes, lines, text, gradients, animations).
+8. **Custom no-data message**: ask the user if they want a custom "awaiting data" message rendered on the canvas when no data is flowing (e.g., "Awaiting telemetry data"). If yes, the viz will detect a `_status` field from an SPL `appendpipe` fallback and render the message centered on the canvas. Optionally, an emoji can be displayed above the text for visual flair. If no, the viz falls back to Dashboard Studio's default placeholder (grey bar chart icon or `VisualizationError` text).
 
 If the user provides a vague request, ask clarifying questions before scaffolding.
+
+### Platform Differences
+
+The table below summarises the key differences that affect generated code. When the target is **both**, apply all Splunk Cloud constraints — they are a strict superset of Enterprise requirements.
+
+| Concern | Splunk Cloud | Splunk Enterprise | Both (default) |
+|---------|-------------|-------------------|----------------|
+| **`[id]` stanza in `app.conf`** | Required (`check_version_is_valid_semver`) | Optional but recommended | Required |
+| **`[triggers]` for `visualizations.conf`** | Rejected (`check_for_trigger_stanza`) | Accepted but unnecessary | Omit |
+| **`sc_admin` role in `default.meta`** | Required (`check_kos_are_accessible`) — `admin` role does not exist in Cloud | Not needed — only `admin` exists | Include both `admin` and `sc_admin` |
+| **Real-time saved searches** | Rejected (`check_for_real_time_saved_searches_for_cloud`) | Allowed | Use historical (`-1m` to `now`) |
+| **App icons in `static/`** | Required — vetting warns on missing icons | Optional but recommended | Include all four |
+| **`check_meta_default_write_access`** | Global `[]` stanza in `default.meta` is mandatory | Recommended | Include |
+
+When generating files, apply the constraints from the user's chosen platform column. The templates in this skill default to the **Both** column.
 
 ## Step 2: Generate the App
 
@@ -1796,4 +1812,4 @@ The `formatter.html` and `visualization_source.js` auto-resolve the namespace vi
 
 ## Splunk Version Requirements
 
-Custom visualizations using this framework require **Splunk Enterprise 10.2+** or **Splunk Cloud**. The `visualizations.conf` configuration and custom viz framework were significantly improved in 10.2. Ensure the user's target environment meets this minimum version.
+Custom visualizations using this framework require **Splunk Enterprise 10.2+** or **Splunk Cloud**. The `visualizations.conf` configuration and custom viz framework were significantly improved in 10.2. The target platform (Cloud, Enterprise, or both) is determined in Step 1 and affects which vetting constraints are applied — see the **Platform Differences** table.
