@@ -1,0 +1,5 @@
+[]
+access = read : [ * ], write : [ admin, sc_admin ]
+
+[visualizations/worldcup_bets]
+export = system

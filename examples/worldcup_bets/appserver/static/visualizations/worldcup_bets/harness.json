@@ -1,0 +1,30 @@
+{
+  "label": "World Cup Bets Pulse",
+  "defaultSize": { "width": 600, "height": 500 },
+  "noDataMessage": "Awaiting betting data",
+  "dependencies": [],
+  "fields": [
+    { "name": "bets_per_minute", "label": "Bets/Min", "type": "slider", "min": 0, "max": 15000, "step": 50, "default": 4200 },
+    { "name": "match_name", "label": "Match Name", "type": "text", "default": "ENGLAND vs FRANCE" },
+    { "name": "peak_bpm", "label": "Peak BPM", "type": "slider", "min": 0, "max": 15000, "step": 50, "default": 12450 },
+    { "name": "prev_bpm", "label": "Previous BPM", "type": "slider", "min": 0, "max": 15000, "step": 50, "default": 3800 }
+  ],
+  "formatter": [
+    { "name": "pitchStyle", "label": "Pitch Style", "type": "select", "options": ["classic", "dark", "neon"], "default": "dark" },
+    { "name": "colorLow", "label": "Color Low", "type": "color", "default": "#0088ff" },
+    { "name": "colorMid", "label": "Color Mid", "type": "color", "default": "#ffcc00" },
+    { "name": "colorHigh", "label": "Color High", "type": "color", "default": "#ff3333" },
+    { "name": "maxBPM", "label": "Max BPM", "type": "text", "default": "10000" },
+    { "name": "animationSpeed", "label": "Animation Speed", "type": "select", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "showParticles", "label": "Show Particles", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showBreakdown", "label": "Show Volume Bar", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showPeak", "label": "Show Peak", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showPitch", "label": "Show Pitch", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "bpmField", "label": "BPM Field", "type": "text", "default": "bets_per_minute" }
+  ],
+  "data": {
+    "mode": "single_row",
+    "columns": ["bets_per_minute", "match_name", "peak_bpm", "prev_bpm"],
+    "dynamicColumnName": { "column": "bets_per_minute", "configKey": "bpmField" }
+  }
+}

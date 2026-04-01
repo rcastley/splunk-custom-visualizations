@@ -1,0 +1,11 @@
+display.visualizations.custom.worldcup_bets.worldcup_bets.pitchStyle = <string>
+display.visualizations.custom.worldcup_bets.worldcup_bets.colorLow = <string>
+display.visualizations.custom.worldcup_bets.worldcup_bets.colorMid = <string>
+display.visualizations.custom.worldcup_bets.worldcup_bets.colorHigh = <string>
+display.visualizations.custom.worldcup_bets.worldcup_bets.maxBPM = <string>
+display.visualizations.custom.worldcup_bets.worldcup_bets.animationSpeed = <string>
+display.visualizations.custom.worldcup_bets.worldcup_bets.showParticles = <boolean>
+display.visualizations.custom.worldcup_bets.worldcup_bets.showBreakdown = <boolean>
+display.visualizations.custom.worldcup_bets.worldcup_bets.showPeak = <boolean>
+display.visualizations.custom.worldcup_bets.worldcup_bets.showPitch = <boolean>
+display.visualizations.custom.worldcup_bets.worldcup_bets.bpmField = <string>

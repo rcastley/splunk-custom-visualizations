@@ -1,0 +1,13 @@
+{
+  "name": "worldcup-bets-viz",
+  "version": "1.0.0",
+  "description": "Football pitch-themed radial pulse gauge for real-time World Cup betting volume",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch"
+  },
+  "devDependencies": {
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
