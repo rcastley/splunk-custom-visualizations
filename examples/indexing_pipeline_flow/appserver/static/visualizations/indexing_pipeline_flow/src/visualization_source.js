@@ -66,16 +66,23 @@ define([
         return Math.max(min, Math.min(max, val));
     }
 
+    function parseColor(c) {
+        if (c.charAt(0) === '#') {
+            return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
+        }
+        var m = c.match(/(\d+)/g);
+        if (m && m.length >= 3) {
+            return [parseInt(m[0], 10), parseInt(m[1], 10), parseInt(m[2], 10)];
+        }
+        return [0, 0, 0];
+    }
+
     function lerpColor(a, b, t) {
-        var ar = parseInt(a.slice(1, 3), 16);
-        var ag = parseInt(a.slice(3, 5), 16);
-        var ab = parseInt(a.slice(5, 7), 16);
-        var br = parseInt(b.slice(1, 3), 16);
-        var bg = parseInt(b.slice(3, 5), 16);
-        var bb = parseInt(b.slice(5, 7), 16);
-        var r = Math.round(ar + (br - ar) * t);
-        var g = Math.round(ag + (bg - ag) * t);
-        var bl = Math.round(ab + (bb - ab) * t);
+        var ac = parseColor(a);
+        var bc = parseColor(b);
+        var r = Math.round(ac[0] + (bc[0] - ac[0]) * t);
+        var g = Math.round(ac[1] + (bc[1] - ac[1]) * t);
+        var bl = Math.round(ac[2] + (bc[2] - ac[2]) * t);
         return 'rgb(' + r + ',' + g + ',' + bl + ')';
     }
 
@@ -407,21 +414,22 @@ define([
 
             // ── Layout calculations ──
             var stageCount = PIPELINE_ORDER.length;
-            var padX = Math.max(16, w * 0.04);
+            var arrowPad = 30;
+            var padX = Math.max(16, w * 0.03);
             var padY = Math.max(16, h * 0.08);
             var labelH = showLabels ? Math.max(20, h * 0.1) : 0;
             var valueH = showValues ? Math.max(18, h * 0.07) : 0;
-            var connectorW = Math.max(20, w * 0.06);
+            var connectorW = Math.max(16, w * 0.04);
             var totalConnW = connectorW * (stageCount - 1);
-            var availW = w - padX * 2 - totalConnW;
-            var tubeW = Math.min(availW / stageCount, 120);
+            var availW = w - padX * 2 - arrowPad - totalConnW;
+            var tubeW = Math.min(availW / stageCount, h * 0.55);
             var tubeH = h - padY * 2 - labelH - valueH;
             tubeH = Math.max(60, Math.min(tubeH, 300));
             var tubeR = Math.min(12, tubeW * 0.15);
 
-            // Center the pipeline horizontally
-            var totalW = tubeW * stageCount + connectorW * (stageCount - 1);
-            var startX = (w - totalW) / 2;
+            // Center pipeline horizontally
+            var pipelineW = tubeW * stageCount + connectorW * (stageCount - 1);
+            var startX = Math.max(padX + arrowPad, (w - pipelineW) / 2);
             var tubeY = padY + valueH;
 
             // Connector pipe height
