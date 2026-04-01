@@ -129,7 +129,7 @@ define([
     function drawOrbitRing(ctx, cx, cy, radius, label, labelFS) {
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(100,150,220,0.1)';
+        ctx.strokeStyle = 'rgba(200,215,245,0.25)';
         ctx.lineWidth = 1;
         ctx.setLineDash([4, 6]);
         ctx.stroke();
@@ -138,7 +138,7 @@ define([
         // Label at top of ring
         if (label) {
             ctx.font = labelFS + 'px sans-serif';
-            ctx.fillStyle = 'rgba(100,150,220,0.18)';
+            ctx.fillStyle = 'rgba(220,230,255,0.5)';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             ctx.fillText(label, cx, cy - radius - 3);
