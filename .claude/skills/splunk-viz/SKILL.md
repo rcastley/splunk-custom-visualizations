@@ -54,6 +54,11 @@ Every viz app follows this exact layout — do not deviate:
     default.meta
   README/
     savedsearches.conf.spec
+  static/
+    appIcon.png                   (36x36 app icon)
+    appIcon_2x.png                (72x72 HiDPI app icon)
+    appIconAlt.png                (36x36 alternate app icon)
+    appIconAlt_2x.png             (72x72 HiDPI alternate app icon)
   appserver/
     static/
       visualizations/
@@ -115,7 +120,7 @@ Every viz app includes a `README.md` at the app root. This is the single source 
 
 ## Time Range
 
-`rt-1m` to `rt` (or `-60m` to `now` for historical)
+`-1m` to `now` (historical). Do NOT use real-time (`rt-1m` to `rt`) — Splunk Cloud vetting rejects real-time saved searches (`check_for_real_time_saved_searches_for_cloud`).
 
 ## Build
 
@@ -130,6 +135,10 @@ The tarball is output to `dist/{app_name}-1.0.0.tar.gz`.
 
 #### default/app.conf
 ```
+[id]
+name = {app_name}
+version = 1.0.0
+
 [install]
 is_configured = true
 build = 1
@@ -147,6 +156,8 @@ description = {description}
 version = 1.0.0
 ```
 
+The `[id]` stanza is required by Splunk Cloud vetting (`check_version_is_valid_semver`). Do NOT add a `[triggers]` stanza with `reload.visualizations = simple` — `visualizations.conf` is a Splunk-defined conf file and Splunk Cloud vetting (`check_for_trigger_stanza`) will reject it. The `[triggers]` stanza is only for custom (non-Splunk) config files. Keep the version in `[id]` and `[launcher]` in sync.
+
 #### default/visualizations.conf
 ```
 [{app_name}]
@@ -162,13 +173,13 @@ The `search_fragment` is a partial SPL snippet that shows users how to structure
 
 #### default/savedsearches.conf
 
-Provide a complete, working saved search that demonstrates the visualization with real-time or historical data. Include all `display.visualizations.custom.*` settings with sensible defaults.
+Provide a complete, working saved search that demonstrates the visualization. Use historical time ranges — do NOT use real-time (`rt-*` to `rt`) as Splunk Cloud vetting rejects them (`check_for_real_time_saved_searches_for_cloud`). Include all `display.visualizations.custom.*` settings with sensible defaults.
 
 ```
 [{Display Label} - Live]
 search = {full_spl_query}
-dispatch.earliest_time = rt-{window}
-dispatch.latest_time = rt
+dispatch.earliest_time = -{window}
+dispatch.latest_time = now
 display.general.type = visualizations
 display.visualizations.type = custom
 display.visualizations.custom.type = {app_name}.{app_name}
@@ -191,11 +202,26 @@ Required for Splunk to export the visualization to other apps/users.
 The global `[]` stanza is **mandatory for Splunk Cloud vetting** — without it the upload is blocked with `check_meta_default_write_access`.
 ```
 []
-access = read : [ * ], write : [ admin ]
+access = read : [ * ], write : [ admin, sc_admin ]
 
 [visualizations/{app_name}]
 export = system
 ```
+
+Always include `sc_admin` alongside `admin` in write ACLs — the `admin` role is not available in Splunk Cloud. Without `sc_admin`, Cloud administrators cannot access the knowledge objects (`check_kos_are_accessible`).
+
+#### static/ (app icons)
+
+Splunk requires four PNG icon files in the `static/` directory at the app root. These are displayed in the Splunk app browser, Manage Apps page, and Splunkbase. All four must exist — missing icons cause Splunk Cloud vetting warnings.
+
+| File | Size | Description |
+|------|------|-------------|
+| `appIcon.png` | 36x36 px | Standard app icon |
+| `appIcon_2x.png` | 72x72 px | HiDPI (Retina) app icon |
+| `appIconAlt.png` | 36x36 px | Alternate icon (used on dark backgrounds) |
+| `appIconAlt_2x.png` | 72x72 px | HiDPI alternate icon |
+
+Use a simple, recognizable graphic on a transparent background. The `Alt` variants should be legible on both light and dark backgrounds — typically a lighter or inverted version of the primary icon.
 
 #### formatter.html
 
@@ -1202,7 +1228,10 @@ Before presenting the generated code, verify:
 
 - [ ] `README.md` exists with description, install, columns, search, configuration, drilldown (if applicable), time range, and build sections
 - [ ] All files in the directory structure are generated
+- [ ] `app.conf` has `[id]` stanza with `name` and `version` (required for Splunk Cloud vetting)
+- [ ] `app.conf` does NOT have a `[triggers]` stanza for `visualizations.conf` (it is a Splunk-defined conf, not a custom one)
 - [ ] `app.conf` package ID matches the directory name
+- [ ] `app.conf` version is consistent across `[id]` and `[launcher]` stanzas
 - [ ] `visualizations.conf` stanza name matches the directory name
 - [ ] `savedsearches.conf` custom type follows pattern `{app_name}.{app_name}`
 - [ ] `savedsearches.conf.spec` documents every setting in formatter.html
@@ -1212,7 +1241,9 @@ Before presenting the generated code, verify:
 - [ ] `visualization_source.js` formatData validates required columns and throws VisualizationError
 - [ ] If custom no-data message requested: `formatData` detects `_status` field, `updateView` intercepts it, `_ensureCanvas` and `_drawStatusMessage` methods exist
 - [ ] `visualization.css` exists (transparent background by default)
-- [ ] `metadata/default.meta` exists with global `[]` access stanza and `export = system`
+- [ ] `metadata/default.meta` exists with global `[]` access stanza, `export = system`, and `sc_admin` in all write ACLs (required for Splunk Cloud)
+- [ ] `savedsearches.conf` uses historical time ranges (no `rt-*` / `rt` — rejected by Splunk Cloud vetting)
+- [ ] `static/` contains all four app icons: `appIcon.png` (36x36), `appIcon_2x.png` (72x72), `appIconAlt.png` (36x36), `appIconAlt_2x.png` (72x72)
 - [ ] `.gitignore` excludes `node_modules`
 - [ ] Build script excludes src/, node_modules/, package.json, webpack.config.js from tarball
 - [ ] `harness.json` exists with correct fields, formatter (matching JS defaults), and data mode
@@ -1397,7 +1428,11 @@ The master reference for this pattern is [`splunk-custom-visualizations`](https:
     default.meta
   README/
     savedsearches.conf.spec       (empty — populated by build.sh merge)
-  static/                         (app icons)
+  static/
+    appIcon.png                   (36x36 app icon)
+    appIcon_2x.png                (72x72 HiDPI app icon)
+    appIconAlt.png                (36x36 alternate app icon)
+    appIconAlt_2x.png             (72x72 HiDPI alternate app icon)
   vizs/
     build.sh                      (build + merge + package script)
     harness-manifest.json
@@ -1415,6 +1450,10 @@ node_modules/
 
 #### default/app.conf
 ```
+[id]
+name = {app_name}
+version = 1.0.0
+
 [install]
 is_configured = true
 build = 1
@@ -1437,16 +1476,16 @@ check_for_updates = false
 #### metadata/default.meta
 ```
 []
-access = read : [ * ], write : [ admin, power ]
+access = read : [ * ], write : [ admin, sc_admin, power ]
 
 [app/local]
-access = read : [ * ], write : [ admin ]
+access = read : [ * ], write : [ admin, sc_admin ]
 
 [views]
-access = read : [ * ], write : [ admin, power ]
+access = read : [ * ], write : [ admin, sc_admin, power ]
 
 [nav]
-access = read : [ * ], write : [ admin ]
+access = read : [ * ], write : [ admin, sc_admin ]
 ```
 
 The `[visualizations/*]` export stanzas are appended automatically by `build.sh` during the merge phase.
@@ -1677,9 +1716,9 @@ for f in \
     fi
 done
 
-# Bump patch version
+# Bump patch version (updates both [id] and [launcher] stanzas)
 if [ "$MERGED" -gt 0 ]; then
-    CURRENT_VERSION=$(grep '^version' "$TARGET_APP/default/app.conf" | cut -d= -f2 | tr -d ' ')
+    CURRENT_VERSION=$(grep '^version' "$TARGET_APP/default/app.conf" | head -1 | cut -d= -f2 | tr -d ' ')
     MAJOR=$(echo "$CURRENT_VERSION" | cut -d. -f1)
     MINOR=$(echo "$CURRENT_VERSION" | cut -d. -f2)
     PATCH=$(echo "$CURRENT_VERSION" | cut -d. -f3)
