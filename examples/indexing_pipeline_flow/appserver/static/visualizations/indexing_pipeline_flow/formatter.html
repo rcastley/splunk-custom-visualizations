@@ -1,0 +1,44 @@
+<form class="splunk-formatter-section" section-label="Pipeline Settings">
+    <splunk-control-group label="Animation Speed" help="Speed of flow particles between pipeline stages">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.animSpeed" value="medium">
+            <option value="slow">Slow</option>
+            <option value="medium">Medium</option>
+            <option value="fast">Fast</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Colour Theme" help="Visual theme for the pipeline tubes">
+        <splunk-select name="{{VIZ_NAMESPACE}}.colorTheme" value="default">
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="neon">Neon</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Show Labels" help="Display queue names below each tube">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLabels" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Values" help="Display fill percentage on each tube">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showValues" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Thresholds">
+    <splunk-control-group label="Warning Threshold" help="Fill percentage at which the tube turns yellow (0-100)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.warningThreshold" value="70">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Critical Threshold" help="Fill percentage at which the tube turns red (0-100)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.criticalThreshold" value="85">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Glow Effect" help="Glowing highlight on high-fill tubes">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>

@@ -1,0 +1,31 @@
+{
+  "label": "Indexing Pipeline Flow",
+  "defaultSize": { "width": 700, "height": 350 },
+  "noDataMessage": "Awaiting pipeline data",
+  "dependencies": [],
+  "fields": [
+    { "name": "_parsingFill", "label": "Parsing Fill %", "type": "slider", "min": 0, "max": 100, "step": 1, "default": 25 },
+    { "name": "_mergingFill", "label": "Merging Fill %", "type": "slider", "min": 0, "max": 100, "step": 1, "default": 40 },
+    { "name": "_typingFill", "label": "Typing Fill %", "type": "slider", "min": 0, "max": 100, "step": 1, "default": 15 },
+    { "name": "_indexingFill", "label": "Indexing Fill %", "type": "slider", "min": 0, "max": 100, "step": 1, "default": 60 }
+  ],
+  "formatter": [
+    { "name": "animSpeed", "label": "Animation Speed", "type": "radio", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "colorTheme", "label": "Colour Theme", "type": "select", "options": ["default", "dark", "neon"], "default": "default" },
+    { "name": "showLabels", "label": "Show Labels", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showValues", "label": "Show Values", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "warningThreshold", "label": "Warning Threshold", "type": "text", "default": "70" },
+    { "name": "criticalThreshold", "label": "Critical Threshold", "type": "text", "default": "85" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["name", "fill_pct", "avg_size", "capacity"],
+    "sampleRows": [
+      ["parsingQueue", "25", "128", "500"],
+      ["mergingQueue", "40", "200", "500"],
+      ["typingQueue", "15", "75", "500"],
+      ["indexQueue", "60", "300", "500"]
+    ]
+  }
+}
