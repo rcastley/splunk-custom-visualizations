@@ -4,9 +4,7 @@
   "noDataMessage": "Awaiting betting data",
   "dependencies": [],
   "fields": [
-    { "name": "category", "label": "Category", "type": "text", "default": "Match Result" },
-    { "name": "market", "label": "Market", "type": "text", "default": "England Win" },
-    { "name": "volume", "label": "Volume", "type": "slider", "min": 0, "max": 20000, "step": 100, "default": 5000 }
+    { "name": "_numRows", "label": "Markets", "type": "slider", "min": 1, "max": 15, "step": 1, "default": 15 }
   ],
   "formatter": [
     { "name": "palette", "label": "Color Palette", "type": "select", "options": ["vibrant", "pastel", "neon"], "default": "vibrant" },
@@ -20,6 +18,7 @@
   "data": {
     "mode": "multi_row",
     "columns": ["category", "market", "volume"],
+    "rowCountField": "_numRows",
     "sampleRows": [
       ["Match Result", "England Win", "12000"],
       ["Match Result", "France Win", "9500"],

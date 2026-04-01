@@ -4,9 +4,7 @@
   "noDataMessage": "Awaiting liability data",
   "dependencies": [],
   "fields": [
-    { "name": "category", "label": "Category", "type": "text", "default": "Match Result" },
-    { "name": "exposure", "label": "Exposure", "type": "slider", "min": 0, "max": 5000000, "step": 50000, "default": 2400000 },
-    { "name": "threshold", "label": "Threshold", "type": "slider", "min": 0, "max": 5000000, "step": 50000, "default": 3000000 }
+    { "name": "_numCategories", "label": "Categories", "type": "slider", "min": 1, "max": 6, "step": 1, "default": 6 }
   ],
   "formatter": [
     { "name": "safeColor", "label": "Safe Color", "type": "color", "default": "#00cc66" },
@@ -21,6 +19,7 @@
   "data": {
     "mode": "multi_row",
     "columns": ["category", "exposure", "threshold"],
+    "rowCountField": "_numCategories",
     "sampleRows": [
       ["Match Result", "2400000", "3000000"],
       ["Goal Scorers", "1850000", "2000000"],

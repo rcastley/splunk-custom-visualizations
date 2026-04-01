@@ -4,10 +4,7 @@
   "noDataMessage": "Awaiting odds data",
   "dependencies": [],
   "fields": [
-    { "name": "market", "label": "Market", "type": "text", "default": "England to Win" },
-    { "name": "odds", "label": "Odds", "type": "text", "default": "2.50" },
-    { "name": "prev_odds", "label": "Previous Odds", "type": "text", "default": "2.80" },
-    { "name": "bet_volume", "label": "Bet Volume", "type": "text", "default": "45230" }
+    { "name": "_numItems", "label": "Odds Items", "type": "slider", "min": 1, "max": 10, "step": 1, "default": 10 }
   ],
   "formatter": [
     { "name": "scrollSpeed", "label": "Scroll Speed", "type": "select", "options": ["slow", "medium", "fast"], "default": "medium" },
@@ -21,6 +18,7 @@
   "data": {
     "mode": "multi_row",
     "columns": ["market", "odds", "prev_odds", "bet_volume"],
+    "rowCountField": "_numItems",
     "sampleRows": [
       ["England to Win", "2.50", "2.80", "45230"],
       ["France to Win", "3.10", "2.90", "38100"],
