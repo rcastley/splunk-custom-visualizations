@@ -31,7 +31,33 @@ This will:
 2. Bundle `visualization_source.js` into `visualization.js`
 3. Package everything into `dist/custom_single_value-1.0.0.tar.gz`
 
-## 3. Install in Splunk
+## 3. Test in the Browser
+
+You can iterate on your visualization without deploying to Splunk using the test harness. Add your new viz to `harness-manifest.json`:
+
+```json
+{
+  "pathTemplate": "examples/{name}/appserver/static/visualizations/{name}",
+  "vizs": [
+    "custom_single_value",
+    "component_status_board",
+    "gauge",
+    "your_new_viz"
+  ]
+}
+```
+
+Serve the repo locally (any static server works):
+
+```bash
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000/test-harness.html` and select your visualization from the dropdown. The harness reads `harness.json` and builds the sidebar controls automatically. Change values and settings to see real-time updates. Use the theme toggle to verify your viz looks correct in both light and dark mode.
+
+See [TEST-HARNESS.md](TEST-HARNESS.md) for full harness documentation including `harness.json` schema and data modes.
+
+## 4. Install in Splunk
 
 **Option A — Install the tarball:**
 
@@ -47,14 +73,14 @@ ln -s $(pwd)/examples/custom_single_value $SPLUNK_HOME/etc/apps/custom_single_va
 $SPLUNK_HOME/bin/splunk restart
 ```
 
-## 4. Use in a Dashboard
+## 5. Use in a Dashboard
 
 1. Open any Splunk dashboard in edit mode
 2. Add a new panel with a search (e.g., `| makeresults | eval value="Hello"`)
 3. Click the visualization picker and select **Custom Single Value**
 4. Use the **Format** panel to configure colours, alignment, and labels
 
-## 5. Create Your Own Visualization
+## 6. Create Your Own Visualization
 
 This is where the Claude Code skill shines. Open the repo in your editor with Claude Code enabled and describe what you want:
 
@@ -98,7 +124,7 @@ Each change updates the source files in place. Rebuild with:
 ./build.sh status_board
 ```
 
-## 6. Scaffold a Dashboard Studio App
+## 7. Scaffold a Dashboard Studio App
 
 If you're building a Splunk app that bundles dashboards and multiple custom visualizations together, you can scaffold the entire app structure:
 
@@ -109,7 +135,7 @@ with custom visualization support.
 
 This generates a complete app with a `vizs/` build pipeline — see [EMBEDDING.md](EMBEDDING.md) for the full details. Individual vizs are then created under `vizs/` using the normal `/splunk-viz` workflow and merged into the app automatically by the build script.
 
-## 7. Development Workflow
+## 8. Development Workflow
 
 ### Fast Iteration (no restart needed)
 
@@ -132,7 +158,7 @@ $SPLUNK_HOME/bin/splunk btool check
 
 If you see "Invalid key" errors, ensure every `display.visualizations.custom.*` setting used in `savedsearches.conf` is also listed in `README/savedsearches.conf.spec`.
 
-## 8. Custom Fonts
+## 9. Custom Fonts
 
 To use a custom font in your visualization:
 
@@ -169,7 +195,22 @@ To use a custom font in your visualization:
    // See the skill documentation for the full font-loading pattern
    ```
 
-## 9. Directory Structure Reference
+## 10. Development Tips
+
+- **ES5 only** in `visualization_source.js`. Use `var`, `function`, and `for`
+  loops. No `const`, `let`, arrow functions, or template literals.
+- **JS defaults must match formatter defaults.** Splunk does not send formatter
+  values on the first render, so your JS must fall back to the same defaults
+  declared in `formatter.html`.
+- **Read config in `updateView`, not `formatData`.** The `formatData` method
+  should only parse the data structure. All config reading belongs in
+  `updateView`.
+- **Handle HiDPI.** Scale your canvas by `window.devicePixelRatio` and draw in
+  CSS pixel coordinates after `ctx.scale(dpr, dpr)`.
+- **Test both themes.** Use the harness theme toggle to verify your viz looks
+  correct in light and dark mode.
+
+## 11. Directory Structure Reference
 
 ```text
 splunk-custom-visualizations/
@@ -205,6 +246,17 @@ splunk-custom-visualizations/
   INSTRUCTIONS.md             This file
   README.md                   Project overview
 ```
+
+## What Next?
+
+- Read [TEST-HARNESS.md](TEST-HARNESS.md) for the full harness documentation
+  including `harness.json` schema and data modes
+- Read [EMBEDDING.md](EMBEDDING.md) to learn how to embed visualizations
+  into an existing Splunk app (manual or automated build pipeline)
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) for the project rules and how to
+  submit changes
+- Browse the existing examples in `examples/` to see patterns for different
+  visualization types
 
 ## Troubleshooting
 

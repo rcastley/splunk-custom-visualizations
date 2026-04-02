@@ -37,7 +37,7 @@ TEST-HARNESS.md                Test harness documentation
    $SPLUNK_HOME/bin/splunk install app dist/my_viz_name-1.0.0.tar.gz
    ```
 
-See [QUICKSTART.md](QUICKSTART.md) for a step-by-step tutorial or [INSTRUCTIONS.md](INSTRUCTIONS.md) for the full setup guide.
+See [INSTRUCTIONS.md](INSTRUCTIONS.md) for the full setup guide.
 
 **Try the test harness live:** [GitHub Pages Demo](https://rcastley.github.io/splunk-custom-visualizations/)
 
