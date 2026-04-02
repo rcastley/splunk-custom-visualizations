@@ -258,6 +258,20 @@ splunk-custom-visualizations/
 - Browse the existing examples in `examples/` to see patterns for different
   visualization types
 
+## Tips & Tricks
+
+### Hide Real-Time Search Blue Dots
+
+When a Splunk dashboard uses real-time searches, a small blue status dot appears on each panel. These can be distracting, especially on NOC screens or presentation dashboards.
+
+To hide them, create a browser bookmark with this URL:
+
+```text
+javascript:(function()%7Bconst s=document.createElement('style');s.textContent='div[data-test="simple-status-icon-container"]%7Bdisplay:none%7D';document.head.appendChild(s);%7D)();
+```
+
+Click the bookmark on any Splunk dashboard page to inject a CSS rule that hides the status icons. The effect lasts until you reload the page.
+
 ## Troubleshooting
 
 | Issue | Fix |
