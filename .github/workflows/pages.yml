@@ -31,7 +31,11 @@ jobs:
           mkdir _site
           cp test-harness.html _site/index.html
           cp harness-manifest.json _site/
-          # Copy viz source and harness descriptors
+          # Copy root-level assets (logo, etc.)
+          cp -f *.png _site/ 2>/dev/null || true
+          # Copy shared assets (fonts, etc.)
+          [ -d shared ] && cp -r shared _site/
+          # Copy viz source, harness descriptors, and extra data files
           for viz in examples/*/; do
             viz_name=$(basename "$viz")
             viz_dir="examples/$viz_name/appserver/static/visualizations/$viz_name"
@@ -42,6 +46,10 @@ jobs:
               cp "$viz_dir/src/visualization_source.js" "$dest/src/"
               # Copy visualization.css if it exists
               [ -f "$viz_dir/visualization.css" ] && cp "$viz_dir/visualization.css" "$dest/"
+              # Copy extra data files (json, csv, png — exclude node_modules, src, package files)
+              find "$viz_dir" -maxdepth 1 -type f \( -name "*.json" -o -name "*.csv" -o -name "*.png" \) \
+                ! -name "harness.json" ! -name "package.json" ! -name "package-lock.json" \
+                -exec cp {} "$dest/" \;
             fi
           done
 
