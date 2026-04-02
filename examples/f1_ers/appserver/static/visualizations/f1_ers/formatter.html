@@ -1,0 +1,38 @@
+<form class="splunk-formatter-section" section-label="Display Settings">
+    <splunk-control-group label="Accent Colour" help="Colour for highlights and total harvest stat">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.accentColor" type="custom" value="#ff8700">
+            <splunk-color>#ff8700</splunk-color>
+            <splunk-color>#e10600</splunk-color>
+            <splunk-color>#00d2be</splunk-color>
+            <splunk-color>#0600ef</splunk-color>
+            <splunk-color>#006f62</splunk-color>
+            <splunk-color>#2b4562</splunk-color>
+            <splunk-color>#b6babd</splunk-color>
+            <splunk-color>#ffffff</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+    <splunk-control-group label="Layout" help="Battery bar orientation">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.layout" value="horizontal">
+            <option value="horizontal">Horizontal</option>
+            <option value="vertical">Vertical</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Labels">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showLabels" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Harvest/Deploy Stats">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showStats" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Glow Effect">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>

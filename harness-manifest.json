@@ -20,6 +20,8 @@
     "liability_gauge",
     "bet_flow_map",
     "goal_timeline",
-    "market_donut"
+    "market_donut",
+    "f1_track_info",
+    "f1_ers"
   ]
 }

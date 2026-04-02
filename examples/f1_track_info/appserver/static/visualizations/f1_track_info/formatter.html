@@ -1,0 +1,32 @@
+<form class="splunk-formatter-section" section-label="Track Display">
+    <splunk-control-group label="Track Line Width">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.trackWidth" value="4">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Track Map" help="Show the track outline silhouette">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showTrackMap" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Track Name">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showTrackName" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Sector Markers">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showSectorMarkers" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Text Colour">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.textColor" type="custom" value="#ffffff">
+            <splunk-color>#ffffff</splunk-color>
+            <splunk-color>#cccccc</splunk-color>
+            <splunk-color>#888888</splunk-color>
+            <splunk-color>#ff8700</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>

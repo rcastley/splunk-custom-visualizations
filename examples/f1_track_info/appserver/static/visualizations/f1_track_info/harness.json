@@ -1,0 +1,22 @@
+{
+  "label": "F1 Track Info",
+  "defaultSize": { "width": 500, "height": 400 },
+  "dependencies": ["track_splines.json"],
+  "fields": [
+    { "name": "track_id", "label": "Track ID", "type": "slider", "min": 0, "max": 41, "step": 1, "default": 0 },
+    { "name": "track_length", "label": "Track Length (m)", "type": "slider", "min": 3000, "max": 7000, "step": 100, "default": 5303 },
+    { "name": "sector2_lap_distance_start", "label": "Sector 2 Start (m)", "type": "slider", "min": 500, "max": 4000, "step": 100, "default": 1800 },
+    { "name": "sector3_lap_distance_start", "label": "Sector 3 Start (m)", "type": "slider", "min": 1000, "max": 6000, "step": 100, "default": 3600 }
+  ],
+  "formatter": [
+    { "name": "trackWidth", "label": "Track Width", "type": "text", "default": "4" },
+    { "name": "showTrackMap", "label": "Show Map", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showTrackName", "label": "Show Name", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showSectorMarkers", "label": "Sector Markers", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "textColor", "label": "Text Color", "type": "color", "default": "#ffffff" }
+  ],
+  "data": {
+    "mode": "single_row",
+    "columns": ["track_id", "track_length", "sector2_lap_distance_start", "sector3_lap_distance_start"]
+  }
+}

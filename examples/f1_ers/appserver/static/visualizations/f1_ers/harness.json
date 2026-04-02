@@ -1,0 +1,23 @@
+{
+  "label": "F1 ERS",
+  "defaultSize": { "width": 600, "height": 200 },
+  "dependencies": [],
+  "fields": [
+    { "name": "ers_store_energy", "label": "ERS Store (J)", "type": "slider", "min": 0, "max": 4000000, "step": 10000, "default": 2500000 },
+    { "name": "ers_deploy_mode", "label": "Deploy Mode", "type": "select", "options": [{"v": "0", "l": "None"}, {"v": "1", "l": "Medium"}, {"v": "2", "l": "Hotlap"}, {"v": "3", "l": "Overtake"}], "default": "1" },
+    { "name": "ers_harvested_this_lap_mguk", "label": "Harvested MGU-K", "type": "slider", "min": 0, "max": 2000000, "step": 10000, "default": 500000 },
+    { "name": "ers_harvested_this_lap_mguh", "label": "Harvested MGU-H", "type": "slider", "min": 0, "max": 2000000, "step": 10000, "default": 800000 },
+    { "name": "ers_deployed_this_lap", "label": "Deployed This Lap", "type": "slider", "min": 0, "max": 4000000, "step": 10000, "default": 1200000 }
+  ],
+  "formatter": [
+    { "name": "accentColor", "label": "Accent Color", "type": "color", "default": "#ff8700" },
+    { "name": "layout", "label": "Layout", "type": "radio", "options": ["horizontal", "vertical"], "default": "horizontal" },
+    { "name": "showLabels", "label": "Show Labels", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showStats", "label": "Show Stats", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" }
+  ],
+  "data": {
+    "mode": "single_row",
+    "columns": ["ers_store_energy", "ers_deploy_mode", "ers_harvested_this_lap_mguk", "ers_harvested_this_lap_mguh", "ers_deployed_this_lap"]
+  }
+}

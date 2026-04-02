@@ -1,0 +1,13 @@
+{
+  "name": "f1-ers-viz",
+  "version": "1.0.0",
+  "description": "F1 ERS Energy Recovery System visualization for Splunk",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch"
+  },
+  "devDependencies": {
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
