@@ -29,8 +29,8 @@ Before generating code, ask the user (or extract from context):
 
 1. **Target platform**: Splunk Cloud, Splunk Enterprise, or both. This determines which vetting constraints apply (see **Platform Differences** below). When in doubt, default to **both** — this produces an app that passes Splunk Cloud vetting and also works on Enterprise.
 2. **Viz name**: short lowercase identifier (e.g., `network_graph`, `heatmap_grid`). Used as both the app ID and the visualization stanza name.
-3. **Display label**: human-readable name for the Splunk UI (e.g., "Network Graph", "Heatmap Grid").
-4. **Description**: one-line description of what the visualization does.
+3. **Display label**: human-readable name for the Splunk UI (e.g., "Network Graph", "Heatmap Grid"). **Max 30 characters.**
+4. **Description**: one-line description of what the visualization does. **Max 80 characters.** Use active voice focusing on user tasks (e.g., "Track metric values against configurable thresholds").
 5. **Expected SPL columns**: which fields the search must produce (e.g., `_time, source, dest, value`). Distinguish required vs optional columns. Ask if the viz will share a base search with other panels — if so, use configurable field names (see rule 18) instead of hardcoding column names like `value`.
 6. **Configurable settings**: what the user should be able to tweak from the formatter panel (e.g., colors, sizes, toggles, units). For each setting, determine: name, type (text/radio/dropdown), default value.
 7. **Rendering approach**: what to draw on the canvas (shapes, lines, text, gradients, animations).
@@ -82,6 +82,7 @@ Every viz app follows this exact layout — do not deviate:
           src/
             visualization_source.js
           formatter.html
+          preview.png             (116x76 viz picker preview icon)
           visualization.css       (transparent background by default)
           webpack.config.js
           package.json
@@ -184,6 +185,11 @@ allow_user_selection = true
 disabled = 0
 search_fragment = {search_fragment}
 ```
+
+**Character limits** (enforced by Splunk's viz picker UI):
+- `label`: max **30 characters**
+- `description`: max **80 characters**
+- `search_fragment`: max **80 characters**
 
 The `search_fragment` is a partial SPL snippet that shows users how to structure their search for this visualization. It should produce the expected columns.
 
@@ -312,6 +318,82 @@ Create this file with a transparent background on the root container. Splunk req
 ```
 node_modules
 ```
+
+#### preview.png (Visualization Picker Icon)
+
+Splunk displays a `preview.png` in the visualization picker when the user selects a chart type. This file is **required** for a polished viz.
+
+| Property | Requirement |
+|----------|-------------|
+| **Dimensions** | Exactly 116×76 pixels |
+| **Format** | PNG |
+| **Location** | `appserver/static/visualizations/{app_name}/preview.png` |
+| **Content** | Fill the full 116×76 area — no gaps, borders, or empty margins. Show a recognizable, moderately detailed representation of the viz (not too minimal, not too busy) |
+| **Background** | Use the viz's typical dark background color (e.g., `#1a1a2e`, `#0d1117`) — not transparent, since the picker has its own background |
+
+**Prerequisite:** Generating `preview.png` requires Python 3 with the **Pillow** library. If not already installed:
+
+```bash
+pip3 install Pillow
+```
+
+**Generation script** — `generate_preview.py` is a temporary helper that creates `preview.png` for the viz. Place it alongside the viz source, run it once, then delete it. The script draws a simplified representation of the viz type on a 116×76 canvas.
+
+Generate a viz-type-specific script based on the table below. Each script must:
+1. Create a 116×76 RGBA image
+2. Fill with the viz's dark background color
+3. Draw a simplified but recognizable representation of the viz
+4. Save as `preview.png` in the same directory
+5. Print a confirmation message
+
+**Viz type preview templates:**
+
+| Viz Type | What to Draw |
+|----------|-------------|
+| **Gauge / Meter** | Arc with colored fill segment, center value text |
+| **Heatmap / Grid** | Small grid of colored rectangles with varying intensity |
+| **Network Graph** | Circles (nodes) connected by lines (edges) |
+| **Status Board** | Colored rounded rectangles with short labels |
+| **Timeline / Gantt** | Horizontal bars at different Y positions |
+| **Bar / Column** | Vertical bars of varying height with axis line |
+| **Radial / Donut** | Colored arc segments forming a ring with center text |
+| **Line Chart** | Polyline with dots on a simple axis |
+| **Single Value** | Large centered number with small label below |
+
+**Example generation script** (gauge type):
+
+```python
+#!/usr/bin/env python3
+"""Generate preview.png for the viz picker (116x76)."""
+import math, os
+try:
+    from PIL import Image, ImageDraw, ImageFont
+except ImportError:
+    print("ERROR: Pillow is required. Install with: pip3 install Pillow")
+    raise SystemExit(1)
+
+W, H = 116, 76
+img = Image.new("RGBA", (W, H), (26, 26, 46, 255))  # dark bg
+draw = ImageDraw.Draw(img)
+
+# Draw a simplified gauge arc
+cx, cy, r = W // 2, H // 2 + 8, 28
+draw.arc([cx - r, cy - r, cx + r, cy + r], 200, 340, fill=(80, 80, 120), width=6)
+draw.arc([cx - r, cy - r, cx + r, cy + r], 200, 290, fill=(0, 200, 120), width=6)
+
+# Center value text (use default font)
+try:
+    font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 14)
+except Exception:
+    font = ImageFont.load_default()
+draw.text((cx, cy - 6), "75", fill=(255, 255, 255), font=font, anchor="mm")
+
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "preview.png")
+img.save(out)
+print(f"Created {out} ({W}x{H})")
+```
+
+**Workflow:** After generating the viz source files, create `generate_preview.py` customized for the specific viz, run it with `python3 generate_preview.py`, verify the output, then delete the script. Only `preview.png` ships with the app.
 
 ### visualization_source.js — The Core Pattern
 
@@ -1151,18 +1233,19 @@ function drawArc(ctx, cx, cy, radius, startDeg, endDeg, color, lineWidth) {
 
 ### Legends
 ```javascript
+// Swatch size per Splunk design guidelines: 16x12px
 function drawLegend(ctx, items, x, y, fontSize) {
-    var swatchSize = fontSize;
+    var swatchW = 16, swatchH = 12;
     var padding = fontSize * 0.5;
     var currentX = x;
     ctx.font = fontSize + 'px sans-serif';
     ctx.textBaseline = 'middle';
     for (var i = 0; i < items.length; i++) {
         ctx.fillStyle = items[i].color;
-        ctx.fillRect(currentX, y, swatchSize, swatchSize);
-        ctx.fillStyle = '#333';
-        currentX += swatchSize + padding;
-        ctx.fillText(items[i].label, currentX, y + swatchSize / 2);
+        ctx.fillRect(currentX, y, swatchW, swatchH);
+        ctx.fillStyle = '#3C444D';
+        currentX += swatchW + padding;
+        ctx.fillText(items[i].label, currentX, y + swatchH / 2);
         currentX += ctx.measureText(items[i].label).width + padding * 2;
     }
 }
@@ -1219,6 +1302,138 @@ function findHitRect(hitRects, clickX, clickY) {
 }
 ```
 
+## Splunk Design Guidelines Reference
+
+These constants come from the [official Splunk design guidelines](https://help.splunk.com/en/splunk-cloud-platform/developing-views-and-apps-for-splunk-web/10.3.2512/custom-visualizations/design-guidelines). Apply them when the viz includes standard chart elements (axes, legends, gridlines, tooltips). Canvas-only vizs that draw custom UI (gauges, status boards, etc.) may deviate where it makes sense, but should still use the official palettes and font stacks.
+
+### Character Limits (visualizations.conf)
+
+| Field | Max Length | Notes |
+|-------|-----------|-------|
+| `label` | 30 characters | Display name in the viz picker |
+| `description` | 80 characters | One-line description below the label |
+| `search_fragment` | 80 characters | Partial SPL shown to users |
+
+Enforce these limits when generating `visualizations.conf`. If the user's label or description exceeds the limit, truncate or ask them to shorten it.
+
+### Description Best Practices
+
+Write descriptions in active voice focusing on user tasks, not visual appearance:
+- **Pattern**: Action (show/track/compare/plot) + Information (values/trends/metrics) + Presentation (over/in/against) + Key Components (baseline/range/time)
+- **Good**: "Track metric values against configurable thresholds over time"
+- **Bad**: "A colorful gauge with an arc and numbers" (describes appearance, not purpose)
+- Do not repeat the visualization name in the description
+
+### Font Standards
+
+When the viz uses standard chart elements (axis labels, tick marks, legends), use the Splunk font stack:
+
+```javascript
+var SPLUNK_FONT = "'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica, sans-serif";
+```
+
+| Element | Size | Line-height | Color |
+|---------|------|-------------|-------|
+| Axis titles (X/Y) | 12px | 16px | `#3C444D` |
+| Tick mark labels | 11px | 12px | `#3C444D` |
+| Legend text | 11px | 12px | `#3C444D` |
+
+For Canvas vizs that don't have traditional chart axes (gauges, status boards, etc.), continue using `sans-serif` and `monospace` as described in rule 10 — the Splunk font stack is only relevant for chart-style visualizations.
+
+### Color Palettes
+
+When the viz needs color scales, prefer Splunk's official palettes. These correspond to the `splunk-color-picker` `type` values in `formatter.html`.
+
+**Semantic (6 colors)** — for value ranges and meaning indicators (`type="splunkSemantic"`):
+```javascript
+var SPLUNK_SEMANTIC = ['#DC4E41', '#F1813F', '#F8BE34', '#53A051', '#006D9C', '#3C444D'];
+```
+
+**Categorical (3 alternate 10-color palettes)** — for distinct category coloring (`type="splunkCategorical"`):
+```javascript
+var SPLUNK_CAT_1 = ['#006D9C', '#4FA484', '#EC9960', '#AF575A', '#B6C75A', '#62B3B2', '#294E70', '#738795', '#EDD051', '#BD9872'];
+var SPLUNK_CAT_2 = ['#5A4575', '#7EA77B', '#708794', '#D7C6B7', '#339BB2', '#55672D', '#E6E1A4', '#96907F', '#87BC65', '#CF7E60'];
+var SPLUNK_CAT_3 = ['#7B5547', '#77D6D8', '#4A7F2C', '#F589AD', '#6A2C5D', '#AAABAE', '#9A7438', '#A4D563', '#7672A4', '#184B81'];
+```
+
+**Sequential (6 base colors)** — for single-hue intensity scales (`type="splunkSequential"`):
+```javascript
+var SPLUNK_SEQUENTIAL = ['#1D92C5', '#D6563C', '#6A5C9E', '#31A35F', '#ED8440', '#3863A0'];
+// Minimum values must appear at ≥10% lightness of the base color
+```
+
+**Divergent (6 two-color pairs)** — for emphasizing high/low extremes:
+```javascript
+var SPLUNK_DIVERGENT = [
+    ['#236D9C', '#EC9960'],
+    ['#62B3B2', '#AF575A'],
+    ['#6A5C9E', '#D6563C'],
+    ['#31A35F', '#EC9960'],
+    ['#ED8440', '#3863A0'],
+    ['#1D92C5', '#AF575A']
+];
+```
+
+### Spacing Constants
+
+Apply these when the viz draws chart-style elements (axes, legends, gridlines):
+
+| Spacing | Value | Between |
+|---------|-------|---------|
+| Panel margin | 15px | Around entire visualization panel |
+| Y-axis label → viz | 10px | Label text to chart area |
+| X-axis label → tick marks | 10px | Label text to tick marks |
+| Tick marks → viz | 5px | Tick mark end to chart area edge |
+| Viz → legend | 20px | Chart area to legend |
+
+### Gridlines and Axes
+
+| Element | Color |
+|---------|-------|
+| Gridlines | `#ebedef` |
+| Axis lines | `#d9dce0` |
+
+### Legend Swatches
+
+Each legend item has a **16×12px** color swatch. Use this size when drawing legends for chart-style vizs:
+
+```javascript
+function drawLegend(ctx, items, x, y, fontSize) {
+    var swatchW = 16, swatchH = 12;
+    var padding = fontSize * 0.5;
+    var currentX = x;
+    ctx.font = fontSize + 'px ' + SPLUNK_FONT;
+    ctx.textBaseline = 'middle';
+    for (var i = 0; i < items.length; i++) {
+        ctx.fillStyle = items[i].color;
+        ctx.fillRect(currentX, y, swatchW, swatchH);
+        ctx.fillStyle = '#3C444D';
+        currentX += swatchW + padding;
+        ctx.fillText(items[i].label, currentX, y + swatchH / 2);
+        currentX += ctx.measureText(items[i].label).width + padding * 2;
+    }
+}
+```
+
+### Tooltips
+
+When implementing Canvas tooltips (HTML overlays positioned on hover), use these specs:
+
+| Property | Value |
+|----------|-------|
+| Padding | 10px |
+| Text size | 12px |
+| Line-height | 16px |
+| Label color | `#CCC` |
+| Background | `#FFF` |
+| Pointer | Centered on tooltip edge |
+
+### Responsive Design
+
+- Scale all elements proportionally when the panel resizes — avoid fixed pixel widths for layout
+- Hide non-essential labels and decorations on small panels (e.g., hide axis titles below 200px width)
+- The `reflow` method and percentage-based layout in the core pattern handle most of this, but chart-style vizs should explicitly check panel dimensions and adapt
+
 ## Viz Type Guidance
 
 When the user describes what they want, map their description to one of these common viz categories and tailor the scaffolding accordingly:
@@ -1249,6 +1464,8 @@ Before presenting the generated code, verify:
 - [ ] `app.conf` package ID matches the directory name
 - [ ] `app.conf` version is consistent across `[id]` and `[launcher]` stanzas
 - [ ] `visualizations.conf` stanza name matches the directory name
+- [ ] `visualizations.conf` label ≤30 chars, description ≤80 chars, search_fragment ≤80 chars
+- [ ] `visualizations.conf` description uses active voice focusing on user tasks (not visual appearance)
 - [ ] `savedsearches.conf` custom type follows pattern `{app_name}.{app_name}`
 - [ ] `savedsearches.conf.spec` documents every setting in formatter.html
 - [ ] `formatter.html` setting names use `{{VIZ_NAMESPACE}}.{setting}`
@@ -1260,6 +1477,7 @@ Before presenting the generated code, verify:
 - [ ] `metadata/default.meta` exists with global `[]` access stanza, `export = system`, and `sc_admin` in all write ACLs (required for Splunk Cloud)
 - [ ] `savedsearches.conf` uses historical time ranges (no `rt-*` / `rt` — rejected by Splunk Cloud vetting)
 - [ ] `static/` contains all four app icons: `appIcon.png` (36x36), `appIcon_2x.png` (72x72), `appIconAlt.png` (36x36), `appIconAlt_2x.png` (72x72)
+- [ ] `preview.png` exists (116×76px) in `appserver/static/visualizations/{app_name}/` — fills full area with recognizable viz representation
 - [ ] `.gitignore` excludes `node_modules`
 - [ ] Build script excludes src/, node_modules/, package.json, webpack.config.js from tarball
 - [ ] `harness.json` exists with correct fields, formatter (matching JS defaults), and data mode
