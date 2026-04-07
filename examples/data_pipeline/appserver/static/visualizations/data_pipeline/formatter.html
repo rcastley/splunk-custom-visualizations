@@ -1,0 +1,75 @@
+<form class="splunk-formatter-section" section-label="Data">
+    <splunk-control-group label="Name Field" help="Column containing source/index names">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.nameField" value="name">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Volume Field" help="Column containing numeric volume values">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.volumeField" value="volume">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Max Sources" help="Maximum number of source streams to display">
+        <splunk-select name="{{VIZ_NAMESPACE}}.maxSources" value="10">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Volume Unit" help="How to format volume labels">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.volumeUnit" value="events">
+            <option value="events">Events</option>
+            <option value="bytes">Bytes</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Appearance">
+    <splunk-control-group label="Animation" help="Particle flow speed">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.animSpeed" value="medium">
+            <option value="slow">Slow</option>
+            <option value="medium">Medium</option>
+            <option value="fast">Fast</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Volume" help="Display volume labels next to source names">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showVolume" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Chevron" help="Show the Splunk &gt; collection point">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showChevron" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Total" help="Show aggregated total volume below the chevron">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showTotal" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Colors">
+    <splunk-control-group label="Low Volume" help="Color for lowest-volume streams">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.colorLow" type="custom" value="#00B4D8">
+            <splunk-color>#00B4D8</splunk-color>
+            <splunk-color>#48BFE3</splunk-color>
+            <splunk-color>#5E60CE</splunk-color>
+            <splunk-color>#7400B8</splunk-color>
+            <splunk-color>#64DFDF</splunk-color>
+            <splunk-color>#80FFDB</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+    <splunk-control-group label="High Volume" help="Color for highest-volume streams">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.colorHigh" type="custom" value="#65A637">
+            <splunk-color>#65A637</splunk-color>
+            <splunk-color>#FF6B00</splunk-color>
+            <splunk-color>#FF3355</splunk-color>
+            <splunk-color>#FFD166</splunk-color>
+            <splunk-color>#06D6A0</splunk-color>
+            <splunk-color>#EF476F</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>

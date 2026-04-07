@@ -1,0 +1,34 @@
+{
+  "label": "Data Pipeline",
+  "defaultSize": { "width": 800, "height": 450 },
+  "noDataMessage": "Awaiting ingestion data",
+  "fields": [],
+  "formatter": [
+    { "name": "nameField", "label": "Name Field", "type": "text", "default": "name" },
+    { "name": "volumeField", "label": "Volume Field", "type": "text", "default": "volume" },
+    { "name": "maxSources", "label": "Max Sources", "type": "select", "options": ["5", "10", "15", "20"], "default": "10" },
+    { "name": "volumeUnit", "label": "Volume Unit", "type": "radio", "options": ["events", "bytes"], "default": "events" },
+    { "name": "animSpeed", "label": "Animation", "type": "radio", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "showVolume", "label": "Show Volume", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showChevron", "label": "Show Chevron", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showTotal", "label": "Show Total", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "colorLow", "label": "Low Color", "type": "color", "default": "#00B4D8" },
+    { "name": "colorHigh", "label": "High Color", "type": "color", "default": "#65A637" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["name", "volume"],
+    "sampleRows": [
+      ["main", "2450000"],
+      ["_internal", "1820000"],
+      ["web_logs", "1340000"],
+      ["metrics", "890000"],
+      ["security", "645000"],
+      ["network", "412000"],
+      ["dns_logs", "287000"],
+      ["syslog", "156000"],
+      ["aws_cloudtrail", "98000"],
+      ["k8s_events", "42000"]
+    ]
+  }
+}

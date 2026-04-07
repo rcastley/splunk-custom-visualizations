@@ -1,0 +1,10 @@
+display.visualizations.custom.data_pipeline.data_pipeline.nameField = <string>
+display.visualizations.custom.data_pipeline.data_pipeline.volumeField = <string>
+display.visualizations.custom.data_pipeline.data_pipeline.maxSources = <integer>
+display.visualizations.custom.data_pipeline.data_pipeline.animSpeed = <string>
+display.visualizations.custom.data_pipeline.data_pipeline.showVolume = <boolean>
+display.visualizations.custom.data_pipeline.data_pipeline.showChevron = <boolean>
+display.visualizations.custom.data_pipeline.data_pipeline.showTotal = <boolean>
+display.visualizations.custom.data_pipeline.data_pipeline.colorLow = <string>
+display.visualizations.custom.data_pipeline.data_pipeline.colorHigh = <string>
+display.visualizations.custom.data_pipeline.data_pipeline.volumeUnit = <string>
