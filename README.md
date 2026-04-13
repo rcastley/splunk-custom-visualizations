@@ -12,7 +12,14 @@ examples/
   custom_single_value/         Working example: configurable single value display
   component_status_board/      Working example: NOC-style component health grid
   gauge/                       Working example: multi-mode gauge (arc, donut, bar, status)
-build.sh                       Build and package any viz into an installable .tar.gz
+  indexing_pipeline_flow/      Health: animated glass-tube pipeline queue monitor
+  splunk_status_board/         Health: glass-themed component health tiles
+  license_gauge/               Health: arc gauge for daily license usage vs quota
+  resource_gauge/              Health: triple-arc CPU/Memory/Swap gauge
+  forwarder_heatmap/           Health: forwarder staleness heatmap grid
+splunk_health/                 Bundled app: all 5 health vizzes + Dashboard Studio dashboard
+  build.sh                     Build, merge, and package into a single .tar.gz
+build.sh                       Build and package any standalone viz
 test-harness.html              Browser-based testing without Splunk deployment
 harness-manifest.json          Registry of vizs for the test harness
 INSTRUCTIONS.md                Step-by-step setup and usage guide
@@ -49,9 +56,45 @@ The `.claude/skills/splunk-viz/` directory contains a Claude Code skill that kno
 - Scaffold a Dashboard Studio app with a `vizs/` build pipeline for bundling multiple custom vizs
 - Generate Canvas 2D rendering code following Splunk's AMD module pattern
 - Handle HiDPI displays, real-time data, responsive sizing, and font embedding
-- Apply 24 battle-tested rules learned from building production visualizations
+- Apply 28 battle-tested rules learned from building production visualizations
 
 The skill is automatically available when you use Claude Code in this repo. Just describe what you want to visualize and it will generate the full app. You can also ask it to scaffold a full Dashboard Studio app — it generates the app skeleton, build script, test harness, and the `vizs/` directory structure for managing multiple visualizations.
+
+## Example: Splunk Health Dashboard
+
+The `splunk_health/` directory is a ready-to-deploy Splunk app that bundles five glass-themed health monitoring visualizations into a single Dashboard Studio dashboard. All vizzes share the same design language — glass tubes, liquid fills, animated particles, and progressive glow effects.
+
+| Visualization | Panel | What it shows |
+|---------------|-------|---------------|
+| **Splunk Status Board** | Component tiles | Health of Splunk components (Indexer, Search Head, KV Store, etc.) via `| rest /services/server/health` |
+| **License Gauge** | Arc gauge | Daily license consumption vs quota via `| rest /services/licenser/pools` |
+| **Resource Gauge** | Triple arc | CPU, Memory, and Swap utilization via `index=_introspection` |
+| **Indexing Pipeline Flow** | Glass tubes | Queue fill levels for parsing → merging → typing → indexing via `index=_internal group=queue` |
+| **Forwarder Heatmap** | Cell grid | Forwarder staleness — green (recent) → yellow (stale) → red (missing) via `index=_internal group=tcpin_connections` |
+
+Each visualization includes three colour themes (default, dark, neon), configurable warning/critical thresholds, and animated effects that intensify as conditions worsen.
+
+### Build and install
+
+```bash
+./splunk_health/build.sh
+```
+
+This builds all five vizzes from `examples/`, rewrites namespaces, merges configs, and packages `dist/splunk_health.tar.gz`. Upload via **Apps → Manage Apps → Install app from file**.
+
+The dashboard auto-refreshes every 60 seconds. All searches include `appendpipe` fallbacks so panels show "Awaiting data" messages instead of blank placeholders.
+
+### Standalone vizzes
+
+Each visualization also exists as a standalone app in `examples/`:
+
+- `examples/indexing_pipeline_flow/`
+- `examples/splunk_status_board/`
+- `examples/license_gauge/`
+- `examples/forwarder_heatmap/`
+- `examples/resource_gauge/`
+
+Build any one individually with `./build.sh <name>`.
 
 ## Example: Custom Single Value
 
