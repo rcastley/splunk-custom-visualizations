@@ -17,10 +17,10 @@
     "mode": "multi_row",
     "columns": ["name", "fill_pct", "avg_size", "capacity"],
     "sampleRows": [
-      ["parsingQueue", "25", "128", "500"],
-      ["mergingQueue", "40", "200", "500"],
-      ["typingQueue", "15", "75", "500"],
-      ["indexQueue", "60", "300", "500"]
+      ["parsingqueue", "25", "128", "500"],
+      ["mergingqueue", "40", "200", "500"],
+      ["typingqueue", "15", "75", "500"],
+      ["indexqueue", "60", "300", "500"]
     ]
   }
 }

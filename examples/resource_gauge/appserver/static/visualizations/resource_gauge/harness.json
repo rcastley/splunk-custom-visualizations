@@ -1,0 +1,26 @@
+{
+  "label": "Resource Gauge",
+  "defaultSize": { "width": 500, "height": 400 },
+  "noDataMessage": "Awaiting resource data",
+  "dependencies": [],
+  "fields": [
+    { "name": "cpu_pct", "label": "CPU %", "type": "slider", "min": 0, "max": 100, "step": 1, "default": 45 },
+    { "name": "mem_pct", "label": "Memory %", "type": "slider", "min": 0, "max": 100, "step": 1, "default": 72 },
+    { "name": "disk_pct", "label": "Disk %", "type": "slider", "min": 0, "max": 100, "step": 1, "default": 38 }
+  ],
+  "formatter": [
+    { "name": "colorTheme", "label": "Colour Theme", "type": "select", "options": ["default", "dark", "neon"], "default": "default" },
+    { "name": "animSpeed", "label": "Animation Speed", "type": "radio", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "showLabels", "label": "Show Labels", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "warningThreshold", "label": "Warning Threshold", "type": "text", "default": "70" },
+    { "name": "criticalThreshold", "label": "Critical Threshold", "type": "text", "default": "85" },
+    { "name": "cpuField", "label": "CPU Field", "type": "text", "default": "cpu_pct" },
+    { "name": "memField", "label": "Memory Field", "type": "text", "default": "mem_pct" },
+    { "name": "diskField", "label": "Disk Field", "type": "text", "default": "disk_pct" }
+  ],
+  "data": {
+    "mode": "single_row",
+    "columns": ["cpu_pct", "mem_pct", "disk_pct"]
+  }
+}

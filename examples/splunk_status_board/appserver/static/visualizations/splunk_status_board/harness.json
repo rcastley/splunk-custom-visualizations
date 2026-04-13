@@ -1,0 +1,28 @@
+{
+  "label": "Splunk Status Board",
+  "defaultSize": { "width": 800, "height": 400 },
+  "noDataMessage": "Awaiting component data",
+  "dependencies": [],
+  "fields": [],
+  "formatter": [
+    { "name": "colorTheme", "label": "Colour Theme", "type": "select", "options": ["default", "dark", "neon"], "default": "default" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "warningThreshold", "label": "Warning Threshold", "type": "text", "default": "50" },
+    { "name": "criticalThreshold", "label": "Critical Threshold", "type": "text", "default": "80" },
+    { "name": "showCounts", "label": "Show Counts", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "animSpeed", "label": "Animation Speed", "type": "radio", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "columns", "label": "Columns", "type": "text", "default": "3" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["component", "status", "errors", "warns", "health_score"],
+    "sampleRows": [
+      ["Indexer", "ok", "0", "0", "10"],
+      ["Search Head", "warning", "0", "12", "60"],
+      ["KV Store", "critical", "23", "15", "90"],
+      ["License Master", "ok", "0", "0", "5"],
+      ["Deployment Server", "warning", "0", "8", "55"],
+      ["HEC", "ok", "0", "2", "15"]
+    ]
+  }
+}

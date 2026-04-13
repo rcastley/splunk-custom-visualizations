@@ -1,0 +1,9 @@
+display.visualizations.custom.resource_gauge.resource_gauge.colorTheme = <string>
+display.visualizations.custom.resource_gauge.resource_gauge.showGlow = <boolean>
+display.visualizations.custom.resource_gauge.resource_gauge.warningThreshold = <integer>
+display.visualizations.custom.resource_gauge.resource_gauge.criticalThreshold = <integer>
+display.visualizations.custom.resource_gauge.resource_gauge.animSpeed = <string>
+display.visualizations.custom.resource_gauge.resource_gauge.showLabels = <boolean>
+display.visualizations.custom.resource_gauge.resource_gauge.cpuField = <string>
+display.visualizations.custom.resource_gauge.resource_gauge.memField = <string>
+display.visualizations.custom.resource_gauge.resource_gauge.diskField = <string>

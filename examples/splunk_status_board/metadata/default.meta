@@ -1,0 +1,5 @@
+[]
+access = read : [ * ], write : [ admin, sc_admin ]
+
+[visualizations/splunk_status_board]
+export = system

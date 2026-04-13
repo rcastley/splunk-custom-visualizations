@@ -1,0 +1,9 @@
+display.visualizations.custom.license_gauge.license_gauge.colorTheme = <string>
+display.visualizations.custom.license_gauge.license_gauge.showGlow = <boolean>
+display.visualizations.custom.license_gauge.license_gauge.warningThreshold = <integer>
+display.visualizations.custom.license_gauge.license_gauge.criticalThreshold = <integer>
+display.visualizations.custom.license_gauge.license_gauge.animSpeed = <string>
+display.visualizations.custom.license_gauge.license_gauge.showLabel = <boolean>
+display.visualizations.custom.license_gauge.license_gauge.usedField = <string>
+display.visualizations.custom.license_gauge.license_gauge.quotaField = <string>
+display.visualizations.custom.license_gauge.license_gauge.unit = <string>

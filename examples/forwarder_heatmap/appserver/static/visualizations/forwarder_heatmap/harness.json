@@ -1,0 +1,35 @@
+{
+  "label": "Forwarder Heatmap",
+  "defaultSize": { "width": 800, "height": 400 },
+  "noDataMessage": "Awaiting forwarder data",
+  "dependencies": [],
+  "fields": [],
+  "formatter": [
+    { "name": "colorTheme", "label": "Colour Theme", "type": "select", "options": ["default", "dark", "neon"], "default": "default" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "warningThreshold", "label": "Warning Threshold", "type": "text", "default": "5" },
+    { "name": "criticalThreshold", "label": "Critical Threshold", "type": "text", "default": "15" },
+    { "name": "showEps", "label": "Show EPS", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "animSpeed", "label": "Animation Speed", "type": "radio", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "cellSize", "label": "Cell Size", "type": "select", "options": ["auto", "small", "medium", "large"], "default": "auto" },
+    { "name": "sortBy", "label": "Sort By", "type": "select", "options": ["status", "name", "eps"], "default": "status" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["host", "mins_ago", "eps"],
+    "sampleRows": [
+      ["idx-prod-01", "0.5", "1250.3"],
+      ["idx-prod-02", "1.2", "890.1"],
+      ["idx-prod-03", "3.8", "445.0"],
+      ["hf-web-01", "0.3", "2100.5"],
+      ["hf-web-02", "7.5", "120.8"],
+      ["hf-db-01", "12.4", "55.2"],
+      ["uf-app-01", "0.8", "340.0"],
+      ["uf-app-02", "18.6", "0.0"],
+      ["uf-app-03", "2.1", "780.4"],
+      ["uf-syslog-01", "0.1", "5200.0"],
+      ["uf-syslog-02", "25.3", "0.0"],
+      ["dc-hf-01", "4.9", "670.2"]
+    ]
+  }
+}

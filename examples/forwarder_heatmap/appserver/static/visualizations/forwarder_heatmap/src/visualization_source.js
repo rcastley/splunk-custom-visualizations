@@ -1,11 +1,11 @@
 /*
- * Indexing Pipeline Flow — Splunk Custom Visualization
+ * Forwarder Heatmap — Splunk Custom Visualization
  *
- * Animated visualization of Splunk's internal indexing pipeline queues.
- * Renders four pipeline stages (parsing, merging, typing, indexing) as
- * glass tubes with liquid fill levels and animated flow particles.
+ * Glass-themed heatmap grid showing forwarder health. Each cell represents
+ * one forwarder with liquid fill based on staleness (minutes since last seen).
+ * Fresh forwarders show green, stale show yellow, missing show red.
  *
- * Expected SPL columns: name, fill_pct, avg_size, capacity
+ * Expected SPL columns: host, mins_ago, eps (optional)
  */
 define([
     'api/SplunkVisualizationBase',
@@ -14,15 +14,13 @@ define([
 
     // ── Constants ───────────────────────────────────────────────
 
-    var PIPELINE_ORDER = ['parsingqueue', 'mergingqueue', 'typingqueue', 'indexqueue'];
-    var PIPELINE_LABELS = {
-        parsingqueue: 'PARSING',
-        mergingqueue: 'MERGING',
-        typingqueue: 'TYPING',
-        indexqueue: 'INDEXING'
-    };
-
     var SPEED_MAP = { slow: 0.3, medium: 0.7, fast: 1.4 };
+
+    var CELL_SIZES = {
+        small: 60,
+        medium: 90,
+        large: 120
+    };
 
     var THEMES = {
         default: {
@@ -86,17 +84,25 @@ define([
         return 'rgb(' + r + ',' + g + ',' + bl + ')';
     }
 
-    function getFillColor(pct, warnThresh, critThresh, theme) {
-        if (pct >= critThresh) return theme.liquidHigh;
-        if (pct >= warnThresh) {
-            var t = (pct - warnThresh) / (critThresh - warnThresh);
-            return lerpColor(theme.liquidMid, theme.liquidHigh, t);
+    function getFillColor(minsAgo, warnThresh, critThresh, theme) {
+        if (minsAgo >= critThresh) return theme.liquidHigh;
+        if (minsAgo >= warnThresh) {
+            var t = (minsAgo - warnThresh) / (critThresh - warnThresh);
+            return lerpColor(theme.liquidMid, theme.liquidHigh, clamp(t, 0, 1));
         }
-        if (pct >= warnThresh * 0.5) {
-            var t2 = (pct - warnThresh * 0.5) / (warnThresh * 0.5);
-            return lerpColor(theme.liquidLow, theme.liquidMid, t2);
+        if (minsAgo >= warnThresh * 0.5) {
+            var t2 = (minsAgo - warnThresh * 0.5) / (warnThresh * 0.5);
+            return lerpColor(theme.liquidLow, theme.liquidMid, clamp(t2, 0, 1));
         }
         return theme.liquidLow;
+    }
+
+    function getFillPct(minsAgo, warnThresh, critThresh) {
+        // Map staleness to fill percentage: 0 mins = 15% fill, critThresh+ = 95% fill
+        if (minsAgo <= 0) return 15;
+        if (minsAgo >= critThresh) return 95;
+        var t = minsAgo / critThresh;
+        return 15 + t * 80;
     }
 
     function roundRect(ctx, x, y, w, h, r) {
@@ -113,7 +119,7 @@ define([
         ctx.closePath();
     }
 
-    function drawGlassTube(ctx, x, y, w, h, r, theme) {
+    function drawGlassCell(ctx, x, y, w, h, r, theme) {
         // Outer glass border
         roundRect(ctx, x, y, w, h, r);
         ctx.fillStyle = theme.tubeGlass;
@@ -138,20 +144,20 @@ define([
         ctx.restore();
     }
 
-    function drawLiquid(ctx, x, y, tubeW, tubeH, r, fillPct, color, showGlow, time) {
+    function drawLiquidCell(ctx, x, y, cellW, cellH, r, fillPct, color, showGlow, time, isCritical) {
         if (fillPct <= 0) return;
 
-        var inset = 3;
+        var inset = 2;
         var lx = x + inset;
-        var lw = tubeW - inset * 2;
+        var lw = cellW - inset * 2;
         var lr = Math.max(1, r - inset);
-        var maxFillH = tubeH - inset * 2;
+        var maxFillH = cellH - inset * 2;
         var fillH = maxFillH * (fillPct / 100);
-        var ly = y + tubeH - inset - fillH;
+        var ly = y + cellH - inset - fillH;
 
         ctx.save();
 
-        // Clip to tube interior
+        // Clip to cell interior
         roundRect(ctx, x + inset, y + inset, lw, maxFillH, lr);
         ctx.clip();
 
@@ -165,8 +171,8 @@ define([
         ctx.fillRect(lx, ly, lw, fillH);
 
         // Subtle wave on the liquid surface
-        var waveAmp = Math.min(3, fillH * 0.08);
-        var wavePeriod = lw * 0.4;
+        var waveAmp = Math.min(2, fillH * 0.06);
+        var wavePeriod = lw * 0.5;
         ctx.beginPath();
         ctx.moveTo(lx, ly);
         for (var wx = 0; wx <= lw; wx += 2) {
@@ -188,102 +194,131 @@ define([
             var sy = ly + Math.sin((sx / wavePeriod) * Math.PI * 2 + time * 2) * waveAmp;
             ctx.lineTo(lx + sx, sy);
         }
-        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Bubble particles inside liquid
-        var bubbleCount = Math.max(2, Math.floor(fillPct / 15));
-        for (var b = 0; b < bubbleCount; b++) {
-            var seed = b * 137.508;
-            var bx = lx + (((seed * 7.3) % lw));
-            var rawBy = ly + fillH * 0.2 + ((seed * 3.7 + time * 30) % (fillH * 0.7));
-            var by = Math.min(rawBy, ly + fillH - 4);
-            var br = 1 + (seed % 2);
-            ctx.beginPath();
-            ctx.arc(bx, by, br, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255,255,255,0.15)';
-            ctx.fill();
+        // Bubble particles inside liquid for high-fill cells
+        if (fillPct > 40) {
+            var bubbleCount = Math.max(1, Math.floor(fillPct / 20));
+            for (var b = 0; b < bubbleCount; b++) {
+                var seed = b * 137.508;
+                var bx = lx + (((seed * 7.3) % lw));
+                var rawBy = ly + fillH * 0.15 + ((seed * 3.7 + time * 25) % (fillH * 0.7));
+                var by = Math.min(rawBy, ly + fillH - 3);
+                var br = 0.8 + (seed % 1.5);
+                ctx.beginPath();
+                ctx.arc(bx, by, br, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                ctx.fill();
+            }
         }
 
         ctx.restore();
 
-        // Glow effect for high-fill tubes
-        if (showGlow && fillPct > 50) {
-            var glowIntensity = (fillPct - 50) / 50;
+        // Glow effect for critical cells
+        if (showGlow && isCritical) {
+            var pulseAlpha = Math.sin(time * 4) * 0.3;
+            var glowAlpha = clamp(0.3 + pulseAlpha, 0.1, 0.6);
+            ctx.save();
             ctx.shadowColor = color;
-            ctx.shadowBlur = 12 * glowIntensity;
-            roundRect(ctx, x, y, tubeW, tubeH, r);
+            ctx.shadowBlur = 12;
+            roundRect(ctx, x, y, cellW, cellH, r);
             ctx.strokeStyle = color;
-            ctx.globalAlpha = 0.2 * glowIntensity;
+            ctx.globalAlpha = glowAlpha;
             ctx.lineWidth = 2;
             ctx.stroke();
             ctx.shadowBlur = 0;
             ctx.globalAlpha = 1;
+            ctx.restore();
         }
     }
 
-    function drawConnector(ctx, x1, y1, x2, y2, pipeH, theme, particles, time, speed) {
-        var midY = (y1 + y2) / 2;
-
-        // Connector pipe background
-        ctx.fillStyle = theme.connector;
-        ctx.fillRect(x1, midY - pipeH / 2, x2 - x1, pipeH);
-
-        // Pipe border
-        ctx.strokeStyle = theme.tubeStroke;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x1, midY - pipeH / 2);
-        ctx.lineTo(x2, midY - pipeH / 2);
-        ctx.moveTo(x1, midY + pipeH / 2);
-        ctx.lineTo(x2, midY + pipeH / 2);
-        ctx.stroke();
-
-        // Flow particles
-        var pipeLen = x2 - x1;
-        for (var p = 0; p < particles.length; p++) {
-            var particle = particles[p];
-            var px = x1 + ((particle.offset + time * speed * 60) % pipeLen);
-            if (px < x1) px += pipeLen;
-            if (px > x2) px -= pipeLen;
-
-            var pSize = particle.size;
-            ctx.beginPath();
-            ctx.arc(px, midY, pSize, 0, Math.PI * 2);
-            ctx.fillStyle = theme.particle;
-            ctx.globalAlpha = 0.4 + particle.alpha * 0.6;
-
-            ctx.shadowColor = theme.particle;
-            ctx.shadowBlur = 4;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.globalAlpha = 1;
+    function truncateText(ctx, text, maxW) {
+        if (ctx.measureText(text).width <= maxW) return text;
+        var ellipsis = '...';
+        var eW = ctx.measureText(ellipsis).width;
+        var len = text.length;
+        while (len > 0 && ctx.measureText(text.slice(0, len)).width + eW > maxW) {
+            len--;
         }
+        return text.slice(0, len) + ellipsis;
     }
 
-    function drawArrowHead(ctx, x, y, size, theme) {
-        ctx.beginPath();
-        ctx.moveTo(x, y - size);
-        ctx.lineTo(x + size, y);
-        ctx.lineTo(x, y + size);
-        ctx.closePath();
-        ctx.fillStyle = theme.particle;
-        ctx.globalAlpha = 0.5;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-    }
-
-    function initParticles(count, pipeLen) {
-        var particles = [];
-        for (var i = 0; i < count; i++) {
-            particles.push({
-                offset: Math.random() * pipeLen,
-                size: 1.5 + Math.random() * 1.5,
-                alpha: 0.3 + Math.random() * 0.7
+    function sortForwarders(forwarders, sortBy) {
+        var sorted = forwarders.slice();
+        if (sortBy === 'name') {
+            sorted.sort(function(a, b) {
+                return a.host.toLowerCase().localeCompare(b.host.toLowerCase());
+            });
+        } else if (sortBy === 'eps') {
+            sorted.sort(function(a, b) {
+                return b.eps - a.eps;
+            });
+        } else {
+            // status: critical first (highest mins_ago)
+            sorted.sort(function(a, b) {
+                return b.mins_ago - a.mins_ago;
             });
         }
-        return particles;
+        return sorted;
+    }
+
+    function calcGridLayout(count, containerW, containerH, cellSizeSetting, headerH, legendH) {
+        var availW = containerW - 16; // 8px padding each side
+        var availH = containerH - headerH - legendH - 8;
+        var gap = 5;
+        var cellW, cellH, cols;
+
+        if (cellSizeSetting === 'small') {
+            cellW = 60;
+        } else if (cellSizeSetting === 'medium') {
+            cellW = 90;
+        } else if (cellSizeSetting === 'large') {
+            cellW = 120;
+        } else {
+            // auto: calculate optimal cell size to fit everything
+            // Try to fit all cells within the available area
+            var bestCellW = 90;
+            for (var testW = 140; testW >= 50; testW -= 5) {
+                var testCols = Math.floor((availW + gap) / (testW + gap));
+                if (testCols < 1) testCols = 1;
+                var testRows = Math.ceil(count / testCols);
+                var testH = testW * 0.85;
+                var totalH = testRows * (testH + gap) - gap;
+                if (totalH <= availH && testCols > 0) {
+                    bestCellW = testW;
+                    break;
+                }
+            }
+            cellW = Math.max(50, bestCellW);
+        }
+
+        // Cap columns to actual count so few forwarders expand to fill width
+        cols = Math.max(1, Math.floor((availW + gap) / (cellW + gap)));
+        if (cols > count) cols = Math.max(1, count);
+
+        // When few forwarders, expand cells to use available width
+        if (count <= cols) {
+            cellW = Math.min(300, Math.floor((availW - (cols - 1) * gap) / cols));
+        }
+
+        cellH = Math.min(Math.round(cellW * 0.85), 120);
+        var rows = Math.ceil(count / cols);
+
+        // Center the grid horizontally
+        var gridW = cols * cellW + (cols - 1) * gap;
+        var offsetX = Math.max(8, (containerW - gridW) / 2);
+
+        return {
+            cellW: cellW,
+            cellH: cellH,
+            cols: cols,
+            rows: rows,
+            gap: gap,
+            offsetX: offsetX,
+            startY: headerH
+        };
     }
 
     // ── Visualization Class ─────────────────────────────────────
@@ -292,17 +327,19 @@ define([
 
         initialize: function() {
             SplunkVisualizationBase.prototype.initialize.apply(this, arguments);
-            this.el.classList.add('indexing-pipeline-flow-viz');
+            this.el.classList.add('forwarder-heatmap-viz');
 
             this.canvas = document.createElement('canvas');
             this.canvas.style.width = '100%';
             this.canvas.style.height = '100%';
+            this.canvas.style.display = 'block';
             this.el.appendChild(this.canvas);
 
             this._lastGoodData = null;
             this._animTime = 0;
-            this._particles = null;
             this._timer = null;
+            this._drillGrid = null;
+            this._drillForwarders = null;
         },
 
         getInitialDataParams: function() {
@@ -316,7 +353,7 @@ define([
             if (!data || !data.rows || data.rows.length === 0) {
                 if (this._lastGoodData) return this._lastGoodData;
                 throw new SplunkVisualizationBase.VisualizationError(
-                    'Awaiting data \u2014 Indexing Pipeline Flow'
+                    'Awaiting data \u2014 Forwarder Heatmap'
                 );
             }
 
@@ -346,21 +383,19 @@ define([
                 return row[colIdx[name]] || fallback;
             }
 
-            // Build queue data from all rows
-            var queues = {};
+            var forwarders = [];
             for (var r = 0; r < data.rows.length; r++) {
                 var row = data.rows[r];
-                var name = getStr(row, 'name', '');
-                if (!name) continue;
-                queues[name] = {
-                    name: name,
-                    fill_pct: clamp(getVal(row, 'fill_pct', 0), 0, 100),
-                    avg_size: getVal(row, 'avg_size', 0),
-                    capacity: getVal(row, 'capacity', 0)
-                };
+                var host = getStr(row, 'host', '');
+                if (!host) continue;
+                forwarders.push({
+                    host: host,
+                    mins_ago: getVal(row, 'mins_ago', 0),
+                    eps: getVal(row, 'eps', 0)
+                });
             }
 
-            var result = { queues: queues };
+            var result = { forwarders: forwarders };
             this._lastGoodData = result;
             return result;
         },
@@ -382,15 +417,18 @@ define([
                 }
             }
 
+            if (!data.forwarders || data.forwarders.length === 0) return;
+
             // ── Read user settings ──
             var ns = this.getPropertyNamespaceInfo().propertyNamespace;
-            var animSpeed = config[ns + 'animSpeed'] || 'medium';
             var colorTheme = config[ns + 'colorTheme'] || 'default';
-            var showLabels = (config[ns + 'showLabels'] || 'true') === 'true';
-            var showValues = (config[ns + 'showValues'] || 'true') === 'true';
-            var warningThreshold = parseInt(config[ns + 'warningThreshold'], 10) || 70;
-            var criticalThreshold = parseInt(config[ns + 'criticalThreshold'], 10) || 85;
             var showGlow = (config[ns + 'showGlow'] || 'true') === 'true';
+            var warningThreshold = parseFloat(config[ns + 'warningThreshold']) || 5;
+            var criticalThreshold = parseFloat(config[ns + 'criticalThreshold']) || 15;
+            var showEps = (config[ns + 'showEps'] || 'true') === 'true';
+            var animSpeed = config[ns + 'animSpeed'] || 'medium';
+            var cellSizeSetting = config[ns + 'cellSize'] || 'auto';
+            var sortBy = config[ns + 'sortBy'] || 'status';
 
             var theme = THEMES[colorTheme] || THEMES['default'];
             var speed = SPEED_MAP[animSpeed] || SPEED_MAP.medium;
@@ -412,149 +450,111 @@ define([
 
             ctx.clearRect(0, 0, w, h);
 
+            // ── Sort forwarders ──
+            var forwarders = sortForwarders(data.forwarders, sortBy);
+            var count = forwarders.length;
+
             // ── Layout calculations ──
-            var stageCount = PIPELINE_ORDER.length;
-            var arrowPad = 30;
-            var padX = Math.max(16, w * 0.03);
-            var padY = Math.max(16, h * 0.08);
-            var labelH = showLabels ? Math.max(20, h * 0.1) : 0;
-            var valueH = showValues ? Math.max(18, h * 0.07) : 0;
-            var connectorW = Math.max(16, w * 0.04);
-            var totalConnW = connectorW * (stageCount - 1);
-            var availW = w - padX * 2 - arrowPad - totalConnW;
-            var tubeW = Math.min(availW / stageCount, h * 0.55);
-            var tubeH = h - padY * 2 - labelH - valueH;
-            tubeH = Math.max(60, Math.min(tubeH, 300));
-            var tubeR = Math.min(12, tubeW * 0.15);
+            var headerH = 4;
+            var legendH = 28;
 
-            // Center pipeline horizontally
-            var pipelineW = tubeW * stageCount + connectorW * (stageCount - 1);
-            var startX = Math.max(padX + arrowPad, (w - pipelineW) / 2);
-            var tubeY = padY + valueH;
+            var grid = calcGridLayout(count, w, h, cellSizeSetting, headerH, legendH);
+            var cellW = grid.cellW;
+            var cellH = grid.cellH;
+            var cols = grid.cols;
+            var gap = grid.gap;
+            var offsetX = grid.offsetX;
+            var startY = grid.startY;
+            var cellR = Math.min(6, cellW * 0.08);
 
-            // Connector pipe height
-            var pipeH = Math.max(6, tubeH * 0.06);
+            // ── Draw cells ──
+            var hostFS = Math.max(7, Math.min(11, cellW * 0.13));
+            var valFS = Math.max(8, Math.min(16, cellW * 0.18));
+            var epsFS = Math.max(6, Math.min(9, cellW * 0.1));
+            var time = this._animTime * speed;
 
-            // Initialise particles for connectors if not done
-            if (!this._particles || this._particles.length !== stageCount - 1) {
-                this._particles = [];
-                for (var p = 0; p < stageCount - 1; p++) {
-                    this._particles.push(initParticles(6, connectorW));
+            for (var i = 0; i < count; i++) {
+                var fwd = forwarders[i];
+                var col = i % cols;
+                var row = Math.floor(i / cols);
+                var cx = offsetX + col * (cellW + gap);
+                var cy = startY + row * (cellH + gap);
+
+                // Skip cells outside visible area
+                if (cy + cellH < 0 || cy > h) continue;
+
+                var minsAgo = fwd.mins_ago;
+                var fillPct = getFillPct(minsAgo, warningThreshold, criticalThreshold);
+                var fillColor = getFillColor(minsAgo, warningThreshold, criticalThreshold, theme);
+                var isCritical = minsAgo >= criticalThreshold;
+
+                // Draw glass cell
+                drawGlassCell(ctx, cx, cy, cellW, cellH, cellR, theme);
+
+                // Draw liquid fill
+                drawLiquidCell(ctx, cx, cy, cellW, cellH, cellR, fillPct, fillColor, showGlow, time, isCritical);
+
+                // Draw hostname label (top of cell)
+                ctx.save();
+                ctx.font = hostFS + 'px sans-serif';
+                ctx.fillStyle = theme.text;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                var displayHost = truncateText(ctx, fwd.host, cellW - 8);
+                ctx.fillText(displayHost, cx + cellW / 2, cy + 4);
+                ctx.restore();
+
+                // Draw mins_ago value (center of cell, in pill)
+                ctx.save();
+                ctx.font = 'bold ' + valFS + 'px monospace';
+                var valStr = minsAgo < 100 ? minsAgo.toFixed(1) + 'm' : Math.round(minsAgo) + 'm';
+                var valTextW = ctx.measureText(valStr).width + 10;
+                var valPillH = valFS + 4;
+                var valPillX = cx + cellW / 2 - valTextW / 2;
+                var valPillY = cy + cellH / 2 - valPillH / 2;
+
+                roundRect(ctx, valPillX, valPillY, valTextW, valPillH, 3);
+                ctx.fillStyle = theme.valueBg;
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                if (showGlow && isCritical) {
+                    ctx.shadowColor = fillColor;
+                    ctx.shadowBlur = 8;
+                }
+                ctx.fillText(valStr, cx + cellW / 2, cy + cellH / 2);
+                ctx.shadowBlur = 0;
+                ctx.restore();
+
+                // Draw EPS (bottom of cell)
+                if (showEps && fwd.eps > 0) {
+                    ctx.save();
+                    ctx.font = epsFS + 'px sans-serif';
+                    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    var epsStr = fwd.eps >= 1000 ? (fwd.eps / 1000).toFixed(1) + 'k' : fwd.eps.toFixed(0);
+                    ctx.fillText(epsStr + ' eps', cx + cellW / 2, cy + cellH - 3);
+                    ctx.restore();
                 }
             }
-
-            // ── Draw title ──
-            var titleFS = Math.max(10, Math.min(16, w * 0.025));
-            ctx.font = '600 ' + titleFS + 'px sans-serif';
-            ctx.fillStyle = theme.text;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'top';
-            ctx.fillText('INDEXING PIPELINE', w / 2, Math.max(4, padY * 0.2));
-
-            // ── Draw input arrow ──
-            var firstTubeX = startX;
-            var arrowX = firstTubeX - 14;
-            var arrowY = tubeY + tubeH / 2;
-            ctx.fillStyle = theme.connector;
-            ctx.fillRect(arrowX - 16, arrowY - pipeH / 2, 16, pipeH);
-            drawArrowHead(ctx, firstTubeX - 4, arrowY, pipeH * 0.8, theme);
-
-            // ── Draw each stage ──
-            for (var s = 0; s < stageCount; s++) {
-                var queueName = PIPELINE_ORDER[s];
-                var queueData = data.queues[queueName] || { name: queueName, fill_pct: 0, avg_size: 0, capacity: 0 };
-                var fillPct = queueData.fill_pct;
-
-                var tx = startX + s * (tubeW + connectorW);
-                var ty = tubeY;
-
-                // Fill color based on thresholds
-                var fillColor = getFillColor(fillPct, warningThreshold, criticalThreshold, theme);
-
-                // Visual fill: always show at least 5% liquid so tubes look alive
-                var visualFill = Math.max(5, fillPct);
-
-                // Draw glass tube
-                drawGlassTube(ctx, tx, ty, tubeW, tubeH, tubeR, theme);
-
-                // Draw liquid (visual fill for rendering, real % for label)
-                drawLiquid(ctx, tx, ty, tubeW, tubeH, tubeR, visualFill, fillColor, showGlow, this._animTime);
-
-                // Draw fill percentage on tube
-                if (showValues) {
-                    var valFS = Math.max(10, Math.min(22, tubeW * 0.28));
-                    var valStr = Math.round(fillPct) + '%';
-
-                    // Background pill for readability
-                    ctx.font = 'bold ' + valFS + 'px monospace';
-                    var valW = ctx.measureText(valStr).width + 12;
-                    var valH2 = valFS + 6;
-                    var valX = tx + tubeW / 2 - valW / 2;
-                    var valY = ty + tubeH / 2 - valH2 / 2;
-                    roundRect(ctx, valX, valY, valW, valH2, 4);
-                    ctx.fillStyle = theme.valueBg;
-                    ctx.fill();
-
-                    ctx.fillStyle = '#ffffff';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-
-                    if (showGlow && fillPct >= criticalThreshold) {
-                        ctx.shadowColor = fillColor;
-                        ctx.shadowBlur = 8;
-                    }
-                    ctx.fillText(valStr, tx + tubeW / 2, ty + tubeH / 2);
-                    ctx.shadowBlur = 0;
-                }
-
-                // Draw label below tube
-                if (showLabels) {
-                    var labelFS = Math.max(9, Math.min(14, tubeW * 0.16));
-                    ctx.font = '600 ' + labelFS + 'px sans-serif';
-                    ctx.fillStyle = theme.text;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'top';
-                    ctx.fillText(PIPELINE_LABELS[queueName] || queueName, tx + tubeW / 2, ty + tubeH + 6);
-
-                    // Size info
-                    if (queueData.capacity > 0) {
-                        var sizeFS = Math.max(7, labelFS * 0.75);
-                        ctx.font = sizeFS + 'px sans-serif';
-                        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                        var sizeStr = Math.round(queueData.avg_size) + ' / ' + Math.round(queueData.capacity) + ' KB';
-                        ctx.fillText(sizeStr, tx + tubeW / 2, ty + tubeH + 6 + labelFS + 2);
-                    }
-                }
-
-                // Draw connector to next stage
-                if (s < stageCount - 1) {
-                    var cx1 = tx + tubeW;
-                    var cx2 = cx1 + connectorW;
-                    var cy = ty + tubeH / 2;
-                    drawConnector(ctx, cx1, cy, cx2, cy, pipeH, theme, this._particles[s], this._animTime, speed);
-                }
-            }
-
-            // ── Draw output arrow ──
-            var lastTubeX = startX + (stageCount - 1) * (tubeW + connectorW);
-            var outX = lastTubeX + tubeW;
-            ctx.fillStyle = theme.connector;
-            ctx.fillRect(outX, arrowY - pipeH / 2, 16, pipeH);
-            drawArrowHead(ctx, outX + 18, arrowY, pipeH * 0.8, theme);
 
             // ── Draw legend ──
-            var legendFS = Math.max(8, Math.min(11, w * 0.018));
-            var legendY = h - Math.max(8, padY * 0.4);
+            var legendFS2 = Math.max(7, Math.min(10, w * 0.016));
+            var legendY = h - 10;
             var legendItems = [
-                { color: theme.liquidLow, label: 'Normal (<' + warningThreshold + '%)' },
-                { color: theme.liquidMid, label: 'Warning (' + warningThreshold + '-' + criticalThreshold + '%)' },
-                { color: theme.liquidHigh, label: 'Critical (>' + criticalThreshold + '%)' }
+                { color: theme.liquidLow, label: 'OK (<' + warningThreshold + 'm)' },
+                { color: theme.liquidMid, label: 'Warning (' + warningThreshold + '-' + criticalThreshold + 'm)' },
+                { color: theme.liquidHigh, label: 'Critical (>' + criticalThreshold + 'm)' }
             ];
-            ctx.font = legendFS + 'px sans-serif';
+            ctx.font = legendFS2 + 'px sans-serif';
             ctx.textBaseline = 'middle';
 
-            var swatchSize = legendFS;
-            var legendPad = legendFS * 0.6;
+            var swatchSize = legendFS2;
+            var legendPad = legendFS2 * 0.5;
             var totalLegendW = 0;
             for (var li = 0; li < legendItems.length; li++) {
                 totalLegendW += swatchSize + legendPad + ctx.measureText(legendItems[li].label).width;
@@ -574,8 +574,40 @@ define([
                 lx += ctx.measureText(legendItems[lj].label).width + legendPad * 2;
             }
 
+            // Cache layout state for drilldown
+            this._drillGrid = grid;
+            this._drillForwarders = forwarders;
+
             // ── Start animation loop ──
             this._startAnimation();
+        },
+
+        drilldown: function(event) {
+            // Fire drilldown when a cell is clicked
+            if (!this._drillGrid || !this._drillForwarders) return;
+
+            var mouseX = event.originalEvent ? event.originalEvent.offsetX : event.offsetX;
+            var mouseY = event.originalEvent ? event.originalEvent.offsetY : event.offsetY;
+
+            var grid = this._drillGrid;
+            var forwarders = this._drillForwarders;
+
+            for (var i = 0; i < forwarders.length; i++) {
+                var col = i % grid.cols;
+                var row = Math.floor(i / grid.cols);
+                var cx = grid.offsetX + col * (grid.cellW + grid.gap);
+                var cy = grid.startY + row * (grid.cellH + grid.gap);
+
+                if (mouseX >= cx && mouseX <= cx + grid.cellW &&
+                    mouseY >= cy && mouseY <= cy + grid.cellH) {
+                    var payload = {
+                        action: SplunkVisualizationBase.FIELD_VALUE_DRILLDOWN,
+                        data: { 'host': forwarders[i].host }
+                    };
+                    this.drilldownRedirect(payload);
+                    return;
+                }
+            }
         },
 
         _startAnimation: function() {
@@ -623,7 +655,7 @@ define([
             var maxTextW = w * 0.85;
             var fontSize = Math.max(10, Math.min(32, Math.min(w, h) * 0.09));
             var emojiSize = Math.round(fontSize * 1.6);
-            var gap = fontSize * 0.5;
+            var gapSize = fontSize * 0.5;
 
             ctx.font = '500 ' + fontSize + 'px sans-serif';
             while (ctx.measureText(message).width > maxTextW && fontSize > 8) {
@@ -636,7 +668,7 @@ define([
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = 'rgba(255,255,255,1)';
-            ctx.fillText('\u23F3', w / 2, h / 2 - fontSize * 0.5 - gap);
+            ctx.fillText('\u23F3', w / 2, h / 2 - fontSize * 0.5 - gapSize);
 
             ctx.font = '500 ' + fontSize + 'px sans-serif';
             ctx.fillStyle = 'rgba(255,255,255,0.30)';

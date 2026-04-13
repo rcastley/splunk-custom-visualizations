@@ -1,11 +1,11 @@
 /*
- * Indexing Pipeline Flow — Splunk Custom Visualization
+ * Splunk Status Board — Splunk Custom Visualization
  *
- * Animated visualization of Splunk's internal indexing pipeline queues.
- * Renders four pipeline stages (parsing, merging, typing, indexing) as
- * glass tubes with liquid fill levels and animated flow particles.
+ * Glass-themed grid of component health tiles with animated liquid fill,
+ * wave surface, bubble particles, and threshold-based coloring.
+ * Matches the glass-skeuomorphic design language of the Indexing Pipeline Flow.
  *
- * Expected SPL columns: name, fill_pct, avg_size, capacity
+ * Expected SPL columns: component, status, errors, warns, health_score
  */
 define([
     'api/SplunkVisualizationBase',
@@ -13,14 +13,6 @@ define([
 ], function(SplunkVisualizationBase, SplunkVisualizationUtils) {
 
     // ── Constants ───────────────────────────────────────────────
-
-    var PIPELINE_ORDER = ['parsingqueue', 'mergingqueue', 'typingqueue', 'indexqueue'];
-    var PIPELINE_LABELS = {
-        parsingqueue: 'PARSING',
-        mergingqueue: 'MERGING',
-        typingqueue: 'TYPING',
-        indexqueue: 'INDEXING'
-    };
 
     var SPEED_MAP = { slow: 0.3, medium: 0.7, fast: 1.4 };
 
@@ -114,7 +106,7 @@ define([
     }
 
     function drawGlassTube(ctx, x, y, w, h, r, theme) {
-        // Outer glass border
+        // Glass tint fill
         roundRect(ctx, x, y, w, h, r);
         ctx.fillStyle = theme.tubeGlass;
         ctx.fill();
@@ -122,7 +114,7 @@ define([
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Glass highlight (left edge reflection)
+        // Left-edge reflection gradient
         var highlightW = Math.max(2, w * 0.08);
         ctx.save();
         ctx.beginPath();
@@ -138,20 +130,20 @@ define([
         ctx.restore();
     }
 
-    function drawLiquid(ctx, x, y, tubeW, tubeH, r, fillPct, color, showGlow, time) {
+    function drawTileLiquid(ctx, x, y, tileW, tileH, r, fillPct, color, showGlow, time) {
         if (fillPct <= 0) return;
 
         var inset = 3;
         var lx = x + inset;
-        var lw = tubeW - inset * 2;
+        var lw = tileW - inset * 2;
         var lr = Math.max(1, r - inset);
-        var maxFillH = tubeH - inset * 2;
+        var maxFillH = tileH - inset * 2;
         var fillH = maxFillH * (fillPct / 100);
-        var ly = y + tubeH - inset - fillH;
+        var ly = y + tileH - inset - fillH;
 
         ctx.save();
 
-        // Clip to tube interior
+        // Clip to tile interior
         roundRect(ctx, x + inset, y + inset, lw, maxFillH, lr);
         ctx.clip();
 
@@ -164,7 +156,7 @@ define([
         ctx.globalAlpha = 0.85;
         ctx.fillRect(lx, ly, lw, fillH);
 
-        // Subtle wave on the liquid surface
+        // Surface wave
         var waveAmp = Math.min(3, fillH * 0.08);
         var wavePeriod = lw * 0.4;
         ctx.beginPath();
@@ -181,7 +173,7 @@ define([
         ctx.fill();
         ctx.globalAlpha = 1;
 
-        // Liquid surface highlight
+        // Surface highlight line
         ctx.beginPath();
         ctx.moveTo(lx, ly + 1);
         for (var sx = 0; sx <= lw; sx += 2) {
@@ -192,12 +184,12 @@ define([
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Bubble particles inside liquid
-        var bubbleCount = Math.max(2, Math.floor(fillPct / 15));
+        // Bubble particles
+        var bubbleCount = Math.max(2, Math.floor(fillPct / 12));
         for (var b = 0; b < bubbleCount; b++) {
             var seed = b * 137.508;
             var bx = lx + (((seed * 7.3) % lw));
-            var rawBy = ly + fillH * 0.2 + ((seed * 3.7 + time * 30) % (fillH * 0.7));
+            var rawBy = ly + fillH * 0.15 + ((seed * 3.7 + time * 30) % (fillH * 0.75));
             var by = Math.min(rawBy, ly + fillH - 4);
             var br = 1 + (seed % 2);
             ctx.beginPath();
@@ -208,82 +200,93 @@ define([
 
         ctx.restore();
 
-        // Glow effect for high-fill tubes
+        // Glow effect for high-fill tiles
         if (showGlow && fillPct > 50) {
             var glowIntensity = (fillPct - 50) / 50;
+            ctx.save();
             ctx.shadowColor = color;
             ctx.shadowBlur = 12 * glowIntensity;
-            roundRect(ctx, x, y, tubeW, tubeH, r);
+            roundRect(ctx, x, y, tileW, tileH, r);
             ctx.strokeStyle = color;
             ctx.globalAlpha = 0.2 * glowIntensity;
             ctx.lineWidth = 2;
             ctx.stroke();
             ctx.shadowBlur = 0;
             ctx.globalAlpha = 1;
+            ctx.restore();
         }
     }
 
-    function drawConnector(ctx, x1, y1, x2, y2, pipeH, theme, particles, time, speed) {
-        var midY = (y1 + y2) / 2;
+    function drawStatusIcon(ctx, cx, cy, size, status, theme) {
+        ctx.save();
+        ctx.lineWidth = Math.max(1.5, size * 0.15);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
 
-        // Connector pipe background
-        ctx.fillStyle = theme.connector;
-        ctx.fillRect(x1, midY - pipeH / 2, x2 - x1, pipeH);
-
-        // Pipe border
-        ctx.strokeStyle = theme.tubeStroke;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x1, midY - pipeH / 2);
-        ctx.lineTo(x2, midY - pipeH / 2);
-        ctx.moveTo(x1, midY + pipeH / 2);
-        ctx.lineTo(x2, midY + pipeH / 2);
-        ctx.stroke();
-
-        // Flow particles
-        var pipeLen = x2 - x1;
-        for (var p = 0; p < particles.length; p++) {
-            var particle = particles[p];
-            var px = x1 + ((particle.offset + time * speed * 60) % pipeLen);
-            if (px < x1) px += pipeLen;
-            if (px > x2) px -= pipeLen;
-
-            var pSize = particle.size;
+        if (status === 'ok') {
+            // Checkmark
+            ctx.strokeStyle = theme.liquidLow;
             ctx.beginPath();
-            ctx.arc(px, midY, pSize, 0, Math.PI * 2);
-            ctx.fillStyle = theme.particle;
-            ctx.globalAlpha = 0.4 + particle.alpha * 0.6;
-
-            ctx.shadowColor = theme.particle;
-            ctx.shadowBlur = 4;
+            ctx.moveTo(cx - size * 0.4, cy);
+            ctx.lineTo(cx - size * 0.1, cy + size * 0.35);
+            ctx.lineTo(cx + size * 0.4, cy - size * 0.3);
+            ctx.stroke();
+        } else if (status === 'warning') {
+            // Warning triangle
+            ctx.strokeStyle = theme.liquidMid;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - size * 0.4);
+            ctx.lineTo(cx + size * 0.4, cy + size * 0.35);
+            ctx.lineTo(cx - size * 0.4, cy + size * 0.35);
+            ctx.closePath();
+            ctx.stroke();
+            // Exclamation dot
+            ctx.fillStyle = theme.liquidMid;
+            ctx.beginPath();
+            ctx.arc(cx, cy + size * 0.2, size * 0.06, 0, Math.PI * 2);
             ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.globalAlpha = 1;
+            // Exclamation line
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - size * 0.15);
+            ctx.lineTo(cx, cy + size * 0.08);
+            ctx.stroke();
+        } else {
+            // X for critical
+            ctx.strokeStyle = theme.liquidHigh;
+            ctx.beginPath();
+            ctx.moveTo(cx - size * 0.3, cy - size * 0.3);
+            ctx.lineTo(cx + size * 0.3, cy + size * 0.3);
+            ctx.moveTo(cx + size * 0.3, cy - size * 0.3);
+            ctx.lineTo(cx - size * 0.3, cy + size * 0.3);
+            ctx.stroke();
         }
+
+        ctx.restore();
     }
 
-    function drawArrowHead(ctx, x, y, size, theme) {
-        ctx.beginPath();
-        ctx.moveTo(x, y - size);
-        ctx.lineTo(x + size, y);
-        ctx.lineTo(x, y + size);
-        ctx.closePath();
-        ctx.fillStyle = theme.particle;
-        ctx.globalAlpha = 0.5;
+    function drawBadge(ctx, x, y, count, color, fontSize) {
+        if (count <= 0) return;
+        var label = String(count);
+        ctx.font = 'bold ' + fontSize + 'px sans-serif';
+        var tw = ctx.measureText(label).width;
+        var badgeW = tw + fontSize * 0.8;
+        var badgeH = fontSize + 4;
+        var badgeR = badgeH / 2;
+        var bx = x - badgeW / 2;
+        var by = y - badgeH / 2;
+
+        // Badge background
+        roundRect(ctx, bx, by, badgeW, badgeH, badgeR);
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.85;
         ctx.fill();
         ctx.globalAlpha = 1;
-    }
 
-    function initParticles(count, pipeLen) {
-        var particles = [];
-        for (var i = 0; i < count; i++) {
-            particles.push({
-                offset: Math.random() * pipeLen,
-                size: 1.5 + Math.random() * 1.5,
-                alpha: 0.3 + Math.random() * 0.7
-            });
-        }
-        return particles;
+        // Badge text
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, x, y);
     }
 
     // ── Visualization Class ─────────────────────────────────────
@@ -292,17 +295,22 @@ define([
 
         initialize: function() {
             SplunkVisualizationBase.prototype.initialize.apply(this, arguments);
-            this.el.classList.add('indexing-pipeline-flow-viz');
+            this.el.classList.add('splunk-status-board-viz');
 
             this.canvas = document.createElement('canvas');
             this.canvas.style.width = '100%';
             this.canvas.style.height = '100%';
+            this.canvas.style.display = 'block';
             this.el.appendChild(this.canvas);
 
             this._lastGoodData = null;
             this._animTime = 0;
-            this._particles = null;
             this._timer = null;
+            this._hitRects = [];
+            this._boundClick = this._onClick.bind(this);
+            this._boundMouseMove = this._onMouseMove.bind(this);
+            this.canvas.addEventListener('click', this._boundClick);
+            this.canvas.addEventListener('mousemove', this._boundMouseMove);
         },
 
         getInitialDataParams: function() {
@@ -312,11 +320,11 @@ define([
             };
         },
 
-        formatData: function(data, config) {
+        formatData: function(data) {
             if (!data || !data.rows || data.rows.length === 0) {
                 if (this._lastGoodData) return this._lastGoodData;
                 throw new SplunkVisualizationBase.VisualizationError(
-                    'Awaiting data \u2014 Indexing Pipeline Flow'
+                    'Awaiting data \u2014 Splunk Status Board'
                 );
             }
 
@@ -346,21 +354,21 @@ define([
                 return row[colIdx[name]] || fallback;
             }
 
-            // Build queue data from all rows
-            var queues = {};
+            var components = [];
             for (var r = 0; r < data.rows.length; r++) {
                 var row = data.rows[r];
-                var name = getStr(row, 'name', '');
-                if (!name) continue;
-                queues[name] = {
-                    name: name,
-                    fill_pct: clamp(getVal(row, 'fill_pct', 0), 0, 100),
-                    avg_size: getVal(row, 'avg_size', 0),
-                    capacity: getVal(row, 'capacity', 0)
-                };
+                var compName = getStr(row, 'component', '');
+                if (!compName) continue;
+                components.push({
+                    component: compName,
+                    status: getStr(row, 'status', 'ok'),
+                    errors: Math.round(getVal(row, 'errors', 0)),
+                    warns: Math.round(getVal(row, 'warns', 0)),
+                    health_score: clamp(getVal(row, 'health_score', 0), 0, 100)
+                });
             }
 
-            var result = { queues: queues };
+            var result = { components: components };
             this._lastGoodData = result;
             return result;
         },
@@ -374,7 +382,7 @@ define([
                 return;
             }
 
-            if (!data) {
+            if (!data || !data.components) {
                 if (this._lastGoodData) {
                     data = this._lastGoodData;
                 } else {
@@ -382,15 +390,18 @@ define([
                 }
             }
 
+            var components = data.components;
+            if (!components || components.length === 0) return;
+
             // ── Read user settings ──
             var ns = this.getPropertyNamespaceInfo().propertyNamespace;
-            var animSpeed = config[ns + 'animSpeed'] || 'medium';
             var colorTheme = config[ns + 'colorTheme'] || 'default';
-            var showLabels = (config[ns + 'showLabels'] || 'true') === 'true';
-            var showValues = (config[ns + 'showValues'] || 'true') === 'true';
-            var warningThreshold = parseInt(config[ns + 'warningThreshold'], 10) || 70;
-            var criticalThreshold = parseInt(config[ns + 'criticalThreshold'], 10) || 85;
             var showGlow = (config[ns + 'showGlow'] || 'true') === 'true';
+            var warningThreshold = parseInt(config[ns + 'warningThreshold'], 10) || 50;
+            var criticalThreshold = parseInt(config[ns + 'criticalThreshold'], 10) || 80;
+            var showCounts = (config[ns + 'showCounts'] || 'true') === 'true';
+            var animSpeed = config[ns + 'animSpeed'] || 'medium';
+            var gridCols = parseInt(config[ns + 'columns'], 10) || 3;
 
             var theme = THEMES[colorTheme] || THEMES['default'];
             var speed = SPEED_MAP[animSpeed] || SPEED_MAP.medium;
@@ -413,142 +424,161 @@ define([
             ctx.clearRect(0, 0, w, h);
 
             // ── Layout calculations ──
-            var stageCount = PIPELINE_ORDER.length;
-            var arrowPad = 30;
-            var padX = Math.max(16, w * 0.03);
-            var padY = Math.max(16, h * 0.08);
-            var labelH = showLabels ? Math.max(20, h * 0.1) : 0;
-            var valueH = showValues ? Math.max(18, h * 0.07) : 0;
-            var connectorW = Math.max(16, w * 0.04);
-            var totalConnW = connectorW * (stageCount - 1);
-            var availW = w - padX * 2 - arrowPad - totalConnW;
-            var tubeW = Math.min(availW / stageCount, h * 0.55);
-            var tubeH = h - padY * 2 - labelH - valueH;
-            tubeH = Math.max(60, Math.min(tubeH, 300));
-            var tubeR = Math.min(12, tubeW * 0.15);
+            var padX = Math.max(12, w * 0.03);
+            var padY = Math.max(12, h * 0.04);
+            var titleFS = Math.max(10, Math.min(16, w * 0.022));
+            var titleH = titleFS + padY;
+            var legendH = Math.max(20, h * 0.06);
 
-            // Center pipeline horizontally
-            var pipelineW = tubeW * stageCount + connectorW * (stageCount - 1);
-            var startX = Math.max(padX + arrowPad, (w - pipelineW) / 2);
-            var tubeY = padY + valueH;
+            var availW = w - padX * 2;
+            var availH = h - titleH - legendH - padY;
 
-            // Connector pipe height
-            var pipeH = Math.max(6, tubeH * 0.06);
+            gridCols = Math.max(1, Math.min(gridCols, components.length));
+            var gridRows = Math.ceil(components.length / gridCols);
 
-            // Initialise particles for connectors if not done
-            if (!this._particles || this._particles.length !== stageCount - 1) {
-                this._particles = [];
-                for (var p = 0; p < stageCount - 1; p++) {
-                    this._particles.push(initParticles(6, connectorW));
-                }
-            }
+            var gapX = Math.max(8, availW * 0.025);
+            var gapY = Math.max(8, availH * 0.03);
+            var tileW = (availW - gapX * (gridCols - 1)) / gridCols;
+            var tileH = (availH - gapY * (gridRows - 1)) / gridRows;
+            tileW = Math.max(60, tileW);
+            tileH = Math.max(50, tileH);
+            var tileR = Math.min(10, tileW * 0.06, tileH * 0.06);
+
+            // Center the grid
+            var totalGridW = tileW * gridCols + gapX * (gridCols - 1);
+            var totalGridH = tileH * gridRows + gapY * (gridRows - 1);
+            var offsetX = padX + (availW - totalGridW) / 2;
+            var offsetY = titleH + (availH - totalGridH) / 2;
 
             // ── Draw title ──
-            var titleFS = Math.max(10, Math.min(16, w * 0.025));
             ctx.font = '600 ' + titleFS + 'px sans-serif';
             ctx.fillStyle = theme.text;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
-            ctx.fillText('INDEXING PIPELINE', w / 2, Math.max(4, padY * 0.2));
+            ctx.fillText('COMPONENT STATUS', w / 2, Math.max(4, padY * 0.3));
 
-            // ── Draw input arrow ──
-            var firstTubeX = startX;
-            var arrowX = firstTubeX - 14;
-            var arrowY = tubeY + tubeH / 2;
-            ctx.fillStyle = theme.connector;
-            ctx.fillRect(arrowX - 16, arrowY - pipeH / 2, 16, pipeH);
-            drawArrowHead(ctx, firstTubeX - 4, arrowY, pipeH * 0.8, theme);
+            // ── Draw tiles ──
+            this._hitRects = [];
+            var time = this._animTime * speed;
 
-            // ── Draw each stage ──
-            for (var s = 0; s < stageCount; s++) {
-                var queueName = PIPELINE_ORDER[s];
-                var queueData = data.queues[queueName] || { name: queueName, fill_pct: 0, avg_size: 0, capacity: 0 };
-                var fillPct = queueData.fill_pct;
+            for (var i = 0; i < components.length; i++) {
+                var comp = components[i];
+                var col = i % gridCols;
+                var row = Math.floor(i / gridCols);
+                var tx = offsetX + col * (tileW + gapX);
+                var ty = offsetY + row * (tileH + gapY);
 
-                var tx = startX + s * (tubeW + connectorW);
-                var ty = tubeY;
+                // Store hit rect for drilldown
+                this._hitRects.push({
+                    x: tx,
+                    y: ty,
+                    w: tileW,
+                    h: tileH,
+                    component: comp.component
+                });
 
-                // Fill color based on thresholds
+                var fillPct = comp.health_score;
                 var fillColor = getFillColor(fillPct, warningThreshold, criticalThreshold, theme);
 
-                // Visual fill: always show at least 5% liquid so tubes look alive
-                var visualFill = Math.max(5, fillPct);
+                // Draw glass tile background
+                drawGlassTube(ctx, tx, ty, tileW, tileH, tileR, theme);
 
-                // Draw glass tube
-                drawGlassTube(ctx, tx, ty, tubeW, tubeH, tubeR, theme);
+                // Draw liquid fill
+                drawTileLiquid(ctx, tx, ty, tileW, tileH, tileR, fillPct, fillColor, showGlow, time);
 
-                // Draw liquid (visual fill for rendering, real % for label)
-                drawLiquid(ctx, tx, ty, tubeW, tubeH, tubeR, visualFill, fillColor, showGlow, this._animTime);
+                // ── Tile content layout ──
+                var iconSize = Math.max(12, Math.min(24, tileH * 0.14));
+                var nameFS = Math.max(9, Math.min(14, tileW * 0.1));
+                var scoreFS = Math.max(10, Math.min(20, tileW * 0.12));
+                var badgeFS = Math.max(7, Math.min(11, tileW * 0.07));
+                var innerPad = Math.max(6, tileH * 0.06);
 
-                // Draw fill percentage on tube
-                if (showValues) {
-                    var valFS = Math.max(10, Math.min(22, tubeW * 0.28));
-                    var valStr = Math.round(fillPct) + '%';
+                // Component name (top area)
+                ctx.font = '600 ' + nameFS + 'px sans-serif';
+                ctx.fillStyle = theme.text;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText(comp.component, tx + tileW / 2, ty + innerPad);
 
-                    // Background pill for readability
-                    ctx.font = 'bold ' + valFS + 'px monospace';
-                    var valW = ctx.measureText(valStr).width + 12;
-                    var valH2 = valFS + 6;
-                    var valX = tx + tubeW / 2 - valW / 2;
-                    var valY = ty + tubeH / 2 - valH2 / 2;
-                    roundRect(ctx, valX, valY, valW, valH2, 4);
-                    ctx.fillStyle = theme.valueBg;
-                    ctx.fill();
+                // Status icon (center-top)
+                var iconY = ty + innerPad + nameFS + innerPad * 0.6;
+                drawStatusIcon(ctx, tx + tileW / 2, iconY + iconSize / 2, iconSize, comp.status, theme);
 
-                    ctx.fillStyle = '#ffffff';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
+                // Health score pill (center)
+                var scoreStr = Math.round(fillPct) + '%';
+                ctx.font = 'bold ' + scoreFS + 'px monospace';
+                var scoreTextW = ctx.measureText(scoreStr).width + 12;
+                var scoreH = scoreFS + 6;
+                var scorePillX = tx + tileW / 2 - scoreTextW / 2;
+                var scorePillY = iconY + iconSize + innerPad * 0.5;
 
-                    if (showGlow && fillPct >= criticalThreshold) {
-                        ctx.shadowColor = fillColor;
-                        ctx.shadowBlur = 8;
+                roundRect(ctx, scorePillX, scorePillY, scoreTextW, scoreH, 4);
+                ctx.fillStyle = theme.valueBg;
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                if (showGlow && comp.status === 'critical') {
+                    ctx.shadowColor = fillColor;
+                    ctx.shadowBlur = 8;
+                }
+                ctx.fillText(scoreStr, tx + tileW / 2, scorePillY + scoreH / 2);
+                ctx.shadowBlur = 0;
+
+                // Error/warn badges (bottom area)
+                if (showCounts) {
+                    var badgeY = scorePillY + scoreH + innerPad * 0.8;
+                    var badgeSpacing = tileW * 0.28;
+
+                    if (comp.errors > 0 || comp.warns > 0) {
+                        if (comp.errors > 0 && comp.warns > 0) {
+                            // Both badges side by side
+                            drawBadge(ctx, tx + tileW / 2 - badgeSpacing / 2, badgeY, comp.errors, theme.liquidHigh, badgeFS);
+                            drawBadge(ctx, tx + tileW / 2 + badgeSpacing / 2, badgeY, comp.warns, theme.liquidMid, badgeFS);
+
+                            // Labels below badges
+                            ctx.font = (badgeFS - 1) + 'px sans-serif';
+                            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'top';
+                            ctx.fillText('err', tx + tileW / 2 - badgeSpacing / 2, badgeY + badgeFS * 0.6 + 2);
+                            ctx.fillText('warn', tx + tileW / 2 + badgeSpacing / 2, badgeY + badgeFS * 0.6 + 2);
+                        } else if (comp.errors > 0) {
+                            drawBadge(ctx, tx + tileW / 2, badgeY, comp.errors, theme.liquidHigh, badgeFS);
+                            ctx.font = (badgeFS - 1) + 'px sans-serif';
+                            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'top';
+                            ctx.fillText('errors', tx + tileW / 2, badgeY + badgeFS * 0.6 + 2);
+                        } else {
+                            drawBadge(ctx, tx + tileW / 2, badgeY, comp.warns, theme.liquidMid, badgeFS);
+                            ctx.font = (badgeFS - 1) + 'px sans-serif';
+                            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'top';
+                            ctx.fillText('warns', tx + tileW / 2, badgeY + badgeFS * 0.6 + 2);
+                        }
                     }
-                    ctx.fillText(valStr, tx + tubeW / 2, ty + tubeH / 2);
-                    ctx.shadowBlur = 0;
                 }
 
-                // Draw label below tube
-                if (showLabels) {
-                    var labelFS = Math.max(9, Math.min(14, tubeW * 0.16));
-                    ctx.font = '600 ' + labelFS + 'px sans-serif';
-                    ctx.fillStyle = theme.text;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'top';
-                    ctx.fillText(PIPELINE_LABELS[queueName] || queueName, tx + tubeW / 2, ty + tubeH + 6);
-
-                    // Size info
-                    if (queueData.capacity > 0) {
-                        var sizeFS = Math.max(7, labelFS * 0.75);
-                        ctx.font = sizeFS + 'px sans-serif';
-                        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                        var sizeStr = Math.round(queueData.avg_size) + ' / ' + Math.round(queueData.capacity) + ' KB';
-                        ctx.fillText(sizeStr, tx + tubeW / 2, ty + tubeH + 6 + labelFS + 2);
-                    }
-                }
-
-                // Draw connector to next stage
-                if (s < stageCount - 1) {
-                    var cx1 = tx + tubeW;
-                    var cx2 = cx1 + connectorW;
-                    var cy = ty + tubeH / 2;
-                    drawConnector(ctx, cx1, cy, cx2, cy, pipeH, theme, this._particles[s], this._animTime, speed);
-                }
+                // Status label at bottom
+                var statusFS = Math.max(7, Math.min(10, tileW * 0.065));
+                ctx.font = statusFS + 'px sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(comp.status.toUpperCase(), tx + tileW / 2, ty + tileH - innerPad * 0.5);
             }
-
-            // ── Draw output arrow ──
-            var lastTubeX = startX + (stageCount - 1) * (tubeW + connectorW);
-            var outX = lastTubeX + tubeW;
-            ctx.fillStyle = theme.connector;
-            ctx.fillRect(outX, arrowY - pipeH / 2, 16, pipeH);
-            drawArrowHead(ctx, outX + 18, arrowY, pipeH * 0.8, theme);
 
             // ── Draw legend ──
             var legendFS = Math.max(8, Math.min(11, w * 0.018));
-            var legendY = h - Math.max(8, padY * 0.4);
+            var legendY = h - Math.max(6, legendH * 0.4);
             var legendItems = [
-                { color: theme.liquidLow, label: 'Normal (<' + warningThreshold + '%)' },
-                { color: theme.liquidMid, label: 'Warning (' + warningThreshold + '-' + criticalThreshold + '%)' },
-                { color: theme.liquidHigh, label: 'Critical (>' + criticalThreshold + '%)' }
+                { color: theme.liquidLow, label: 'OK (<' + warningThreshold + ')' },
+                { color: theme.liquidMid, label: 'Warn (' + warningThreshold + '-' + criticalThreshold + ')' },
+                { color: theme.liquidHigh, label: 'Crit (>' + criticalThreshold + ')' }
             ];
             ctx.font = legendFS + 'px sans-serif';
             ctx.textBaseline = 'middle';
@@ -577,6 +607,45 @@ define([
             // ── Start animation loop ──
             this._startAnimation();
         },
+
+        // ── Drilldown support ──
+
+        _onClick: function(e) {
+            var rect = this.canvas.getBoundingClientRect();
+            var mx = e.clientX - rect.left;
+            var my = e.clientY - rect.top;
+
+            for (var i = 0; i < this._hitRects.length; i++) {
+                var hr = this._hitRects[i];
+                if (mx >= hr.x && mx <= hr.x + hr.w && my >= hr.y && my <= hr.y + hr.h) {
+                    var payload = {
+                        action: SplunkVisualizationBase.FIELD_VALUE_DRILLDOWN,
+                        data: { 'component': hr.component }
+                    };
+                    this.drilldown(payload, e);
+                    break;
+                }
+            }
+        },
+
+        _onMouseMove: function(e) {
+            var rect = this.canvas.getBoundingClientRect();
+            var mx = e.clientX - rect.left;
+            var my = e.clientY - rect.top;
+            var hovering = false;
+
+            for (var i = 0; i < this._hitRects.length; i++) {
+                var hr = this._hitRects[i];
+                if (mx >= hr.x && mx <= hr.x + hr.w && my >= hr.y && my <= hr.y + hr.h) {
+                    hovering = true;
+                    break;
+                }
+            }
+
+            this.canvas.style.cursor = hovering ? 'pointer' : 'default';
+        },
+
+        // ── Animation ──
 
         _startAnimation: function() {
             if (this._timer) return;
@@ -652,6 +721,10 @@ define([
 
         destroy: function() {
             this._stopAnimation();
+            if (this.canvas) {
+                this.canvas.removeEventListener('click', this._boundClick);
+                this.canvas.removeEventListener('mousemove', this._boundMouseMove);
+            }
             SplunkVisualizationBase.prototype.destroy.apply(this, arguments);
         }
     });

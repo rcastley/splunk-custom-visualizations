@@ -12,7 +12,7 @@ Animated visualization of Splunk's internal indexing pipeline queues. Renders fo
 
 | Column | Type | Description |
 |--------|------|-------------|
-| name | string | Queue name (e.g., parsingQueue, mergingQueue, typingQueue, indexQueue) |
+| name | string | Queue name (e.g., parsingqueue, mergingqueue, typingqueue, indexqueue) |
 | fill_pct | float | Fill percentage (0–100) |
 
 ## Optional Columns
@@ -24,7 +24,7 @@ Animated visualization of Splunk's internal indexing pipeline queues. Renders fo
 
 ## Notes
 
-- The visualization expects exactly four queues in the pipeline order: parsingQueue → mergingQueue → typingQueue → indexQueue
+- The visualization expects exactly four queues in the pipeline order: parsingqueue → mergingqueue → typingqueue → indexqueue
 - Queues not present in the data render as empty tubes (0% fill)
 - Fill percentages are clamped to 0–100
 - The `avg_size` and `capacity` columns are displayed as supplementary info below each tube label
@@ -32,13 +32,13 @@ Animated visualization of Splunk's internal indexing pipeline queues. Renders fo
 ## Search
 
 ```spl
-index=_internal source=*metrics.log group=queue
-    name IN (parsingQueue, mergingQueue, typingQueue, indexQueue)
+index=_internal group=queue
+    name IN (parsingqueue, mergingqueue, typingqueue, indexqueue)
 | stats avg(current_size_kb) as avg_size, avg(max_size_kb) as capacity by name
-| eval fill_pct=round((avg_size/capacity)*100,1)
+| eval fill_pct=if(capacity>0, round((avg_size/capacity)*100, 1), 0)
 | table name fill_pct avg_size capacity
 | appendpipe [| stats count | where count=0
-    | eval _status="Awaiting pipeline data", name="parsingQueue", fill_pct=0, avg_size=0, capacity=0]
+    | eval _status="Awaiting pipeline data", name="parsingqueue", fill_pct=0, avg_size=0, capacity=0]
 ```
 
 ## Configuration

@@ -1,0 +1,26 @@
+{
+  "label": "License Gauge",
+  "defaultSize": { "width": 500, "height": 400 },
+  "noDataMessage": "Awaiting license data",
+  "dependencies": [],
+  "fields": [
+    { "name": "used_gb", "label": "Used GB", "type": "slider", "min": 0, "max": 200, "step": 0.5, "default": 42.5 },
+    { "name": "quota_gb", "label": "Quota GB", "type": "slider", "min": 1, "max": 200, "step": 1, "default": 100 }
+  ],
+  "formatter": [
+    { "name": "colorTheme", "label": "Colour Theme", "type": "select", "options": ["default", "dark", "neon"], "default": "default" },
+    { "name": "animSpeed", "label": "Animation Speed", "type": "radio", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "showLabel", "label": "Show Label", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "warningThreshold", "label": "Warning Threshold", "type": "text", "default": "80" },
+    { "name": "criticalThreshold", "label": "Critical Threshold", "type": "text", "default": "90" },
+    { "name": "usedField", "label": "Used Field", "type": "text", "default": "used_gb" },
+    { "name": "quotaField", "label": "Quota Field", "type": "text", "default": "quota_gb" },
+    { "name": "unit", "label": "Unit", "type": "text", "default": "GB" }
+  ],
+  "data": {
+    "mode": "single_row",
+    "columns": ["used_gb", "quota_gb"],
+    "dynamicColumnName": { "column": "used_gb", "configKey": "usedField" }
+  }
+}
