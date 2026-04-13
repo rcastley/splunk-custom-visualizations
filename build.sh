@@ -36,7 +36,7 @@ build_app() {
     fi
 
     local VERSION
-    VERSION=$(grep '^version' "$APP_DIR/default/app.conf" | cut -d= -f2 | tr -d ' ')
+    VERSION=$(grep '^version' "$APP_DIR/default/app.conf" | head -1 | cut -d= -f2 | tr -d ' ')
     local TARBALL="$OUTPUT_DIR/${APP_NAME}-${VERSION}.tar.gz"
 
     echo "=== Building: $APP_NAME v$VERSION ==="
