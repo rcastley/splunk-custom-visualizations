@@ -23,6 +23,10 @@
     "market_donut",
     "f1_track_info",
     "f1_ers",
-    "data_pipeline"
+    "data_pipeline",
+    "splunk_status_board",
+    "license_gauge",
+    "forwarder_heatmap",
+    "resource_gauge"
   ]
 }
