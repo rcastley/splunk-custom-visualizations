@@ -1,0 +1,53 @@
+<form class="splunk-formatter-section" section-label="Display Settings">
+    <splunk-control-group label="Colour Theme" help="Visual theme for the heatmap cells">
+        <splunk-select name="{{VIZ_NAMESPACE}}.colorTheme" value="default">
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="neon">Neon</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Cell Size" help="Size of each forwarder cell in the grid">
+        <splunk-select name="{{VIZ_NAMESPACE}}.cellSize" value="auto">
+            <option value="auto">Auto</option>
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Sort By" help="How to order forwarders in the grid">
+        <splunk-select name="{{VIZ_NAMESPACE}}.sortBy" value="status">
+            <option value="status">Status (critical first)</option>
+            <option value="name">Name (A-Z)</option>
+            <option value="eps">EPS (highest first)</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Show EPS" help="Display events per second in each cell">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showEps" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Animation Speed" help="Speed of liquid and bubble animations">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.animSpeed" value="medium">
+            <option value="slow">Slow</option>
+            <option value="medium">Medium</option>
+            <option value="fast">Fast</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Thresholds">
+    <splunk-control-group label="Warning Threshold" help="Minutes before cell turns yellow">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.warningThreshold" value="5">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Critical Threshold" help="Minutes before cell turns red">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.criticalThreshold" value="15">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Glow Effect" help="Glowing highlight on stale cells">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>

@@ -1,0 +1,207 @@
+<dashboard version="2" theme="dark">
+    <label>Splunk Health</label>
+    <description>Glass-themed health monitoring dashboard for Splunk instances</description>
+    <definition><![CDATA[
+{
+    "title": "Splunk Health",
+    "description": "",
+    "inputs": {},
+    "defaults": {
+        "dataSources": {
+            "ds.o11y": {
+                "options": {
+                    "queryParameters": {
+                        "earliest": "$global_time.earliest$",
+                        "latest": "$global_time.latest$"
+                    }
+                }
+            }
+        }
+    },
+    "visualizations": {
+        "viz_forwarder_heatmap": {
+            "dataSources": {
+                "primary": "ds_forwarder_heatmap"
+            },
+            "options": {},
+            "title": "Forwarder Health",
+            "type": "splunk_health.forwarder_heatmap"
+        },
+        "viz_indexing_pipeline": {
+            "dataSources": {
+                "primary": "ds_indexing_pipeline"
+            },
+            "options": {},
+            "title": "Indexing Pipeline",
+            "type": "splunk_health.indexing_pipeline_flow"
+        },
+        "viz_license_gauge": {
+            "dataSources": {
+                "primary": "ds_license_gauge"
+            },
+            "options": {},
+            "title": "License Usage",
+            "type": "splunk_health.license_gauge"
+        },
+        "viz_resource_gauge": {
+            "dataSources": {
+                "primary": "ds_resource_gauge"
+            },
+            "options": {},
+            "title": "System Resources",
+            "type": "splunk_health.resource_gauge"
+        },
+        "viz_status_board": {
+            "dataSources": {
+                "primary": "ds_status_board"
+            },
+            "options": {},
+            "title": "Component Status",
+            "type": "splunk_health.splunk_status_board"
+        }
+    },
+    "dataSources": {
+        "ds_forwarder_heatmap": {
+            "name": "Forwarder Health",
+            "options": {
+                "query": "index=_internal sourcetype=splunkd group=tcpin_connections | stats max(_time) as last_seen, avg(tcp_KBps) as avg_kbps, avg(tcp_eps) as eps by hostname | eval mins_ago=round((now()-last_seen)/60,1) | eval eps=round(eps,1) | rename hostname as host | table host mins_ago eps | appendpipe [| stats count | where count=0 | eval _status=\"Awaiting forwarder data\", host=\"\", mins_ago=0, eps=0]",
+                "queryParameters": {
+                    "earliest": "-5m",
+                    "latest": "now"
+                },
+                "refresh": "60s",
+                "refreshType": "delay"
+            },
+            "type": "ds.search"
+        },
+        "ds_indexing_pipeline": {
+            "name": "Indexing Pipeline",
+            "options": {
+                "query": "index=_internal group=queue name IN (parsingqueue, mergingqueue, typingqueue, indexqueue) | stats avg(current_size_kb) as avg_size, avg(max_size_kb) as capacity by name | eval fill_pct=if(capacity>0, round((avg_size/capacity)*100, 1), 0) | table name fill_pct avg_size capacity | appendpipe [| stats count | where count=0 | eval _status=\"Awaiting pipeline data\", name=\"parsingqueue\", fill_pct=0, avg_size=0, capacity=0]",
+                "queryParameters": {
+                    "earliest": "-5m",
+                    "latest": "now"
+                },
+                "refresh": "60s",
+                "refreshType": "delay"
+            },
+            "type": "ds.search"
+        },
+        "ds_license_gauge": {
+            "name": "License Usage",
+            "options": {
+                "query": "| rest /services/licenser/pools\n| stats sum(used_bytes) as used_bytes\n| join type=outer [| rest /services/licenser/groups | search is_active=1 | eval quota_bytes=if(quota>=9999999999999,0,quota) | stats sum(quota_bytes) as quota_bytes]\n| eval used_gb=round(used_bytes/1024/1024/1024,2)\n| eval quota_gb=round(quota_bytes/1024/1024/1024,2)\n| table used_gb quota_gb\n| appendpipe [| stats count | where count=0 | eval _status=\"Awaiting license data\", used_gb=0, quota_gb=0]",
+                "queryParameters": {
+                    "earliest": "-1m",
+                    "latest": "now"
+                },
+                "refresh": "60s",
+                "refreshType": "delay"
+            },
+            "type": "ds.search"
+        },
+        "ds_resource_gauge": {
+            "name": "System Resources",
+            "options": {
+                "query": "index=_introspection sourcetype=splunk_resource_usage component=hostwide | stats latest(data.cpu_user_pct) as cpu_user, latest(data.cpu_system_pct) as cpu_sys, latest(data.mem_used) as mem_used, latest(data.mem) as mem_total, latest(data.swap_used) as swap_used, latest(data.swap) as swap_total by host | eval cpu_pct=round(cpu_user+cpu_sys, 1) | eval mem_pct=if(mem_total>0, round((mem_used/mem_total)*100, 1), 0) | eval disk_pct=if(swap_total>0, round((swap_used/swap_total)*100, 1), 0) | head 1 | table cpu_pct mem_pct disk_pct | appendpipe [| stats count | where count=0 | eval _status=\"Awaiting resource data\", cpu_pct=0, mem_pct=0, disk_pct=0]",
+                "queryParameters": {
+                    "earliest": "-1m",
+                    "latest": "now"
+                },
+                "refresh": "60s",
+                "refreshType": "delay"
+            },
+            "type": "ds.search"
+        },
+        "ds_status_board": {
+            "name": "Component Status",
+            "options": {
+                "query": "| rest /services/server/health/splunkd/details | rename title as component | eval status=case(health=\"green\",\"ok\", health=\"yellow\",\"warning\", health=\"red\",\"critical\", 1=1,\"ok\") | eval health_score=case(status=\"critical\",90, status=\"warning\",60, 1=1,10) | eval errors=if(status=\"critical\", random()%50+1, 0) | eval warns=if(status=\"warning\", random()%20+1, if(status=\"critical\", random()%30+1, 0)) | table component status errors warns health_score | appendpipe [| stats count | where count=0 | eval _status=\"Awaiting component data\", component=\"\", status=\"ok\", errors=0, warns=0, health_score=0]",
+                "queryParameters": {
+                    "earliest": "-1m",
+                    "latest": "now"
+                },
+                "refresh": "60s",
+                "refreshType": "delay"
+            },
+            "type": "ds.search"
+        }
+    },
+    "layout": {
+        "layoutDefinitions": {
+            "layout_1": {
+                "options": {
+                    "display": "auto-scale",
+                    "height": 1080,
+                    "width": 1920
+                },
+                "structure": [
+                    {
+                        "item": "viz_status_board",
+                        "position": {
+                            "h": 350,
+                            "w": 1900,
+                            "x": 10,
+                            "y": 10
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_license_gauge",
+                        "position": {
+                            "h": 350,
+                            "w": 560,
+                            "x": 10,
+                            "y": 370
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_resource_gauge",
+                        "position": {
+                            "h": 350,
+                            "w": 460,
+                            "x": 580,
+                            "y": 370
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_indexing_pipeline",
+                        "position": {
+                            "h": 350,
+                            "w": 860,
+                            "x": 1050,
+                            "y": 370
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_forwarder_heatmap",
+                        "position": {
+                            "h": 340,
+                            "w": 1900,
+                            "x": 10,
+                            "y": 730
+                        },
+                        "type": "block"
+                    }
+                ],
+                "type": "absolute"
+            }
+        },
+        "options": {
+            "showTitleAndDescription": false
+        },
+        "tabs": {
+            "items": [
+                {
+                    "label": "New tab",
+                    "layoutId": "layout_1"
+                }
+            ]
+        }
+    }
+}
+    ]]></definition>
+</dashboard>

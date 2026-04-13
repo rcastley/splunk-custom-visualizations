@@ -1,0 +1,46 @@
+[]
+access = read : [ * ], write : [ admin, sc_admin, power ]
+
+[app/local]
+access = read : [ * ], write : [ admin, sc_admin ]
+
+[views]
+access = read : [ * ], write : [ admin, sc_admin, power ]
+
+[nav]
+access = read : [ * ], write : [ admin, sc_admin ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[visualizations/indexing_pipeline_flow]
+export = system
+
+[visualizations/splunk_status_board]
+export = system
+
+[visualizations/license_gauge]
+export = system
+
+[visualizations/forwarder_heatmap]
+export = system
+
+[visualizations/resource_gauge]
+export = system

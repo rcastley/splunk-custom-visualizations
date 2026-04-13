@@ -1,0 +1,42 @@
+<form class="splunk-formatter-section" section-label="Display Settings">
+    <splunk-control-group label="Colour Theme" help="Visual theme for the status tiles">
+        <splunk-select name="{{VIZ_NAMESPACE}}.colorTheme" value="default">
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="neon">Neon</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Grid Columns" help="Number of tile columns in the grid">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.columns" value="3">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Count Badges" help="Display error and warning count badges on tiles">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showCounts" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Animation Speed" help="Speed of liquid surface waves and bubble particles">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.animSpeed" value="medium">
+            <option value="slow">Slow</option>
+            <option value="medium">Medium</option>
+            <option value="fast">Fast</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Thresholds">
+    <splunk-control-group label="Warning Threshold" help="Health score at which tiles turn yellow (0-100)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.warningThreshold" value="50">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Critical Threshold" help="Health score at which tiles turn red (0-100)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.criticalThreshold" value="80">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Glow Effect" help="Glowing highlight on critical-status tiles">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
