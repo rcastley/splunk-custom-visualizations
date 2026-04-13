@@ -49,6 +49,7 @@ The table below summarises the key differences that affect generated code. When 
 | **`sc_admin` role in `default.meta`** | Required (`check_kos_are_accessible`) — `admin` role does not exist in Cloud | Not needed — only `admin` exists | Include both `admin` and `sc_admin` |
 | **Real-time saved searches** | Rejected (`check_for_real_time_saved_searches_for_cloud`) | Allowed | Use historical (`-1m` to `now`) |
 | **App icons in `static/`** | Required — vetting warns on missing icons | Optional but recommended | Include all four |
+| **Prohibited files** | Rejected (`check_for_prohibited_files`) — `.gitignore`, `.gitkeep`, `.github/`, `.git/`, `.DS_Store`, `*.pyc`, `__pycache__/` are all blocked | No restriction | Exclude all `.git*` files and dev artifacts from the tarball |
 | **`check_meta_default_write_access`** | Global `[]` stanza in `default.meta` is mandatory | Recommended | Include |
 
 When generating files, apply the constraints from the user's chosen platform column. The templates in this skill default to the **Both** column.
@@ -87,7 +88,7 @@ Every viz app follows this exact layout — do not deviate:
           webpack.config.js
           package.json
           harness.json            (test harness config — fields, formatter, sample data)
-          .gitignore              (excludes node_modules)
+          .gitignore              (dev-only — excluded from tarball by build script)
 ```
 
 ### File Templates
@@ -315,6 +316,9 @@ Create this file with a transparent background on the root container. Splunk req
 ```
 
 #### .gitignore
+
+**Important**: `.gitignore` is for local development only. Splunk Cloud vetting rejects apps containing `.gitignore`, `.gitkeep`, `.github/`, or any `.git*` files (`check_for_prohibited_files`). The build script must exclude all `.git*` files from the tarball using `--exclude='.git*'` or `--exclude='.*'`.
+
 ```
 node_modules
 ```
@@ -1125,6 +1129,21 @@ define([
 
     **When NOT to use this pattern**: If the viz's SPL search uses `| stats` commands that always return a row (e.g., `| stats count` returns 0 instead of empty), Dashboard Studio will always pass data to the viz and the default placeholder never appears. In that case, `_status`/`appendpipe` is unnecessary.
 
+28. **Dashboard Studio JSON: keep viz `options` empty**. When embedding custom visualizations in a Dashboard Studio v2 JSON dashboard, do NOT hardcode formatter settings in the viz's `options` block. Use empty options instead:
+
+    ```json
+    "viz_my_gauge": {
+        "dataSources": { "primary": "ds_my_gauge" },
+        "options": {},
+        "title": "My Gauge",
+        "type": "my_app.my_gauge"
+    }
+    ```
+
+    **Why**: When a user changes a setting via the Format panel, Dashboard Studio writes a new fully-qualified key (e.g., `my_app.my_gauge.colorTheme: "neon"`) but does **not** remove the original short key (e.g., `colorTheme: "default"`). The viz JS reads `config[ns + 'colorTheme']` which resolves to the short key's stale value — the user's change is silently ignored. By starting with empty `options`, the only keys that exist are the ones the user explicitly sets, so there is no conflict.
+
+    The viz's JS `||` fallbacks (e.g., `config[ns + 'colorTheme'] || 'default'`) handle the initial "no settings" state correctly — this is the same code path that runs on first load in Splunk (see rule 19).
+
 ## Step 3: Generate Build Script
 
 Generate one build shell script per viz. **Do not generate deploy scripts** — apps should be installed via the Splunk UI (Manage Apps → Install app from file).
@@ -1161,7 +1180,7 @@ echo "[3/3] Packaging $TARBALL..."
 xattr -rc "$APP_DIR" 2>/dev/null || true
 
 COPYFILE_DISABLE=1 tar --disable-copyfile --no-xattrs --no-mac-metadata \
-    --exclude='.*' --exclude='._*' --exclude='__MACOSX' \
+    --exclude='.*' --exclude='._*' --exclude='__MACOSX' --exclude='__pycache__' --exclude='*.pyc' \
     --exclude="$APP_NAME/appserver/static/visualizations/{app_name}/node_modules" \
     --exclude="$APP_NAME/appserver/static/visualizations/{app_name}/src" \
     --exclude="$APP_NAME/appserver/static/visualizations/{app_name}/package.json" \
@@ -1480,6 +1499,7 @@ Before presenting the generated code, verify:
 - [ ] `preview.png` exists (116×76px) in `appserver/static/visualizations/{app_name}/` — fills full area with recognizable viz representation
 - [ ] `.gitignore` excludes `node_modules`
 - [ ] Build script excludes src/, node_modules/, package.json, webpack.config.js from tarball
+- [ ] Build script excludes `.git*` files (`.gitignore`, `.gitkeep`, `.github/`), `__pycache__/`, and `*.pyc` from the tarball — Splunk Cloud vetting rejects these (`check_for_prohibited_files`)
 - [ ] `harness.json` exists with correct fields, formatter (matching JS defaults), and data mode
 - [ ] `harness.json` sampleRows use strings only (Splunk passes strings)
 - [ ] Viz name added to `harness-manifest.json`
@@ -1596,6 +1616,8 @@ Two generic modes — the harness has no domain-specific code:
 - `columns`: array of column names. Each column's value comes from the matching field's current value.
 - `dynamicColumnName` (optional): renames a column based on a formatter setting. Used when the viz has a configurable "Field Name" setting (rule 18).
 
+**Important**: In `single_row` mode, every column in `columns` **must** have a corresponding entry in the top-level `fields` array with a `default` value. The harness builds the data row from `fields[].default` — if a column has no matching field, its value is `'0'`. Unlike `multi_row` mode (which reads from `sampleRows`), `single_row` mode does NOT use `sampleRows` as a fallback. Always provide slider, text, or select fields for every column.
+
 **`multi_row`** — passes pre-defined sample rows. Used for charts, tables, maps, and any viz that iterates `data.rows`.
 
 ```json
@@ -1649,7 +1671,7 @@ The master reference for this pattern is [`splunk-custom-visualizations`](https:
 
 ```
 {app_name}/
-  .gitignore
+  .gitignore                      (dev-only — excluded from tarball by build.sh)
   README.md
   default/
     app.conf
@@ -1676,6 +1698,9 @@ The master reference for this pattern is [`splunk-custom-visualizations`](https:
 ### File templates
 
 #### .gitignore
+
+**Dev-only** — must NOT be included in the packaged tarball. Splunk Cloud vetting rejects `.git*` files.
+
 ```
 .DS_Store
 vizs/*.tar.gz
@@ -1969,11 +1994,11 @@ xattr -rc "$TARGET_APP" 2>/dev/null || true
 
 run_with_spinner "$APP_NAME.tar.gz" bash -c "
     COPYFILE_DISABLE=1 tar --disable-copyfile \
-        --exclude='.git' \
-        --exclude='.github' \
+        --exclude='.git*' \
         --exclude='.DS_Store' \
-        --exclude='.gitignore' \
         --exclude='._*' \
+        --exclude='__pycache__' \
+        --exclude='*.pyc' \
         --exclude='vizs' \
         --exclude='local' \
         --exclude='README.md' \
