@@ -1144,6 +1144,15 @@ define([
 
     The viz's JS `||` fallbacks (e.g., `config[ns + 'colorTheme'] || 'default'`) handle the initial "no settings" state correctly — this is the same code path that runs on first load in Splunk (see rule 19).
 
+29. **Text readability across all themes**. Every text element drawn on canvas must be readable regardless of the active colour theme or what's behind it (liquid fills, glows, dark backgrounds). Follow these modern UX principles:
+
+    - **Use pure white (`#ffffff`) for all informational text** — labels, names, values, sub-text. White provides maximum contrast on dark dashboards and remains legible over coloured liquid fills. Never use `theme.text` (which varies per theme and can be low-contrast cyan in neon) for text that overlays liquid or coloured elements.
+    - **Reserve colour for meaning, not decoration** — only colour a value when the colour itself communicates status (e.g., a percentage coloured green/yellow/red via `getFillColor`). All other text stays white.
+    - **Sub-text uses white at reduced opacity (`rgba(255,255,255,0.5)` minimum)** — never go below 50% opacity for text the user needs to read. The 30% opacity convention (`rgba(255,255,255,0.3)`) is only acceptable for purely decorative or supplementary text that isn't essential.
+    - **Test every theme visually** — default, dark, and neon themes have very different background intensities. Text that's readable on default may vanish on neon. Always verify readability across all themes before finalising.
+    - **Per-theme colour palettes for data categories** (e.g., search types, data temperature) must maintain the theme's visual identity. Neon theme should use neon-family colours (`#00ff88`, `#ffff00`, `#ff0066`) — not blues and purples that belong to the default theme. Each theme's category colours should feel cohesive with its `liquidLow`/`liquidMid`/`liquidHigh` palette.
+    - **When in doubt, prioritise readability over aesthetics** — a viz that looks stylish but can't be read is useless. Pure white text on a semi-transparent dark pill (`valueBg`) is always a safe fallback if direct overlay is insufficient.
+
 ## Step 3: Generate Build Script
 
 Generate one build shell script per viz. **Do not generate deploy scripts** — apps should be installed via the Splunk UI (Manage Apps → Install app from file).
