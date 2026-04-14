@@ -170,32 +170,37 @@ define([
         ctx.globalAlpha = 0.85;
         ctx.fillRect(lx, ly, lw, fillH);
 
-        // Subtle wave on the liquid surface
-        var waveAmp = Math.min(2, fillH * 0.06);
-        var wavePeriod = lw * 0.5;
+        // Animated wave on the liquid surface (compound sine)
+        var waveAmp = Math.min(4, fillH * 0.12);
+        var wavePeriod1 = lw * 0.35;
+        var wavePeriod2 = lw * 0.55;
+
+        function waveY(wx, t) {
+            return Math.sin((wx / wavePeriod1) * Math.PI * 2 + t * 3.5) * waveAmp
+                 + Math.sin((wx / wavePeriod2) * Math.PI * 2 - t * 2.2) * waveAmp * 0.4;
+        }
+
         ctx.beginPath();
-        ctx.moveTo(lx, ly);
-        for (var wx = 0; wx <= lw; wx += 2) {
-            var wy = ly + Math.sin((wx / wavePeriod) * Math.PI * 2 + time * 2) * waveAmp;
-            ctx.lineTo(lx + wx, wy);
+        ctx.moveTo(lx, ly + waveY(0, time));
+        for (var wx = 1; wx <= lw; wx += 2) {
+            ctx.lineTo(lx + wx, ly + waveY(wx, time));
         }
         ctx.lineTo(lx + lw, ly + fillH + 5);
         ctx.lineTo(lx, ly + fillH + 5);
         ctx.closePath();
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.15;
+        ctx.globalAlpha = 0.6;
         ctx.fill();
         ctx.globalAlpha = 1;
 
         // Liquid surface highlight
         ctx.beginPath();
-        ctx.moveTo(lx, ly + 1);
-        for (var sx = 0; sx <= lw; sx += 2) {
-            var sy = ly + Math.sin((sx / wavePeriod) * Math.PI * 2 + time * 2) * waveAmp;
-            ctx.lineTo(lx + sx, sy);
+        ctx.moveTo(lx, ly + waveY(0, time));
+        for (var sx = 1; sx <= lw; sx += 2) {
+            ctx.lineTo(lx + sx, ly + waveY(sx, time));
         }
-        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.lineWidth = 1.5;
         ctx.stroke();
 
         // Bubble particles inside liquid for high-fill cells

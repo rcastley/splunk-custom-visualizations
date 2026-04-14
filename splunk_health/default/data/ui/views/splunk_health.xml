@@ -117,7 +117,7 @@
         "ds_index_storage": {
             "name": "Index Storage",
             "options": {
-                "query": "| rest /services/data/indexes | where totalEventCount>0 | eval sizeGB=round(currentDBSizeMB/1024,2) | eval hotGB=round(hot_bucket_size/1024,2) | eval warmGB=round(warm_bucket_size/1024,2) | eval coldGB=round(cold_bucket_size/1024,2) | table title sizeGB hotGB warmGB coldGB | sort -sizeGB | appendpipe [| stats count | where count=0 | eval _status=\"Awaiting index data\", title=\"\", sizeGB=0, hotGB=0, warmGB=0, coldGB=0]",
+                "query": "| dbinspect index=* | eval temp=case(state==\"hot\",\"hot\", state==\"warm\",\"warm\", state==\"cold\",\"cold\", 1=1,\"other\") | stats sum(sizeOnDiskMB) as sizeMB by index, temp | eval sizeGB=round(sizeMB/1024,2) | chart sum(sizeGB) as sizeGB by index, temp | rename index as title | eval hotGB=coalesce(hot,0), warmGB=coalesce(warm,0), coldGB=coalesce(cold,0) | eval sizeGB=hotGB+warmGB+coldGB | where sizeGB>0 | join type=outer title [| rest /services/data/indexes | eval maxGB=round(maxTotalDataSizeMB/1024,2) | table title maxGB] | table title sizeGB maxGB hotGB warmGB coldGB | sort -sizeGB | appendpipe [| stats count | where count=0 | eval _status=\"Awaiting index data\", title=\"\", sizeGB=0, maxGB=0, hotGB=0, warmGB=0, coldGB=0]",
                 "queryParameters": {
                     "earliest": "-1m",
                     "latest": "now"
@@ -195,9 +195,9 @@
         "ds_status_board": {
             "name": "Component Status",
             "options": {
-                "query": "| rest /services/server/health/splunkd/details | rename title as component | eval status=case(health=\"green\",\"ok\", health=\"yellow\",\"warning\", health=\"red\",\"critical\", 1=1,\"ok\") | eval health_score=case(status=\"critical\",90, status=\"warning\",60, 1=1,10) | eval errors=if(status=\"critical\", random()%50+1, 0) | eval warns=if(status=\"warning\", random()%20+1, if(status=\"critical\", random()%30+1, 0)) | table component status errors warns health_score | appendpipe [| stats count | where count=0 | eval _status=\"Awaiting component data\", component=\"\", status=\"ok\", errors=0, warns=0, health_score=0]",
+                "query": "index=_internal sourcetype=splunkd component=* log_level=* | stats count(eval(log_level=\"ERROR\")) as errors, count(eval(log_level=\"WARN\")) as warns by component | eval status=if(errors>0, \"critical\", if(warns>0, \"warning\", \"ok\")) | eval health_score=case(status=\"critical\", 90, status=\"warning\", 60, 1=1, 10) | sort - errors - warns | head 20 | table component status errors warns health_score | appendpipe [| stats count | where count=0 | eval _status=\"Awaiting component data\", component=\"\", status=\"ok\", errors=0, warns=0, health_score=0]",
                 "queryParameters": {
-                    "earliest": "-1m",
+                    "earliest": "-15m",
                     "latest": "now"
                 },
                 "refresh": "60s",
@@ -218,8 +218,8 @@
                     {
                         "item": "viz_status_board",
                         "position": {
-                            "h": 350,
-                            "w": 830,
+                            "h": 400,
+                            "w": 1030,
                             "x": 10,
                             "y": 10
                         },
@@ -231,7 +231,7 @@
                             "h": 350,
                             "w": 560,
                             "x": 10,
-                            "y": 370
+                            "y": 420
                         },
                         "type": "block"
                     },
@@ -241,27 +241,27 @@
                             "h": 350,
                             "w": 460,
                             "x": 580,
-                            "y": 370
+                            "y": 420
                         },
                         "type": "block"
                     },
                     {
                         "item": "viz_indexing_pipeline",
                         "position": {
-                            "h": 350,
+                            "h": 400,
                             "w": 860,
                             "x": 1050,
-                            "y": 370
+                            "y": 10
                         },
                         "type": "block"
                     },
                     {
                         "item": "viz_forwarder_heatmap",
                         "position": {
-                            "h": 340,
+                            "h": 290,
                             "w": 810,
                             "x": 10,
-                            "y": 730
+                            "y": 780
                         },
                         "type": "block"
                     },
@@ -269,9 +269,9 @@
                         "item": "viz_search_activity",
                         "position": {
                             "h": 350,
-                            "w": 710,
-                            "x": 1200,
-                            "y": 10
+                            "w": 400,
+                            "x": 1050,
+                            "y": 420
                         },
                         "type": "block"
                     },
@@ -279,19 +279,19 @@
                         "item": "viz_scheduler_health",
                         "position": {
                             "h": 350,
-                            "w": 340,
-                            "x": 850,
-                            "y": 10
+                            "w": 450,
+                            "x": 1460,
+                            "y": 420
                         },
                         "type": "block"
                     },
                     {
                         "item": "viz_index_storage",
                         "position": {
-                            "h": 340,
+                            "h": 290,
                             "w": 1080,
                             "x": 830,
-                            "y": 730
+                            "y": 780
                         },
                         "type": "block"
                     }

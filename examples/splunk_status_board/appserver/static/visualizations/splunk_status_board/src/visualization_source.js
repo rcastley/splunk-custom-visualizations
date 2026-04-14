@@ -156,32 +156,37 @@ define([
         ctx.globalAlpha = 0.85;
         ctx.fillRect(lx, ly, lw, fillH);
 
-        // Surface wave
-        var waveAmp = Math.min(3, fillH * 0.08);
-        var wavePeriod = lw * 0.4;
+        // Animated wave on the liquid surface (compound sine)
+        var waveAmp = Math.min(4, fillH * 0.12);
+        var wavePeriod1 = lw * 0.35;
+        var wavePeriod2 = lw * 0.55;
+
+        function waveY(wx, t) {
+            return Math.sin((wx / wavePeriod1) * Math.PI * 2 + t * 3.5) * waveAmp
+                 + Math.sin((wx / wavePeriod2) * Math.PI * 2 - t * 2.2) * waveAmp * 0.4;
+        }
+
         ctx.beginPath();
-        ctx.moveTo(lx, ly);
-        for (var wx = 0; wx <= lw; wx += 2) {
-            var wy = ly + Math.sin((wx / wavePeriod) * Math.PI * 2 + time * 2) * waveAmp;
-            ctx.lineTo(lx + wx, wy);
+        ctx.moveTo(lx, ly + waveY(0, time));
+        for (var wx = 1; wx <= lw; wx += 2) {
+            ctx.lineTo(lx + wx, ly + waveY(wx, time));
         }
         ctx.lineTo(lx + lw, ly + fillH + 5);
         ctx.lineTo(lx, ly + fillH + 5);
         ctx.closePath();
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.15;
+        ctx.globalAlpha = 0.6;
         ctx.fill();
         ctx.globalAlpha = 1;
 
         // Surface highlight line
         ctx.beginPath();
-        ctx.moveTo(lx, ly + 1);
-        for (var sx = 0; sx <= lw; sx += 2) {
-            var sy = ly + Math.sin((sx / wavePeriod) * Math.PI * 2 + time * 2) * waveAmp;
-            ctx.lineTo(lx + sx, sy);
+        ctx.moveTo(lx, ly + waveY(0, time));
+        for (var sx = 1; sx <= lw; sx += 2) {
+            ctx.lineTo(lx + sx, ly + waveY(sx, time));
         }
-        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.lineWidth = 1.5;
         ctx.stroke();
 
         // Bubble particles
@@ -477,90 +482,49 @@ define([
                 // Draw liquid fill
                 drawTileLiquid(ctx, tx, ty, tileW, tileH, tileR, fillPct, fillColor, showGlow, time);
 
-                // ── Tile content layout ──
-                var iconSize = Math.max(12, Math.min(24, tileH * 0.14));
-                var nameFS = Math.max(9, Math.min(14, tileW * 0.1));
-                var scoreFS = Math.max(10, Math.min(20, tileW * 0.12));
-                var badgeFS = Math.max(7, Math.min(11, tileW * 0.07));
-                var innerPad = Math.max(6, tileH * 0.06);
+                // ── Tile content: name, icon, counts ──
+                var centerX = tx + tileW / 2;
+                var nameFS = Math.max(9, Math.min(14, Math.min(tileW * 0.1, tileH * 0.12)));
+                var iconSize = Math.max(14, Math.min(28, tileH * 0.2));
+                var countFS = Math.max(8, Math.min(12, tileH * 0.09));
 
-                // Component name (top area)
+                var gapH = Math.max(4, tileH * 0.04);
+                var nameH = nameFS + 2;
+                var iconH = iconSize;
+                var hasCount = showCounts && (comp.errors > 0 || comp.warns > 0);
+                var countH = hasCount ? countFS + 2 : 0;
+                var totalH = nameH + gapH + iconH + (hasCount ? gapH + countH : 0);
+                var curY = ty + (tileH - totalH) / 2;
+
+                // Component name
                 ctx.font = '600 ' + nameFS + 'px sans-serif';
-                ctx.fillStyle = theme.text;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                ctx.fillText(comp.component, tx + tileW / 2, ty + innerPad);
-
-                // Status icon (center-top)
-                var iconY = ty + innerPad + nameFS + innerPad * 0.6;
-                drawStatusIcon(ctx, tx + tileW / 2, iconY + iconSize / 2, iconSize, comp.status, theme);
-
-                // Health score pill (center)
-                var scoreStr = Math.round(fillPct) + '%';
-                ctx.font = 'bold ' + scoreFS + 'px monospace';
-                var scoreTextW = ctx.measureText(scoreStr).width + 12;
-                var scoreH = scoreFS + 6;
-                var scorePillX = tx + tileW / 2 - scoreTextW / 2;
-                var scorePillY = iconY + iconSize + innerPad * 0.5;
-
-                roundRect(ctx, scorePillX, scorePillY, scoreTextW, scoreH, 4);
-                ctx.fillStyle = theme.valueBg;
-                ctx.fill();
-
                 ctx.fillStyle = '#ffffff';
                 ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
+                ctx.textBaseline = 'top';
+                ctx.fillText(comp.component, centerX, curY);
+                curY += nameH + gapH;
 
+                // Status icon (bigger, centered)
                 if (showGlow && comp.status === 'critical') {
                     ctx.shadowColor = fillColor;
-                    ctx.shadowBlur = 8;
+                    ctx.shadowBlur = 10;
                 }
-                ctx.fillText(scoreStr, tx + tileW / 2, scorePillY + scoreH / 2);
+                drawStatusIcon(ctx, centerX, curY + iconSize / 2, iconSize, comp.status, theme);
                 ctx.shadowBlur = 0;
+                curY += iconH;
 
-                // Error/warn badges (bottom area)
-                if (showCounts) {
-                    var badgeY = scorePillY + scoreH + innerPad * 0.8;
-                    var badgeSpacing = tileW * 0.28;
-
-                    if (comp.errors > 0 || comp.warns > 0) {
-                        if (comp.errors > 0 && comp.warns > 0) {
-                            // Both badges side by side
-                            drawBadge(ctx, tx + tileW / 2 - badgeSpacing / 2, badgeY, comp.errors, theme.liquidHigh, badgeFS);
-                            drawBadge(ctx, tx + tileW / 2 + badgeSpacing / 2, badgeY, comp.warns, theme.liquidMid, badgeFS);
-
-                            // Labels below badges
-                            ctx.font = (badgeFS - 1) + 'px sans-serif';
-                            ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'top';
-                            ctx.fillText('err', tx + tileW / 2 - badgeSpacing / 2, badgeY + badgeFS * 0.6 + 2);
-                            ctx.fillText('warn', tx + tileW / 2 + badgeSpacing / 2, badgeY + badgeFS * 0.6 + 2);
-                        } else if (comp.errors > 0) {
-                            drawBadge(ctx, tx + tileW / 2, badgeY, comp.errors, theme.liquidHigh, badgeFS);
-                            ctx.font = (badgeFS - 1) + 'px sans-serif';
-                            ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'top';
-                            ctx.fillText('errors', tx + tileW / 2, badgeY + badgeFS * 0.6 + 2);
-                        } else {
-                            drawBadge(ctx, tx + tileW / 2, badgeY, comp.warns, theme.liquidMid, badgeFS);
-                            ctx.font = (badgeFS - 1) + 'px sans-serif';
-                            ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'top';
-                            ctx.fillText('warns', tx + tileW / 2, badgeY + badgeFS * 0.6 + 2);
-                        }
-                    }
+                // Error/warn count (single line, e.g. "23 err · 15 warn")
+                if (hasCount) {
+                    curY += gapH;
+                    var parts = [];
+                    if (comp.errors > 0) parts.push(comp.errors + ' err');
+                    if (comp.warns > 0) parts.push(comp.warns + ' warn');
+                    ctx.font = countFS + 'px sans-serif';
+                    ctx.fillStyle = '#ffffff';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(parts.join(' \u00B7 '), centerX, curY);
                 }
-
-                // Status label at bottom
-                var statusFS = Math.max(7, Math.min(10, tileW * 0.065));
-                ctx.font = statusFS + 'px sans-serif';
-                ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-                ctx.fillText(comp.status.toUpperCase(), tx + tileW / 2, ty + tileH - innerPad * 0.5);
             }
 
             // ── Draw legend ──

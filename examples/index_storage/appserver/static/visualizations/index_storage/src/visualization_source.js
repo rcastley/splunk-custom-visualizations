@@ -243,33 +243,37 @@ define([
         }
 
         if (totalFillH > 2) {
-            var waveAmp = Math.min(2, topLayerH * 0.08);
-            var wavePeriod = lw * 0.5;
+            var waveAmp = Math.min(4, topLayerH * 0.12);
+            var wavePeriod1 = lw * 0.35;
+            var wavePeriod2 = lw * 0.55;
+
+            function waveY(wx, t) {
+                return Math.sin((wx / wavePeriod1) * Math.PI * 2 + t * 3.5) * waveAmp
+                     + Math.sin((wx / wavePeriod2) * Math.PI * 2 - t * 2.2) * waveAmp * 0.4;
+            }
 
             // Wave overlay
             ctx.beginPath();
-            ctx.moveTo(lx, topLayerY);
-            for (var wx = 0; wx <= lw; wx += 2) {
-                var wy = topLayerY + Math.sin((wx / wavePeriod) * Math.PI * 2 + time * 2) * waveAmp;
-                ctx.lineTo(lx + wx, wy);
+            ctx.moveTo(lx, topLayerY + waveY(0, time));
+            for (var wx = 1; wx <= lw; wx += 2) {
+                ctx.lineTo(lx + wx, topLayerY + waveY(wx, time));
             }
             ctx.lineTo(lx + lw, topLayerY + topLayerH + 5);
             ctx.lineTo(lx, topLayerY + topLayerH + 5);
             ctx.closePath();
             ctx.fillStyle = topColor;
-            ctx.globalAlpha = 0.15;
+            ctx.globalAlpha = 0.6;
             ctx.fill();
             ctx.globalAlpha = 1;
 
             // Surface highlight line
             ctx.beginPath();
-            ctx.moveTo(lx, topLayerY + 1);
-            for (var sx = 0; sx <= lw; sx += 2) {
-                var sy = topLayerY + Math.sin((sx / wavePeriod) * Math.PI * 2 + time * 2) * waveAmp;
-                ctx.lineTo(lx + sx, sy);
+            ctx.moveTo(lx, topLayerY + waveY(0, time));
+            for (var sx = 1; sx <= lw; sx += 2) {
+                ctx.lineTo(lx + sx, topLayerY + waveY(sx, time));
             }
-            ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+            ctx.lineWidth = 1.5;
             ctx.stroke();
         }
 
