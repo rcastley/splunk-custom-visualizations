@@ -27,6 +27,9 @@
     "splunk_status_board",
     "license_gauge",
     "forwarder_heatmap",
-    "resource_gauge"
+    "resource_gauge",
+    "scheduler_health",
+    "search_activity",
+    "index_storage"
   ]
 }
