@@ -11,7 +11,7 @@ Glass-skeuomorphic arc gauge showing daily Splunk license consumption as a perce
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | used_gb | float | GB consumed today (configurable field name) |
 | quota_gb | float | Total license quota in GB (configurable field name) |
 
@@ -35,7 +35,7 @@ Glass-skeuomorphic arc gauge showing daily Splunk license consumption as a perce
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | colorTheme | Visual theme: default, dark, neon | default |
 | showGlow | Enable glow effects on high usage | true |
 | warningThreshold | Warning percentage threshold | 80 |

@@ -10,19 +10,19 @@ A broadcast-style horizontal scrolling ticker that displays the most recent even
 
 ## Required Columns
 
-| Column | Type   | Description                          |
-| ------ | ------ | ------------------------------------ |
-| _time  | time   | Event timestamp for time-ago display |
+| Column | Type | Description |
+| --- | --- | --- |
+| _time | time | Event timestamp for time-ago display |
 
 ## Optional Columns
 
 Up to 4 configurable fields. Column names are set in the formatter.
 
-| Column  | Type   | Description          |
-| ------- | ------ | -------------------- |
-| field 1 | string | First display field  |
+| Column | Type | Description |
+| --- | --- | --- |
+| field 1 | string | First display field |
 | field 2 | string | Second display field |
-| field 3 | string | Third display field  |
+| field 3 | string | Third display field |
 | field 4 | string | Fourth display field |
 
 ## Notes
@@ -46,22 +46,22 @@ index=main earliest=-4d
 
 ## Configuration
 
-| Setting        | Description                                | Default   |
-| -------------- | ------------------------------------------ | --------- |
-| Title          | Event/brand name on the left               | .conf25   |
-| Scroll Speed   | Ticker speed (slow/medium/fast)            | medium    |
-| Field 1        | Column name for first value                | size      |
-| Label 1        | Prepend text for field 1                   | Size      |
-| Field 2        | Column name for second value               | lanyard   |
-| Label 2        | Prepend text for field 2                   | Lanyard   |
-| Field 3        | Column name for third value                | region    |
-| Label 3        | Prepend text for field 3                   | Region    |
-| Field 4        | Column name for fourth value               | device    |
-| Label 4        | Prepend text for field 4                   | Device    |
-| Background     | Ticker strip background color              | #1a1a2e   |
-| Text Color     | Scrolling text color                       | #ffffff   |
-| Accent Color   | LIVE badge, title, and separator dot color | #e20082   |
-| Separator Color| Vertical line between title and ticker     | #444466   |
+| Setting | Description | Default |
+| --- | --- | --- |
+| Title | Event/brand name on the left | .conf25 |
+| Scroll Speed | Ticker speed (slow/medium/fast) | medium |
+| Field 1 | Column name for first value | size |
+| Label 1 | Prepend text for field 1 | Size |
+| Field 2 | Column name for second value | lanyard |
+| Label 2 | Prepend text for field 2 | Lanyard |
+| Field 3 | Column name for third value | region |
+| Label 3 | Prepend text for field 3 | Region |
+| Field 4 | Column name for fourth value | device |
+| Label 4 | Prepend text for field 4 | Device |
+| Background | Ticker strip background color | #1a1a2e |
+| Text Color | Scrolling text color | #ffffff |
+| Accent Color | LIVE badge, title, and separator dot color | #e20082 |
+| Separator Color | Vertical line between title and ticker | #444466 |
 
 ## Time Range
 

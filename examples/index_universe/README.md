@@ -11,7 +11,7 @@ Orbital bubble chart that provides a visual inventory of all Splunk indexes. Eac
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | title | string | Index name |
 | totalEventCount | integer | Total number of events in the index |
 | currentDBSizeMB | float | Current disk usage in MB |
@@ -20,7 +20,7 @@ Orbital bubble chart that provides a visual inventory of all Splunk indexes. Eac
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | maxTotalDataSizeMB | float | Maximum allocated capacity in MB (shown in tooltip) |
 
 ## Notes
@@ -47,7 +47,7 @@ Orbital bubble chart that provides a visual inventory of all Splunk indexes. Eac
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | showLabels | Display index names on/near each bubble | true |
 | colorScheme | Color gradient for event count (cool/warm/neon) | cool |
 | minBubbleSize | Minimum bubble radius in pixels | 8 |
@@ -65,6 +65,7 @@ Click a bubble to drill down to that index. In Dashboard Studio, configure drill
 3. Use `$row.title.value$` as the drilldown token
 
 Example drilldown search:
+
 ```spl
 index="$row.title.value$" | head 100
 ```

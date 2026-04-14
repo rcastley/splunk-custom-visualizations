@@ -11,7 +11,7 @@ A geographic visualization showing animated particle flows from bet origin count
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | country | string | Country name (e.g., "United Kingdom") |
 | lat | number | Latitude of the betting origin |
 | lon | number | Longitude of the betting origin |
@@ -20,7 +20,7 @@ A geographic visualization showing animated particle flows from bet origin count
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | venue_lat | number | Match venue latitude (default 0 if not present) |
 | venue_lon | number | Match venue longitude (default 0 if not present) |
 
@@ -57,7 +57,7 @@ A geographic visualization showing animated particle flows from bet origin count
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | arcColor | Color of flow arcs from origin to venue | #0088ff |
 | venueColor | Color of the destination venue marker | #ff6600 |
 | showLabels | Display country name labels at origin points | true |

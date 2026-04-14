@@ -11,7 +11,7 @@ General-purpose single value display. Point it at any search field to render the
 ## Required Columns
 
 | Column | Type | Description |
-| -------- | ------ | ------------- |
+| --- | --- | --- |
 | (configurable) | string/number | The field to display — set via the "Field Name" setting (default: `value`) |
 
 ## Notes
@@ -36,7 +36,7 @@ index=main sourcetype=access_combined
 ## Configuration
 
 | Setting | Description | Default |
-| --------- | ------------- | --------- |
+| --- | --- | --- |
 | field | Column name from your search to display | value |
 | color | Hex colour for the value text | #E20082 |
 | weight | Font weight: bold or normal | bold |

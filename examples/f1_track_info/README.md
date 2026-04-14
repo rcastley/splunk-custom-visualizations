@@ -12,13 +12,13 @@ sector boundary markers, track name, length (km), and number of turns.
 ## Required Columns
 
 | Column | Type | Description |
-| -------- |------| ------------- |
+| --- | --- | --- |
 | `track_id` | integer | Numeric track identifier |
 
 ## Optional Columns
 
 | Column | Type | Description |
-| -------- |------| ------------- |
+| --- | --- | --- |
 | `track_length` | float | Track length in metres |
 | `sector2_lap_distance_start` | float | Lap distance where sector 2 begins |
 | `sector3_lap_distance_start` | float | Lap distance where sector 3 begins |
@@ -40,7 +40,7 @@ index="data_drivers_f1_2025" sourcetype="SessionData"
 
 ## Build
 
-```
+```bash
 cd appserver/static/visualizations/f1_track_info
 npm install
 npm run build

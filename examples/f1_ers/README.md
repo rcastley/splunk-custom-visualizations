@@ -12,13 +12,13 @@ and harvest/deploy stats.
 ## Required Columns
 
 | Column | Type | Description |
-| -------- |------| ------------- |
+| --- | --- | --- |
 | `ers_store_energy` | float | ERS stored energy in Joules (max 4,000,000) |
 
 ## Optional Columns
 
 | Column | Type | Description |
-| -------- |------| ------------- |
+| --- | --- | --- |
 | `ers_deploy_mode` | integer | Deploy mode: 0=None, 1=Medium, 2=Hotlap, 3=Overtake |
 | `ers_harvested_this_lap_mguk` | float | Energy harvested this lap via MGU-K (Joules) |
 | `ers_harvested_this_lap_mguh` | float | Energy harvested this lap via MGU-H (Joules) |
@@ -44,7 +44,7 @@ index="data_drivers_f1_2025" sourcetype="CarStatusData"
 
 ## Build
 
-```
+```bash
 cd appserver/static/visualizations/f1_ers
 npm install
 npm run build

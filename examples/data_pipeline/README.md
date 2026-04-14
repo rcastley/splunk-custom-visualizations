@@ -10,10 +10,10 @@ Animated data pipeline showing ingestion volume flowing from sources into Splunk
 
 ## Required Columns
 
-| Column | Type   | Description                          |
-|--------|--------|--------------------------------------|
-| name   | string | Source / index / sourcetype label    |
-| volume | number | Volume value (event count or bytes)  |
+| Column | Type | Description |
+| --- | --- | --- |
+| name | string | Source / index / sourcetype label |
+| volume | number | Volume value (event count or bytes) |
 
 Column names are configurable via the Format panel (`Name Field`, `Volume Field`).
 
@@ -49,18 +49,18 @@ index=_internal source=*license_usage.log type=Usage
 
 ## Configuration
 
-| Setting       | Description                                 | Default   |
-|---------------|---------------------------------------------|-----------|
-| Name Field    | Column containing source names              | name      |
-| Volume Field  | Column containing volume values             | volume    |
-| Max Sources   | Maximum number of sources to display        | 10        |
-| Animation     | Particle animation speed                    | medium    |
-| Show Volume   | Display volume labels next to source names  | true      |
-| Show Chevron  | Show the Splunk ">" chevron at the endpoint | true      |
-| Show Total    | Show aggregated total volume                | true      |
-| Low Color     | Color for lowest-volume pipes               | #00B4D8   |
-| High Color    | Color for highest-volume pipes              | #65A637   |
-| Volume Unit   | How to format volume labels                 | events    |
+| Setting | Description | Default |
+| --- | --- | --- |
+| Name Field | Column containing source names | name |
+| Volume Field | Column containing volume values | volume |
+| Max Sources | Maximum number of sources to display | 10 |
+| Animation | Particle animation speed | medium |
+| Show Volume | Display volume labels next to source names | true |
+| Show Chevron | Show the Splunk ">" chevron at the endpoint | true |
+| Show Total | Show aggregated total volume | true |
+| Low Color | Color for lowest-volume pipes | #00B4D8 |
+| High Color | Color for highest-volume pipes | #65A637 |
+| Volume Unit | How to format volume labels | events |
 
 ## Time Range
 

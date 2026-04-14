@@ -11,7 +11,7 @@ Horizontal stacked glass tank showing search slot utilization. Liquid fills from
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | type | string | Search type: "scheduled", "ad-hoc", "other" |
 | count | integer | Number of active searches of this type |
 
@@ -35,7 +35,7 @@ Horizontal stacked glass tank showing search slot utilization. Liquid fills from
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | colorTheme | Visual theme (default/dark/neon) | default |
 | showGlow | Enable glow effects when utilization is high | true |
 | animSpeed | Animation speed (slow/medium/fast) | medium |

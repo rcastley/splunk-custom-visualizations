@@ -11,7 +11,7 @@ NOC-style grid of status tiles showing Splunk component health at a glance. Each
 ## Required Columns
 
 | Column | Type | Description |
-| -------- | ------ | ------------- |
+| --- | --- | --- |
 | component | string | Component or host name (configurable via "Component Field" setting) |
 | errors | integer | Error count for this component |
 | warns | integer | Warning count for this component |
@@ -41,7 +41,7 @@ index=_internal sourcetype=splunkd log_level=* component=*
 ## Configuration
 
 | Setting | Description | Default |
-| --------- | ------------- | --------- |
+| --- | --- | --- |
 | componentField | Column name for the component/host name | component |
 | errorsField | Column name for the error count | errors |
 | warningsField | Column name for the warning count | warns |

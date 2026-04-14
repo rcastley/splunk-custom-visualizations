@@ -11,15 +11,15 @@ Glass-skeuomorphic tank grid showing Splunk index sizes with layered hot/warm/co
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
-| title  | string | Index name |
+| --- | --- | --- |
+| title | string | Index name |
 | sizeGB | float | Total index size in GB |
 
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
-| hotGB  | float | Hot bucket size in GB |
+| --- | --- | --- |
+| hotGB | float | Hot bucket size in GB |
 | warmGB | float | Warm bucket size in GB |
 | coldGB | float | Cold bucket size in GB |
 
@@ -49,7 +49,7 @@ Glass-skeuomorphic tank grid showing Splunk index sizes with layered hot/warm/co
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | colorTheme | Visual theme (default/dark/neon) | default |
 | showGlow | Enable glow effects on large indexes | true |
 | animSpeed | Animation speed (slow/medium/fast) | medium |

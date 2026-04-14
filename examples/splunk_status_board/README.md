@@ -11,7 +11,7 @@ Glass-themed component health status board that displays a grid of animated tile
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | component | string | Component name (e.g., "Indexer", "Search Head") |
 | status | string | Component status: "ok", "warning", or "critical" |
 | errors | integer | Error count for the component |
@@ -41,7 +41,7 @@ Glass-themed component health status board that displays a grid of animated tile
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | colorTheme | Visual theme: default, dark, or neon | default |
 | showGlow | Enable glow effect on critical tiles | true |
 | warningThreshold | Health score threshold for yellow color (0-100) | 50 |

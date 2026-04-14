@@ -11,13 +11,13 @@ Football pitch-themed radial pulse gauge for displaying real-time betting volume
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | `bets_per_minute` | number | Current bets per minute count (field name configurable) |
 
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | `match_name` | string | Match being displayed (e.g., "ENGLAND vs FRANCE") |
 | `peak_bpm` | number | Peak bets per minute observed |
 | `prev_bpm` | number | Previous minute's BPM for trend calculation |
@@ -40,7 +40,7 @@ Football pitch-themed radial pulse gauge for displaying real-time betting volume
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | BPM Field | Column name for bets per minute value | `bets_per_minute` |
 | Max BPM | Maximum value for the gauge scale | `10000` |
 | Animation Speed | Speed of pulse and particle animations (slow/medium/fast) | `medium` |

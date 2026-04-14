@@ -11,7 +11,7 @@ Three concentric arc gauges displaying CPU, Memory, and Disk I/O utilization in 
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | cpu_pct | float | CPU utilization percentage (0-100) |
 | mem_pct | float | Memory utilization percentage (0-100) |
 | disk_pct | float | Disk I/O utilization percentage (0-100) |
@@ -41,7 +41,7 @@ index=_introspection sourcetype=splunk_resource_usage component=hostwide
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | colorTheme | Visual theme (default/dark/neon) | default |
 | showGlow | Enable glow effects on high-usage arcs | true |
 | warningThreshold | Percentage at which arc turns yellow | 70 |

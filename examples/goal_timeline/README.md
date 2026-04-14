@@ -11,14 +11,14 @@ Horizontal timeline for a match showing betting volume as a filled area chart wi
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | minute | number | Match minute (0-90+) |
 | volume | number | Betting volume at this minute |
 
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | event | string | Event description e.g., "Goal - Kane", "Red Card - Silva" |
 | event_type | string | "goal", "red_card", "var", "penalty" — determines marker color/icon |
 
@@ -44,7 +44,7 @@ Horizontal timeline for a match showing betting volume as a filled area chart wi
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | areaColor | Fill color for the betting volume area chart | #0088ff |
 | goalColor | Marker color for goal events | #00cc66 |
 | cardColor | Marker color for red card events | #ff3333 |

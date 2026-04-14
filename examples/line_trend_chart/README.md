@@ -11,14 +11,14 @@ Line/area trend chart with colored background sections, multiple series, smooth 
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | x-axis field | string/time | X-axis values (configurable, default: `_time`) |
 | value columns | numeric | One or more numeric columns, each becomes a line series |
 
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | zone field | string | Background highlight zone name (empty = no zone for that point) |
 
 ## Notes
@@ -61,7 +61,7 @@ Line/area trend chart with colored background sections, multiple series, smooth 
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | title | Chart title | (empty) |
 | xField | Column for X axis | _time |
 | seriesFields | Comma-separated series column names (empty = auto) | (empty) |

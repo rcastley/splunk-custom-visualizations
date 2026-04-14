@@ -11,7 +11,7 @@ A radar (spider) chart that overlays multiple data series as semi-transparent fi
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | series | string | Name of the data series (e.g., "Beijing") |
 
 All remaining columns are treated as numeric axes. Column headers become axis labels.
@@ -36,7 +36,7 @@ All remaining columns are treated as numeric axes. Column headers become axis la
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | title | Chart title text | (empty) |
 | maxValue | Max axis value (0 = auto) | 0 |
 | gridRings | Number of concentric grid rings | 4 |

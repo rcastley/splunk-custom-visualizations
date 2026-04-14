@@ -11,7 +11,7 @@ Three horizontal glass tubes displaying scheduler vital signs: success rate, ski
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | skip_pct | float | Percentage of searches skipped |
 | success_pct | float | Percentage of searches successful |
 | avg_runtime | float | Average search runtime in seconds |
@@ -40,7 +40,7 @@ index=_internal sourcetype=scheduler status=*
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | colorTheme | Visual theme (default/dark/neon) | default |
 | showGlow | Enable glow effects on problematic tubes | true |
 | animSpeed | Animation speed (slow/medium/fast) | medium |

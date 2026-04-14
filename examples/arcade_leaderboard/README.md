@@ -11,7 +11,7 @@ An 80s arcade-style high score leaderboard with cyberpunk neon colors, CRT scanl
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | rank | integer | Position on the leaderboard (1 = first place) |
 | player_name | string | Player's display name |
 | score | number | Player's score value |
@@ -38,7 +38,7 @@ An 80s arcade-style high score leaderboard with cyberpunk neon colors, CRT scanl
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | Title | Header text (rendered in arcade pixel font) | HIGH SCORES |
 | Max Rows | Maximum leaderboard entries to display | 10 |
 | Score Digits | Leading-zero digit count (0 = no padding) | 8 |

@@ -11,14 +11,14 @@ Glass-themed heatmap grid showing Splunk forwarder health. Each cell represents 
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | host | string | Forwarder hostname |
 | mins_ago | float | Minutes since last data received |
 
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | eps | float | Events per second from the forwarder |
 
 ## Notes
@@ -44,7 +44,7 @@ index=_internal sourcetype=splunkd group=tcpin_connections
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | colorTheme | Visual theme (default/dark/neon) | default |
 | showGlow | Enable glow on stale cells | true |
 | warningThreshold | Minutes before yellow | 5 |

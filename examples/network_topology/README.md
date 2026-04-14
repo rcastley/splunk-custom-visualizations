@@ -11,14 +11,14 @@ An interactive network topology visualization that shows nodes as circles connec
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | source | string | Source node name |
 | dest | string | Destination node name |
 
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | weight | number | Edge weight controlling line thickness (1-10) |
 | status | string | Node status for coloring: ok, warning, or critical |
 
@@ -45,7 +45,7 @@ An interactive network topology visualization that shows nodes as circles connec
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | nodeColor | Default fill color for nodes | #4FC3F7 |
 | edgeColor | Default color for edges | #555555 |
 | nodeSize | Base radius of nodes in pixels | 8 |

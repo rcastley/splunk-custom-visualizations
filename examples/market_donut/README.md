@@ -10,17 +10,17 @@ Nested donut chart where the outer ring shows bet type categories (Match Result,
 
 ## Required Columns
 
-| Column     | Type   | Description                                      |
-|------------|--------|--------------------------------------------------|
-| category   | string | Parent bet category (e.g., "Match Result")       |
-| market     | string | Specific market (e.g., "England Win", "Draw")    |
-| volume     | number | Betting volume for this market                   |
+| Column | Type | Description |
+| --- | --- | --- |
+| category | string | Parent bet category (e.g., "Match Result") |
+| market | string | Specific market (e.g., "England Win", "Draw") |
+| volume | number | Betting volume for this market |
 
 ## Optional Columns
 
-| Column       | Type   | Description                                    |
-|--------------|--------|------------------------------------------------|
-| profit_loss  | number | P&L indicator: positive = profit, negative = loss |
+| Column | Type | Description |
+| --- | --- | --- |
+| profit_loss | number | P&L indicator: positive = profit, negative = loss |
 
 ## Notes
 
@@ -40,15 +40,15 @@ index=betting sourcetype=worldcup_bets
 
 ## Configuration
 
-| Setting         | Description                                     | Default   |
-|-----------------|-------------------------------------------------|-----------|
-| palette         | Color palette: vibrant, pastel, neon            | vibrant   |
-| showLabels      | Display category labels around the outer ring   | true      |
-| showCenter      | Display total volume in the center              | true      |
-| showInnerLabels | Display market labels on the inner ring         | false     |
-| gapAngle        | Degrees of gap between segments (0-5)           | 1         |
-| ringRatio       | Inner ring radius as fraction of outer (0.3-0.9)| 0.6       |
-| outerThickness  | Outer ring thickness in pixels (0 = auto)       | 0         |
+| Setting | Description | Default |
+| --- | --- | --- |
+| palette | Color palette: vibrant, pastel, neon | vibrant |
+| showLabels | Display category labels around the outer ring | true |
+| showCenter | Display total volume in the center | true |
+| showInnerLabels | Display market labels on the inner ring | false |
+| gapAngle | Degrees of gap between segments (0-5) | 1 |
+| ringRatio | Inner ring radius as fraction of outer (0.3-0.9) | 0.6 |
+| outerThickness | Outer ring thickness in pixels (0 = auto) | 0 |
 
 ## Time Range
 

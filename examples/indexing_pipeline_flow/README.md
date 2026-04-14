@@ -11,14 +11,14 @@ Animated visualization of Splunk's internal indexing pipeline queues. Renders fo
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | name | string | Queue name (e.g., parsingqueue, mergingqueue, typingqueue, indexqueue) |
 | fill_pct | float | Fill percentage (0–100) |
 
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | avg_size | float | Average current queue size in KB |
 | capacity | float | Maximum queue capacity in KB |
 
@@ -44,7 +44,7 @@ index=_internal group=queue
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | animSpeed | Animation speed for flow particles (slow/medium/fast) | medium |
 | colorTheme | Visual theme (default/dark/neon) | default |
 | showLabels | Display queue names below each tube | true |

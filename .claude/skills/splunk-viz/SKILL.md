@@ -1153,6 +1153,18 @@ define([
     - **Per-theme colour palettes for data categories** (e.g., search types, data temperature) must maintain the theme's visual identity. Neon theme should use neon-family colours (`#00ff88`, `#ffff00`, `#ff0066`) — not blues and purples that belong to the default theme. Each theme's category colours should feel cohesive with its `liquidLow`/`liquidMid`/`liquidHigh` palette.
     - **When in doubt, prioritise readability over aesthetics** — a viz that looks stylish but can't be read is useless. Pure white text on a semi-transparent dark pill (`valueBg`) is always a safe fallback if direct overlay is insufficient.
 
+30. **README.md must pass markdown linting**. Every generated `README.md` must be valid, well-formatted Markdown that passes standard linting (e.g., `markdownlint`). Specifically:
+
+    - **Headings**: use ATX style (`#`), increment by one level only (`##` after `#`, not `####` after `##`), blank line before and after
+    - **Lists**: consistent markers (`-` for unordered), blank line before the first item, proper indentation for nested lists
+    - **Tables**: every pipe must have a space on both sides of content (`| Column | Type |` not `|Column|Type|`). Separator rows use `| --- | --- |` with spaces. Blank line before and after the table. Never omit spaces around pipes — this is a hard requirement
+    - **Code blocks**: fenced with triple backticks, language identifier on opening fence (` ```spl `, ` ```bash `, ` ```json `), blank line before and after
+    - **Line length**: no hard limit, but avoid excessively long lines in prose (code blocks and tables are exempt)
+    - **Trailing whitespace**: none
+    - **Final newline**: file ends with exactly one newline
+    - **No bare URLs**: use `[text](url)` for links
+    - **No HTML**: use Markdown equivalents
+
 ## Step 3: Generate Build Script
 
 Generate one build shell script per viz. **Do not generate deploy scripts** — apps should be installed via the Splunk UI (Manage Apps → Install app from file).

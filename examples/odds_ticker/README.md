@@ -4,12 +4,12 @@ Horizontal scrolling ticker showing real-time World Cup betting odds changes. Th
 
 ## Expected SPL Columns
 
-| Column       | Required | Description                                  |
-|--------------|----------|----------------------------------------------|
-| `market`     | Yes      | Market name (e.g., "England to Win")         |
-| `odds`       | Yes      | Current decimal odds (e.g., "2.50")          |
-| `prev_odds`  | No       | Previous odds for direction calculation      |
-| `bet_volume` | No       | Number of bets placed on this market         |
+| Column | Required | Description |
+| --- | --- | --- |
+| `market` | Yes | Market name (e.g., "England to Win") |
+| `odds` | Yes | Current decimal odds (e.g., "2.50") |
+| `prev_odds` | No | Previous odds for direction calculation |
+| `bet_volume` | No | Number of bets placed on this market |
 
 ## Sample SPL
 
@@ -24,15 +24,15 @@ Horizontal scrolling ticker showing real-time World Cup betting odds changes. Th
 
 ## Formatter Settings
 
-| Setting       | Type         | Default     | Description                                    |
-|---------------|--------------|-------------|------------------------------------------------|
-| `scrollSpeed` | select       | `medium`    | Scroll speed: slow, medium, fast               |
-| `bgColor`     | color picker | `#0d0d1a`   | Background color of the ticker strip           |
-| `upColor`     | color picker | `#00cc66`   | Color for shortening odds (more bets)          |
-| `downColor`   | color picker | `#ff4444`   | Color for lengthening odds (fewer bets)        |
-| `showVolume`  | radio        | `true`      | Show/hide bet volume on each item              |
-| `itemSpacing` | text         | `40`        | Pixels between ticker items                    |
-| `fontSize`    | select       | `medium`    | Text size: small, medium, large                |
+| Setting | Type | Default | Description |
+| --- | --- | --- | --- |
+| `scrollSpeed` | select | `medium` | Scroll speed: slow, medium, fast |
+| `bgColor` | color picker | `#0d0d1a` | Background color of the ticker strip |
+| `upColor` | color picker | `#00cc66` | Color for shortening odds (more bets) |
+| `downColor` | color picker | `#ff4444` | Color for lengthening odds (fewer bets) |
+| `showVolume` | radio | `true` | Show/hide bet volume on each item |
+| `itemSpacing` | text | `40` | Pixels between ticker items |
+| `fontSize` | select | `medium` | Text size: small, medium, large |
 
 ## Build
 

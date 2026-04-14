@@ -8,25 +8,25 @@ Displays a horizontal bracket layout progressing from Round of 16 through Quarte
 
 ## Expected SPL Columns
 
-| Column     | Required | Description                               |
-|------------|----------|-------------------------------------------|
-| `round`    | Yes      | Round identifier: "R16", "QF", "SF", "F"  |
-| `position` | Yes      | Position within round (1-8 for R16, etc.)  |
-| `team1`    | Yes      | First team name                            |
-| `team2`    | Yes      | Second team name                           |
-| `volume`   | Yes      | Betting volume (numeric)                   |
-| `winner`   | No       | Winning team name (empty if undecided)     |
+| Column | Required | Description |
+| --- | --- | --- |
+| `round` | Yes | Round identifier: "R16", "QF", "SF", "F" |
+| `position` | Yes | Position within round (1-8 for R16, etc.) |
+| `team1` | Yes | First team name |
+| `team2` | Yes | Second team name |
+| `volume` | Yes | Betting volume (numeric) |
+| `winner` | No | Winning team name (empty if undecided) |
 
 ## Configuration Settings
 
-| Setting          | Type         | Default   | Description                              |
-|------------------|--------------|-----------|------------------------------------------|
-| `colorLow`       | Color picker | `#1a2a4a` | Color for low betting volume cards        |
-| `colorHigh`      | Color picker | `#ff6600` | Color for high betting volume cards       |
-| `showVolume`     | Radio        | `true`    | Show/hide volume numbers on cards         |
-| `cardWidth`      | Text         | `0`       | Fixed card width in px (0 = auto)         |
-| `showConnectors` | Radio        | `true`    | Show/hide connecting lines between rounds |
-| `accentColor`    | Color picker | `#00ff88` | Highlight color for winning teams         |
+| Setting | Type | Default | Description |
+| --- | --- | --- | --- |
+| `colorLow` | Color picker | `#1a2a4a` | Color for low betting volume cards |
+| `colorHigh` | Color picker | `#ff6600` | Color for high betting volume cards |
+| `showVolume` | Radio | `true` | Show/hide volume numbers on cards |
+| `cardWidth` | Text | `0` | Fixed card width in px (0 = auto) |
+| `showConnectors` | Radio | `true` | Show/hide connecting lines between rounds |
+| `accentColor` | Color picker | `#00ff88` | Highlight color for winning teams |
 
 ## Build
 

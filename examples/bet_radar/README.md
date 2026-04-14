@@ -11,14 +11,14 @@ Spider/radar chart showing the distribution of bet types for a World Cup match. 
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | bet_type | string | Name of the bet type (e.g., "Match Result", "Corners") |
 | volume | number | Current betting volume for this bet type |
 
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | avg_volume | number | Tournament average volume for comparison overlay |
 
 ## Notes
@@ -40,7 +40,7 @@ index=betting sourcetype=worldcup_bets
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | fillColor | Primary polygon fill color | #0088ff |
 | avgColor | Tournament average polygon color | #ff8800 |
 | showAverage | Show average overlay polygon | true |

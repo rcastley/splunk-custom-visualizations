@@ -10,17 +10,17 @@ Grid visualization showing World Cup matches with cells colored by betting volum
 
 ## Required Columns
 
-| Column    | Type   | Description                                   |
-|-----------|--------|-----------------------------------------------|
-| match     | string | Match identifier e.g., "ENG vs FRA"           |
-| time_slot | string | Time period label e.g., "0-15", "15-30"       |
-| volume    | number | Betting volume for that match/time combination |
+| Column | Type | Description |
+| --- | --- | --- |
+| match | string | Match identifier e.g., "ENG vs FRA" |
+| time_slot | string | Time period label e.g., "0-15", "15-30" |
+| volume | number | Betting volume for that match/time combination |
 
 ## Optional Columns
 
-| Column | Type   | Description                                |
-|--------|--------|--------------------------------------------|
-| peak   | string | Whether this is a peak cell ("true"/"false") |
+| Column | Type | Description |
+| --- | --- | --- |
+| peak | string | Whether this is a peak cell ("true"/"false") |
 
 ## Notes
 
@@ -44,15 +44,15 @@ Grid visualization showing World Cup matches with cells colored by betting volum
 
 ## Configuration
 
-| Setting    | Description                         | Default   |
-|------------|-------------------------------------|-----------|
-| colorLow   | Color for low betting volume cells  | #0a1628   |
-| colorMid   | Color for medium volume cells       | #1a6baa   |
-| colorHigh  | Color for high volume cells         | #ff3333   |
-| showValues | Overlay volume numbers on cells     | false     |
-| cellRadius | Corner radius for cell rectangles   | 4         |
-| cellGap    | Gap between cells in pixels         | 3         |
-| labelWidth | Width of left label column in pixels | 120      |
+| Setting | Description | Default |
+| --- | --- | --- |
+| colorLow | Color for low betting volume cells | #0a1628 |
+| colorMid | Color for medium volume cells | #1a6baa |
+| colorHigh | Color for high volume cells | #ff3333 |
+| showValues | Overlay volume numbers on cells | false |
+| cellRadius | Corner radius for cell rectangles | 4 |
+| cellGap | Gap between cells in pixels | 3 |
+| labelWidth | Width of left label column in pixels | 120 |
 
 ## Time Range
 

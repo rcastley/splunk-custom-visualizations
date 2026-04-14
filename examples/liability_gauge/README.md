@@ -11,7 +11,7 @@ Multi-ring concentric gauge showing the company's liability exposure across diff
 ## Required Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | `category` | string | Liability category name (e.g., "Match Result", "Goal Scorers") |
 | `exposure` | number | Current exposure amount for this category |
 | `threshold` | number | Maximum acceptable exposure for this category |
@@ -19,7 +19,7 @@ Multi-ring concentric gauge showing the company's liability exposure across diff
 ## Optional Columns
 
 | Column | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | `status` | string | Override status: "ok", "warning", or "critical" |
 
 ## Notes
@@ -45,7 +45,7 @@ Multi-ring concentric gauge showing the company's liability exposure across diff
 ## Configuration
 
 | Setting | Description | Default |
-|---------|-------------|---------|
+| --- | --- | --- |
 | Safe Color | Color for safe exposure levels | `#00cc66` |
 | Warning Color | Color for warning exposure levels | `#ffaa00` |
 | Danger Color | Color for danger exposure levels | `#ff3333` |
