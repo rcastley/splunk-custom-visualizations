@@ -85,7 +85,7 @@ The skill is automatically available when you use Claude Code in this repo. Just
 
 The `splunk_health/` directory is a ready-to-deploy Splunk app that bundles eight glass-themed health monitoring visualizations into a single Dashboard Studio dashboard. All vizzes share the same design language — glass tubes, liquid fills, animated particles, and progressive glow effects.
 
-![Splunk Health Dashboard](screenshots/splunk_health_dashboard.png)
+![Splunk Health Dashboard](screenshots/splunk-health-dashboard.png)
 
 | Visualization | Panel | What it shows |
 |---------------|-------|---------------|
