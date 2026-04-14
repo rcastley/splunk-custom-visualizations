@@ -31,6 +31,17 @@ access = read : [ * ], write : [ admin, sc_admin ]
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 [visualizations/indexing_pipeline_flow]
 export = system
 
@@ -44,4 +55,13 @@ export = system
 export = system
 
 [visualizations/resource_gauge]
+export = system
+
+[visualizations/search_activity]
+export = system
+
+[visualizations/index_storage]
+export = system
+
+[visualizations/scheduler_health]
 export = system

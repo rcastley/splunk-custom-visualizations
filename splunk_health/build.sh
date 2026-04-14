@@ -22,6 +22,9 @@ APPS=(
     license_gauge
     forwarder_heatmap
     resource_gauge
+    search_activity
+    index_storage
+    scheduler_health
 )
 
 if [ ! -d "$TARGET_APP/default" ]; then

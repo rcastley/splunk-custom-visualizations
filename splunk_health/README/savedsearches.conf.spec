@@ -43,3 +43,21 @@ display.visualizations.custom.splunk_health.resource_gauge.cpuField = <string>
 display.visualizations.custom.splunk_health.resource_gauge.memField = <string>
 display.visualizations.custom.splunk_health.resource_gauge.diskField = <string>
 
+display.visualizations.custom.splunk_health.search_activity.colorTheme = <string>
+display.visualizations.custom.splunk_health.search_activity.showGlow = <boolean>
+display.visualizations.custom.splunk_health.search_activity.animSpeed = <string>
+display.visualizations.custom.splunk_health.search_activity.maxConcurrent = <integer>
+display.visualizations.custom.splunk_health.search_activity.warningThreshold = <integer>
+display.visualizations.custom.splunk_health.search_activity.criticalThreshold = <integer>
+
+display.visualizations.custom.splunk_health.index_storage.colorTheme = <string>
+display.visualizations.custom.splunk_health.index_storage.showGlow = <boolean>
+display.visualizations.custom.splunk_health.index_storage.animSpeed = <string>
+display.visualizations.custom.splunk_health.index_storage.cellSize = <string>
+display.visualizations.custom.splunk_health.index_storage.sortBy = <string>
+
+display.visualizations.custom.splunk_health.scheduler_health.colorTheme = <string>
+display.visualizations.custom.splunk_health.scheduler_health.showGlow = <boolean>
+display.visualizations.custom.splunk_health.scheduler_health.animSpeed = <string>
+display.visualizations.custom.splunk_health.scheduler_health.runtimeThreshold = <integer>
+

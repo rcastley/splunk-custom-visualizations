@@ -1,0 +1,36 @@
+<form class="splunk-formatter-section" section-label="Display">
+    <splunk-control-group label="Colour Theme" help="Visual theme for the tank">
+        <splunk-select name="{{VIZ_NAMESPACE}}.colorTheme" value="default">
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="neon">Neon</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Show Glow Effect" help="Glowing highlight when utilization is high">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Animation Speed" help="Speed of bubbles and wave effects">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.animSpeed" value="medium">
+            <option value="slow">Slow</option>
+            <option value="medium">Medium</option>
+            <option value="fast">Fast</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Thresholds">
+    <splunk-control-group label="Max Concurrent Slots" help="Maximum concurrent search slots (capacity)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.maxConcurrent" value="50">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Warning Threshold" help="Percentage at which the gauge turns yellow (0-100)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.warningThreshold" value="60">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Critical Threshold" help="Percentage at which the gauge turns red (0-100)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.criticalThreshold" value="80">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>

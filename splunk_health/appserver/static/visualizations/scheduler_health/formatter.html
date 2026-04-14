@@ -1,0 +1,28 @@
+<form class="splunk-formatter-section" section-label="Display">
+    <splunk-control-group label="Colour Theme" help="Visual theme for the tubes">
+        <splunk-select name="{{VIZ_NAMESPACE}}.colorTheme" value="default">
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="neon">Neon</option>
+        </splunk-select>
+    </splunk-control-group>
+    <splunk-control-group label="Show Glow Effect" help="Glow on tubes with problematic values">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showGlow" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Animation Speed" help="Speed of wave and bubble animations">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.animSpeed" value="medium">
+            <option value="slow">Slow</option>
+            <option value="medium">Medium</option>
+            <option value="fast">Fast</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Thresholds">
+    <splunk-control-group label="Runtime Threshold" help="Seconds that maps to 100% runtime fill">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.runtimeThreshold" value="30">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
