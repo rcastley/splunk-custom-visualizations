@@ -335,10 +335,16 @@ Splunk displays a `preview.png` in the visualization picker when the user select
 | **Content** | Fill the full 116×76 area — no gaps, borders, or empty margins. Show a recognizable, moderately detailed representation of the viz (not too minimal, not too busy) |
 | **Background** | Use the viz's typical dark background color (e.g., `#1a1a2e`, `#0d1117`) — not transparent, since the picker has its own background |
 
-**Prerequisite:** Generating `preview.png` requires Python 3 with the **Pillow** library. If not already installed:
+**Prerequisite:** Generating `preview.png` requires Python 3 with the **Pillow** library. **Always use a virtual environment** — never install packages directly on the user's system with `pip install --break-system-packages` or bare `pip install`. Create or reuse a venv:
 
 ```bash
-pip3 install Pillow
+python3 -m venv .venv && source .venv/bin/activate && pip install Pillow
+```
+
+If `.venv/` already exists in the repo, just activate it:
+
+```bash
+source .venv/bin/activate
 ```
 
 **Generation script** — `generate_preview.py` is a temporary helper that creates `preview.png` for the viz. Place it alongside the viz source, run it once, then delete it. The script draws a simplified representation of the viz type on a 116×76 canvas.
@@ -373,7 +379,7 @@ import math, os
 try:
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:
-    print("ERROR: Pillow is required. Install with: pip3 install Pillow")
+    print("ERROR: Pillow is required. Install with: source .venv/bin/activate && pip install Pillow")
     raise SystemExit(1)
 
 W, H = 116, 76
@@ -1164,6 +1170,21 @@ define([
     - **Final newline**: file ends with exactly one newline
     - **No bare URLs**: use `[text](url)` for links
     - **No HTML**: use Markdown equivalents
+
+31. **Always use a Python virtual environment**. When running Python scripts (preview image generation, icon creation, data processing, or any task requiring `pip install`), **never install packages directly on the user's system**. Always create or reuse a virtual environment:
+
+    ```bash
+    # Create (first time)
+    python3 -m venv .venv && source .venv/bin/activate && pip install Pillow
+
+    # Reuse (subsequent times)
+    source .venv/bin/activate
+    ```
+
+    - Never use `pip install --break-system-packages` or bare `pip install` outside a venv
+    - If `.venv/` already exists in the repo, activate it rather than creating a new one
+    - Add `.venv/` to the repo's `.gitignore` if not already present
+    - The venv is a local development tool — it is never included in Splunk app tarballs
 
 ## Step 3: Generate Build Script
 
