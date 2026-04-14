@@ -1,0 +1,29 @@
+{
+  "label": "Search Activity",
+  "defaultSize": { "width": 600, "height": 250 },
+  "noDataMessage": "Awaiting search data",
+  "dependencies": [],
+  "fields": [
+    { "name": "_numRows", "label": "Number of Search Types", "type": "slider", "min": 1, "max": 5, "step": 1, "default": 3 }
+  ],
+  "formatter": [
+    { "name": "colorTheme", "label": "Colour Theme", "type": "select", "options": ["default", "dark", "neon"], "default": "default" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "animSpeed", "label": "Animation Speed", "type": "radio", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "maxConcurrent", "label": "Max Concurrent Slots", "type": "text", "default": "50" },
+    { "name": "warningThreshold", "label": "Warning Threshold", "type": "text", "default": "60" },
+    { "name": "criticalThreshold", "label": "Critical Threshold", "type": "text", "default": "80" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "rowCountField": "_numRows",
+    "columns": ["type", "count"],
+    "sampleRows": [
+      ["scheduled", "18"],
+      ["ad-hoc", "7"],
+      ["other", "3"],
+      ["scheduled", "25"],
+      ["ad-hoc", "12"]
+    ]
+  }
+}

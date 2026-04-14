@@ -26,11 +26,9 @@ Glass-skeuomorphic arc gauge showing daily Splunk license consumption as a perce
 
 ```spl
 | rest /services/licenser/pools
-| stats sum(used_bytes) as used_bytes
-| join type=outer [| rest /services/licenser/groups | search is_active=1 | eval quota_bytes=if(quota>=9999999999999,0,quota) | stats sum(quota_bytes) as quota_bytes]
 | eval used_gb=round(used_bytes/1024/1024/1024,2)
-| eval quota_gb=round(quota_bytes/1024/1024/1024,2)
-| table used_gb quota_gb
+| eval quota_gb=round(effective_quota/1024/1024/1024,2)
+| stats sum(used_gb) as used_gb, max(quota_gb) as quota_gb
 | appendpipe [| stats count | where count=0 | eval _status="Awaiting license data", used_gb=0, quota_gb=0]
 ```
 

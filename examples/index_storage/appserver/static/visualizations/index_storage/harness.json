@@ -1,0 +1,28 @@
+{
+  "label": "Index Storage",
+  "defaultSize": { "width": 800, "height": 400 },
+  "noDataMessage": "Awaiting index data",
+  "dependencies": [],
+  "fields": [],
+  "formatter": [
+    { "name": "colorTheme", "label": "Colour Theme", "type": "select", "options": ["default", "dark", "neon"], "default": "default" },
+    { "name": "showGlow", "label": "Show Glow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "animSpeed", "label": "Animation Speed", "type": "radio", "options": ["slow", "medium", "fast"], "default": "medium" },
+    { "name": "cellSize", "label": "Cell Size", "type": "select", "options": ["auto", "small", "medium", "large"], "default": "auto" },
+    { "name": "sortBy", "label": "Sort By", "type": "select", "options": ["size", "name"], "default": "size" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["title", "sizeGB", "hotGB", "warmGB", "coldGB"],
+    "sampleRows": [
+      ["main", "45.20", "8.50", "18.70", "18.00"],
+      ["_internal", "12.80", "3.20", "5.60", "4.00"],
+      ["web_logs", "38.50", "12.10", "15.40", "11.00"],
+      ["security", "22.30", "5.80", "9.50", "7.00"],
+      ["metrics", "8.90", "2.10", "3.80", "3.00"],
+      ["network", "31.60", "7.40", "13.20", "11.00"],
+      ["app_events", "5.40", "1.80", "2.10", "1.50"],
+      ["audit", "2.10", "0.60", "0.90", "0.60"]
+    ]
+  }
+}

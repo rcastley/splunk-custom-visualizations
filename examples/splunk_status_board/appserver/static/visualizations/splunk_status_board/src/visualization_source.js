@@ -425,13 +425,11 @@ define([
 
             // ── Layout calculations ──
             var padX = Math.max(12, w * 0.03);
-            var padY = Math.max(12, h * 0.04);
-            var titleFS = Math.max(10, Math.min(16, w * 0.022));
-            var titleH = titleFS + padY;
+            var padY = Math.max(8, h * 0.02);
             var legendH = Math.max(20, h * 0.06);
 
             var availW = w - padX * 2;
-            var availH = h - titleH - legendH - padY;
+            var availH = h - padY * 2 - legendH;
 
             gridCols = Math.max(1, Math.min(gridCols, components.length));
             var gridRows = Math.ceil(components.length / gridCols);
@@ -448,14 +446,7 @@ define([
             var totalGridW = tileW * gridCols + gapX * (gridCols - 1);
             var totalGridH = tileH * gridRows + gapY * (gridRows - 1);
             var offsetX = padX + (availW - totalGridW) / 2;
-            var offsetY = titleH + (availH - totalGridH) / 2;
-
-            // ── Draw title ──
-            ctx.font = '600 ' + titleFS + 'px sans-serif';
-            ctx.fillStyle = theme.text;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'top';
-            ctx.fillText('COMPONENT STATUS', w / 2, Math.max(4, padY * 0.3));
+            var offsetY = padY + (availH - totalGridH) / 2;
 
             // ── Draw tiles ──
             this._hitRects = [];
