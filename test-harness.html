@@ -710,7 +710,9 @@ function harness() {
 
         loadFontCSS: function() {
             var fontPath = this.manifestConfig.fontCSS;
-            if (!fontPath || document.getElementById('harness-font-css')) return;
+            if (!fontPath) return;
+            var existing = document.getElementById('harness-font-css');
+            if (existing) existing.remove();
             var link = document.createElement('link');
             link.id = 'harness-font-css';
             link.rel = 'stylesheet';
