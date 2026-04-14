@@ -502,7 +502,7 @@ define([
                 // Draw hostname label (top of cell)
                 ctx.save();
                 ctx.font = hostFS + 'px sans-serif';
-                ctx.fillStyle = theme.text;
+                ctx.fillStyle = '#ffffff';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
                 var displayHost = truncateText(ctx, fwd.host, cellW - 8);
@@ -652,6 +652,8 @@ define([
             var rect = this.el.getBoundingClientRect();
             var dpr = window.devicePixelRatio || 1;
             var ctx = this.canvas.getContext('2d');
+            if (!ctx) return;
+            if (rect.width <= 0 || rect.height <= 0) return;
             ctx.scale(dpr, dpr);
             var w = rect.width;
             var h = rect.height;

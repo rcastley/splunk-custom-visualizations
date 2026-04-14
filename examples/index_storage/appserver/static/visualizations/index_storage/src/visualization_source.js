@@ -748,6 +748,8 @@ define([
             var rect = this.el.getBoundingClientRect();
             var dpr = window.devicePixelRatio || 1;
             var ctx = this.canvas.getContext('2d');
+            if (!ctx) return;
+            if (rect.width <= 0 || rect.height <= 0) return;
             ctx.scale(dpr, dpr);
             var w = rect.width;
             var h = rect.height;

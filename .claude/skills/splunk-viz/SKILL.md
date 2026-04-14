@@ -585,6 +585,8 @@ define([
             var rect = this.el.getBoundingClientRect();
             var dpr = window.devicePixelRatio || 1;
             var ctx = this.canvas.getContext('2d');
+            if (!ctx) return;
+            if (rect.width <= 0 || rect.height <= 0) return;
             ctx.scale(dpr, dpr);
             var w = rect.width;
             var h = rect.height;
@@ -640,9 +642,9 @@ define([
 
 2. **Always handle HiDPI displays**. Set `canvas.width/height` to `rect.width * dpr` and call `ctx.scale(dpr, dpr)`. All drawing math uses the CSS pixel dimensions (`rect.width`, `rect.height`), NOT `canvas.width/height`.
 
-3. **Never assume canvas is visible**. Check `rect.width > 0 && rect.height > 0` before drawing. Splunk may call `updateView` while the viz is hidden.
+3. **Never assume canvas is visible**. Check `rect.width > 0 && rect.height > 0` before drawing. Splunk may call `updateView` while the viz is hidden. This check is required in **every method that draws** — not just `updateView`, but also `_drawStatusMessage` and any other custom drawing methods.
 
-4. **Always null-check `ctx`**. `canvas.getContext('2d')` can return null if the canvas is detached.
+4. **Always null-check `ctx`**. `canvas.getContext('2d')` can return null if the canvas is detached. Add `if (!ctx) return` after every `getContext('2d')` call — in `updateView`, `_drawStatusMessage`, and any other method that obtains a context.
 
 5. **Reset `ctx.shadowBlur` after use**. Canvas shadow state leaks into subsequent draw calls if not explicitly reset to 0.
 
@@ -1092,6 +1094,8 @@ define([
         var rect = this.el.getBoundingClientRect();
         var dpr = window.devicePixelRatio || 1;
         var ctx = this.canvas.getContext('2d');
+        if (!ctx) return;
+        if (rect.width <= 0 || rect.height <= 0) return;
         ctx.scale(dpr, dpr);
         var w = rect.width;
         var h = rect.height;
