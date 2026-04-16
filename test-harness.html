@@ -677,7 +677,7 @@ function harness() {
                 this.dataValues[def.harness.fields[j].name] = def.harness.fields[j].default;
             }
 
-            this.loadFontCSS();
+            var fontsReady = this.loadFontCSS();
             this.setStatus('nodata', 'Loading ' + name + '...');
 
             self.loadDependencies(def, function() {
@@ -697,10 +697,12 @@ function harness() {
                             return;
                         }
                         self.currentInstance = instance;
-                        // Use requestAnimationFrame to ensure layout is complete before first render
-                        requestAnimationFrame(function() {
+                        // Wait for fonts, then use rAF to ensure layout is complete before first render
+                        fontsReady.then(function() {
                             requestAnimationFrame(function() {
-                                self.triggerUpdate();
+                                requestAnimationFrame(function() {
+                                    self.triggerUpdate();
+                                });
                             });
                         });
                     })
@@ -710,14 +712,32 @@ function harness() {
 
         loadFontCSS: function() {
             var fontPath = this.manifestConfig.fontCSS;
-            if (!fontPath) return;
+            if (!fontPath) return Promise.resolve();
+            var cssReady;
             var existing = document.getElementById('harness-font-css');
-            if (existing) existing.remove();
-            var link = document.createElement('link');
-            link.id = 'harness-font-css';
-            link.rel = 'stylesheet';
-            link.href = fontPath;
-            document.head.appendChild(link);
+            if (existing) {
+                cssReady = Promise.resolve();
+            } else {
+                cssReady = new Promise(function(resolve) {
+                    var link = document.createElement('link');
+                    link.id = 'harness-font-css';
+                    link.rel = 'stylesheet';
+                    link.href = fontPath;
+                    link.onload = function() { resolve(); };
+                    link.onerror = function() { resolve(); };
+                    document.head.appendChild(link);
+                });
+            }
+            return cssReady.then(function() {
+                if (!document.fonts || !document.fonts.forEach) return;
+                // @font-face rules register in 'unloaded' status — force activation,
+                // otherwise the first canvas draw falls back until the font is used once.
+                var loaders = [];
+                document.fonts.forEach(function(ff) {
+                    loaders.push(ff.load().catch(function() {}));
+                });
+                return Promise.all(loaders).then(function() { return document.fonts.ready; });
+            });
         },
 
         loadDependencies: function(def, callback) {
