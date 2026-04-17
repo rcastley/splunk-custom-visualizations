@@ -1201,6 +1201,25 @@ define([
     - Add `.venv/` to the repo's `.gitignore` if not already present
     - The venv is a local development tool — it is never included in Splunk app tarballs
 
+32. **Smooth real-time numeric values with a client-side tween.** Splunk real-time searches typically bin at 200 ms–1 s, so the viz receives a new sample roughly every half-second. Rendering raw values directly causes smooth-motion elements (needles, bars, rotations, positions) to snap between samples — visible jerkiness that undermines a live-data feel. For any viz where the data is numeric and continuous, decouple the render rate from the data rate with a client-side ease-out tween:
+
+    - `updateView` stores the latest sample as a **target**, and snaps **current** to target on first sample so the viz doesn't sweep from 0 on dashboard load.
+    - A short-lived `setInterval(16 ms)` or `requestAnimationFrame` loop lerps `current → target` with a frame-rate-independent ease-out:
+      ```
+      current += (target − current) × (1 − exp(−smoothness × dt))
+      ```
+    - Each tick redraws the viz using `current`. Idle-stop the timer when the value has settled for a few frames to save CPU; restart it from the next `updateView` that changes the target.
+    - Expose a `smoothness` formatter setting (per-second follow speed). Default `8` closes ~95% of the gap within 500 ms — practically indistinguishable from a snap for sharp transitions but removes jitter during dwell. `0` disables tweening and restores snap behaviour.
+    - Clear the timer in `destroy()`.
+
+    **When to apply:**
+
+    - ✅ Continuous numerics: metrics, percentages, rates, utilisation, temperature, pressure, levels, rotation angles, 2D coordinates.
+    - ❌ Discrete / categorical / boolean values: enum status, string states, on/off toggles, integer counts where increments matter.
+    - ❌ Tables or ranked lists where row positions reorder between samples — tweening re-orderings reads as glitchy, not smooth.
+
+    See the **Smoothing Between SPL Samples** recipe for the full implementation covering single-value tweens and multi-entity tweens keyed by identifier.
+
 ## Step 3: Generate Build Script
 
 Generate one build shell script per viz. **Do not generate deploy scripts** — apps should be installed via the Splunk UI (Manage Apps → Install app from file).
@@ -1377,6 +1396,169 @@ function findHitRect(hitRects, clickX, clickY) {
     return null;
 }
 ```
+
+### Smoothing Between SPL Samples (client-side tween)
+
+See rule 32. Two variants:
+
+- **Variant A — single numeric value** (gauges, single-value displays, rotations).
+- **Variant B — per-entity positions** (anything that moves multiple items on the canvas, keyed by an identifier from the data).
+
+Both use the same frame-rate-independent ease-out formula and the same timer/cleanup structure — only the state shape and the sync step differ.
+
+**Variant A — single numeric value:**
+
+```javascript
+// ── In initialize ──
+this._currentValue = 0;
+this._targetValue = 0;
+this._animTimer = null;
+this._lastFrameTime = 0;
+this._hasFirstSample = false;
+this._idleFrames = 0;
+this._smoothness = 8;
+this._lastData = null;
+this._lastConfig = null;
+
+// ── In updateView, after guards and extracting rawVal from data ──
+var ns = this.getPropertyNamespaceInfo().propertyNamespace;
+var sm = parseFloat(config[ns + 'smoothness']);
+if (isNaN(sm) || sm < 0) sm = 8;
+this._smoothness = sm;
+
+this._targetValue = rawVal;
+if (!this._hasFirstSample || sm === 0) {
+    this._currentValue = rawVal;
+    this._hasFirstSample = true;
+}
+
+this._idleFrames = 0;
+this._lastData = data;
+this._lastConfig = config;
+this._draw();                        // draws using this._currentValue
+if (sm > 0) this._startAnimLoop();
+```
+
+**Variant B — per-entity positions:**
+
+```javascript
+// ── In initialize ──
+this._entityState = {};              // keyed by identifier
+this._entityScopeId = null;          // optional: reset state when scope changes
+this._animTimer = null;
+this._lastFrameTime = 0;
+this._idleFrames = 0;
+this._smoothness = 8;
+this._lastData = null;
+this._lastConfig = null;
+
+// ── In updateView, after guards and building the entity list from data ──
+var ns = this.getPropertyNamespaceInfo().propertyNamespace;
+var sm = parseFloat(config[ns + 'smoothness']);
+if (isNaN(sm) || sm < 0) sm = 8;
+this._smoothness = sm;
+
+// Optional: reset state when the coordinate scope changes
+if (data.scopeId != null && data.scopeId !== this._entityScopeId) {
+    this._entityState = {};
+    this._entityScopeId = data.scopeId;
+}
+
+for (var i = 0; i < data.entities.length; i++) {
+    var e = data.entities[i];
+    if (e.x == null || e.y == null) continue;
+    var s = this._entityState[e.id];
+    if (!s) {
+        // First sample for this entity — snap to avoid sweeping from (0,0)
+        this._entityState[e.id] = {
+            currentX: e.x, currentY: e.y,
+            targetX:  e.x, targetY:  e.y
+        };
+    } else {
+        s.targetX = e.x;
+        s.targetY = e.y;
+        if (sm === 0) { s.currentX = e.x; s.currentY = e.y; }
+    }
+}
+
+this._idleFrames = 0;
+this._lastData = data;
+this._lastConfig = config;
+this._draw();                        // draws each entity using _entityState[id].currentX/Y
+if (sm > 0) this._startAnimLoop();
+```
+
+**Shared timer, cleanup, and redraw path** (add to the viz's method object):
+
+```javascript
+_startAnimLoop: function() {
+    if (this._animTimer) return;
+    var self = this;
+    this._lastFrameTime = Date.now();
+    this._animTimer = setInterval(function() {
+        var now = Date.now();
+        var dt = (now - self._lastFrameTime) / 1000;
+        self._lastFrameTime = now;
+
+        // Frame-rate-independent exponential ease-out
+        var alpha = 1 - Math.exp(-self._smoothness * dt);
+        if (alpha > 1) alpha = 1;
+
+        // Variant A:
+        self._currentValue += (self._targetValue - self._currentValue) * alpha;
+        var maxDelta = Math.abs(self._targetValue - self._currentValue);
+
+        // Variant B (replace the Variant A lines above with this block):
+        // var maxDelta = 0;
+        // var ids = Object.keys(self._entityState);
+        // for (var i = 0; i < ids.length; i++) {
+        //     var s = self._entityState[ids[i]];
+        //     var dx = s.targetX - s.currentX;
+        //     var dy = s.targetY - s.currentY;
+        //     s.currentX += dx * alpha;
+        //     s.currentY += dy * alpha;
+        //     var d = Math.abs(dx) + Math.abs(dy);
+        //     if (d > maxDelta) maxDelta = d;
+        // }
+
+        self._draw();
+
+        // Idle-stop when settled. Threshold depends on value range:
+        //   - Single value: 0.05 works for 0–100 percentages; scale for larger ranges.
+        //   - 2D coordinates: ~0.5 world-units; tune to your coordinate space.
+        if (maxDelta < 0.05) {
+            self._idleFrames += 1;
+            if (self._idleFrames >= 3) {
+                // Snap final frame exactly on target, then stop
+                // (Variant A: self._currentValue = self._targetValue)
+                // (Variant B: loop ids, set currentX=targetX, currentY=targetY)
+                self._draw();
+                self._stopAnimLoop();
+            }
+        } else {
+            self._idleFrames = 0;
+        }
+    }, 16);
+},
+
+_stopAnimLoop: function() {
+    if (this._animTimer) {
+        clearInterval(this._animTimer);
+        this._animTimer = null;
+    }
+},
+
+destroy: function() {
+    this._stopAnimLoop();
+    SplunkVisualizationBase.prototype.destroy.apply(this, arguments);
+}
+```
+
+**Notes:**
+
+- `_draw()` is the viz's render helper. It reads from `this._lastData` / `this._lastConfig` and uses `this._currentValue` (Variant A) or `this._entityState[id].currentX/Y` (Variant B) for drawn values. The same helper is called from both `updateView` (fresh data) and the timer (cached data, tweened values).
+- The timer also needs to run when the viz receives a `_status` sentinel from the SPL `appendpipe` fallback (rule 27) — stop it in the status-message branch of `updateView` so the loop doesn't fire behind the placeholder.
+- For vizs where the full `_draw()` is too expensive to run at 60 FPS, layer a static-scene snapshot via `getImageData` / `putImageData` so the timer only redraws the moving parts. Use `requestAnimationFrame` for that variant to avoid `setInterval` backlogs when a frame runs long.
 
 ## Splunk Design Guidelines Reference
 
