@@ -1,6 +1,45 @@
 {
   "pathTemplate": "examples/{name}/appserver/static/visualizations/{name}",
   "fontCSS": "shared/fonts.css",
+  "categories": {
+    "Splunk": [
+      "splunk_status_board",
+      "license_gauge",
+      "forwarder_heatmap",
+      "resource_gauge",
+      "scheduler_health",
+      "search_activity",
+      "index_storage",
+      "indexing_pipeline_flow",
+      "index_universe",
+      "data_pipeline"
+    ],
+    "Sports": [
+      "worldcup_bets",
+      "odds_ticker",
+      "match_heatmap",
+      "bet_radar",
+      "wc_bracket",
+      "liability_gauge",
+      "bet_flow_map",
+      "goal_timeline",
+      "market_donut"
+    ],
+    "Motorsport": [
+      "f1_track_info",
+      "f1_ers"
+    ],
+    "General": [
+      "custom_single_value",
+      "component_status_board",
+      "gauge",
+      "radar_chart",
+      "line_trend_chart",
+      "live_ticker",
+      "network_topology",
+      "arcade_leaderboard"
+    ]
+  },
   "vizs": [
     "custom_single_value",
     "component_status_board",

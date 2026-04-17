@@ -747,6 +747,17 @@ define([
 
     Always include a system font fallback (e.g., `sans-serif`) so the viz renders legibly if the embedded font fails to load.
 
+    **Harness-vs-Splunk gotcha: OpenType feature leakage**. In Splunk the viz renders inside an iframe, so parent-document CSS does not reach it. In the test harness the viz renders into `#vizRoot` in the main document and inherits the harness chrome's styles — including `font-feature-settings`. Canvas 2D text rendering respects inherited `font-feature-settings`, and OpenType feature tags are not namespaced: `ss01` on the harness's UI font (e.g. Host Grotesk) and `ss01` on a viz font (e.g. Formula1) are unrelated features that happen to share a 4-letter tag. When the harness enables stylistic sets for its own UI font, those flags silently activate same-tagged alternates in the viz font, producing letterforms (broken-edge S, A, E, etc.) that do not appear in Splunk. Symptom: identical `@font-face` data, identical `ctx.font` string, different glyphs between harness and Splunk. Fix lives in the harness, not the viz — reset the features on the viz container so nothing leaks in:
+
+    ```css
+    #vizRoot, #vizRoot * {
+        font-feature-settings: normal;
+        font-variant-ligatures: normal;
+    }
+    ```
+
+    When diagnosing a harness-vs-Splunk font mismatch, first confirm it's not this by inspecting the viz font's GSUB feature list (`fontTools.ttLib.TTFont(...)['GSUB'].table.FeatureList`) for `ssNN`/`cvNN` tags that overlap with whatever `font-feature-settings` the harness applies to `html, body`. If they overlap, this is the cause. Do not change `shared/fonts.css` or `visualization.css` to "fix" it — they are correct; the harness was leaking.
+
 11. **JSON data files** (e.g., lookup tables, coordinate maps) can be placed next to `visualization.js` and loaded with `require('../filename.json')` — webpack will bundle them inline.
 
 12. **No `this` in helper functions**. Keep drawing helpers as pure functions that take `ctx`, dimensions, and data as arguments. Only the four lifecycle methods (`initialize`, `getInitialDataParams`, `formatData`, `updateView`) plus `destroy` should use `this`.
