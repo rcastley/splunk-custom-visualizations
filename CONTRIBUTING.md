@@ -96,13 +96,31 @@ $SPLUNK_HOME/bin/splunk restart
 
 Use `/_bump` in the Splunk URL to reload static assets without a full restart when changing only JS/CSS.
 
+## Documentation
+
+All top-level documentation (`README.md`, `INSTRUCTIONS.md`, `CONTRIBUTING.md`, `EMBEDDING.md`, `TEST-HARNESS.md`) must pass `markdownlint-cli2`. Viz-specific READMEs under `examples/` and `splunk_health/` are ignored.
+
+Run the linter locally before opening a PR:
+
+```bash
+npx --yes markdownlint-cli2
+```
+
+Rules and ignores live in [.markdownlint-cli2.jsonc](.markdownlint-cli2.jsonc). The [Lint workflow](.github/workflows/lint.yml) runs on every push and PR that touches a markdown file.
+
+Common gotchas:
+
+- **Tables containing SPL pipes** — escape literal `|` inside code spans as `\|` (e.g. `` `\| rest /services/server/health` ``), otherwise the markdown parser treats the pipe as a new column (MD056).
+- **Table separator row must match header style** — use `| --- | --- | --- |` with surrounding spaces, not `|---|---|---|`, to satisfy MD060.
+
 ## Submitting Changes
 
 1. Fork the repository and create a feature branch
 2. Make your changes following the rules above
 3. Test in Splunk — verify the visualization renders correctly in both light and dark themes
 4. Run `./build.sh {app_name}` to confirm the build succeeds
-5. Open a pull request with:
+5. Run `npx --yes markdownlint-cli2` if you touched any top-level `.md` files
+6. Open a pull request with:
    - A description of what the visualization does
    - A screenshot showing it in action
    - The SPL query used for testing

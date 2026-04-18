@@ -77,7 +77,8 @@ The `.claude/skills/splunk-viz/` directory contains a Claude Code skill that kno
 - Scaffold a Dashboard Studio app with a `vizs/` build pipeline for bundling multiple custom vizs
 - Generate Canvas 2D rendering code following Splunk's AMD module pattern
 - Handle HiDPI displays, real-time data, responsive sizing, and font embedding
-- Apply 29 battle-tested rules learned from building production visualizations
+- Smooth real-time numeric values with a client-side tween so gauges, bars, and motion elements don't snap between SPL samples
+- Apply 32 battle-tested rules learned from building production visualizations
 
 The skill is automatically available when you use Claude Code in this repo. Just describe what you want to visualize and it will generate the full app. You can also ask it to scaffold a full Dashboard Studio app — it generates the app skeleton, build script, test harness, and the `vizs/` directory structure for managing multiple visualizations.
 
@@ -88,15 +89,15 @@ The `splunk_health/` directory is a ready-to-deploy Splunk app that bundles eigh
 ![Splunk Health Dashboard](screenshots/splunk-health-dashboard.png)
 
 | Visualization | Panel | What it shows |
-|---------------|-------|---------------|
-| **Splunk Status Board** | Component tiles | Health of Splunk components (Indexer, Search Head, KV Store, etc.) via `| rest /services/server/health` |
-| **License Gauge** | Arc gauge | Daily license consumption vs quota via `| rest /services/licenser/pools` |
+| --- | --- | --- |
+| **Splunk Status Board** | Component tiles | Health of Splunk components (Indexer, Search Head, KV Store, etc.) via `\| rest /services/server/health` |
+| **License Gauge** | Arc gauge | Daily license consumption vs quota via `\| rest /services/licenser/pools` |
 | **Resource Gauge** | Triple arc | CPU, Memory, and Swap utilization via `index=_introspection` |
 | **Indexing Pipeline Flow** | Glass tubes | Queue fill levels for parsing → merging → typing → indexing via `index=_internal group=queue` |
 | **Forwarder Heatmap** | Cell grid | Forwarder staleness — green (recent) → yellow (stale) → red (missing) via `index=_internal group=tcpin_connections` |
-| **Search Activity** | Stacked glass tank | Search slot utilization by type (scheduled/ad-hoc/other) vs max concurrent via `| rest /services/server/status` |
+| **Search Activity** | Stacked glass tank | Search slot utilization by type (scheduled/ad-hoc/other) vs max concurrent via `\| rest /services/server/status` |
 | **Scheduler Health** | Horizontal tubes | Success rate, skip rate, and avg runtime — vital signs for the search scheduler via `index=_internal sourcetype=scheduler` |
-| **Index Storage** | Layered glass tanks | Per-index capacity usage with hot/warm/cold data temperature layers via `| rest /services/data/indexes` |
+| **Index Storage** | Layered glass tanks | Per-index capacity usage with hot/warm/cold data temperature layers via `\| rest /services/data/indexes` |
 
 Each visualization includes three colour themes (default, dark, neon), configurable warning/critical thresholds, and animated effects that intensify as conditions worsen.
 

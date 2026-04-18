@@ -195,7 +195,31 @@ To use a custom font in your visualization:
    // See the skill documentation for the full font-loading pattern
    ```
 
-## 10. Development Tips
+## 10. Smoothing Real-Time Data
+
+Splunk real-time searches typically bin at 200 ms–1 s, so a viz receives a new sample only every half-second or so. Rendering raw values directly causes anything meant to move smoothly — gauge needles, bar heights, rotations, 2D positions — to **snap** between samples. The jerkiness undermines the live-data feel.
+
+The skill applies a client-side ease-out tween that decouples the render rate from the data rate:
+
+1. `updateView` stores each new sample as a **target** value (snapping `current` to the first sample so the viz doesn't sweep from zero on dashboard load).
+2. A short `setInterval(16 ms)` or `requestAnimationFrame` loop lerps `current → target` each frame using a frame-rate-independent formula:
+
+   ```text
+   current += (target − current) × (1 − exp(−smoothness × dt))
+   ```
+
+3. Each tick redraws the viz using `current`. The timer idle-stops when the value has settled and restarts from the next `updateView` that changes the target.
+4. A `smoothness` formatter setting (per-second follow speed) controls how quickly `current` chases `target`. Default `8` closes ~95% of the gap within 500 ms — sharp transitions still look near-instant, but dwell-state jitter disappears. `0` disables the tween entirely and restores snap behaviour.
+
+### When to apply
+
+- ✅ **Continuous numerics** — metrics, percentages, rates, utilisation, temperature, pressure, rotation angles, 2D coordinates.
+- ❌ **Discrete / categorical / boolean values** — enum status, on/off toggles, integer counts where each increment matters.
+- ❌ **Tables or ranked lists where rows reorder between samples** — tweening reorderings reads as glitchy, not smooth.
+
+Ask Claude to "add smoothing" when generating a continuous-numeric viz, or see the **Smoothing Between SPL Samples** recipe in [`.claude/skills/splunk-viz/SKILL.md`](.claude/skills/splunk-viz/SKILL.md) for the full implementation (covering both single-value tweens and multi-entity tweens keyed by identifier).
+
+## 11. Development Tips
 
 - **ES5 only** in `visualization_source.js`. Use `var`, `function`, and `for`
   loops. No `const`, `let`, arrow functions, or template literals.
@@ -210,7 +234,7 @@ To use a custom font in your visualization:
 - **Test both themes.** Use the harness theme toggle to verify your viz looks
   correct in light and dark mode.
 
-## 11. Directory Structure Reference
+## 12. Directory Structure Reference
 
 ```text
 splunk-custom-visualizations/

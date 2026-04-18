@@ -5,7 +5,7 @@ By default, each visualization in this repo is a standalone Splunk app. But you 
 There are two approaches:
 
 | Approach | Best for |
-|----------|----------|
+| --- | --- |
 | **[Automated build pipeline](#automated-build-pipeline)** | New apps or apps that will bundle multiple vizs. Handles building, merging configs, version bumping, and packaging automatically. |
 | **[Manual embedding](#manual-embedding)** | Adding a single viz to an existing app quickly. |
 

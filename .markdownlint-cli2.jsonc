@@ -1,0 +1,20 @@
+{
+  "globs": [
+    "**/*.md"
+  ],
+  "ignores": [
+    "**/node_modules/**",
+    "dist/**",
+    ".claude/**",
+    ".venv/**",
+    "examples/**/README.md",
+    "splunk_health/**/README.md"
+  ],
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD033": false,
+    "MD041": false,
+    "MD024": { "siblings_only": true }
+  }
+}
