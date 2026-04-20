@@ -1212,6 +1212,14 @@ define([
     - Expose a `smoothness` formatter setting (per-second follow speed). Default `8` closes ~95% of the gap within 500 ms — practically indistinguishable from a snap for sharp transitions but removes jitter during dwell. `0` disables tweening and restores snap behaviour.
     - Clear the timer in `destroy()`.
 
+    **Choosing a smoothness value.** Smoothness is a rate constant, not a "level". Time to close 95% of the gap ≈ `3 / smoothness`. Dashboard Studio polls at ~1 Hz, so the tween's relationship to the poll interval matters:
+
+    - **High values (`10`–`14`)** — settle time ~200–300 ms, well inside the 1 s poll window. The needle chases, then rests until the next sample. You will see a subtle 1 Hz pulse between "active chase" and "still" phases. Best for analysis/coaching views where sub-second accuracy matters.
+    - **Default (`8`)** — ~375 ms settle. Compromise. Pulse is softer but still visible during sustained acceleration.
+    - **Low values (`2`–`4`)** — settle time ~750 ms–1.5 s, *longer than* the poll interval. The tween never finishes before the next sample arrives, so motion is continuous across poll boundaries and the 1 Hz pulse disappears entirely. Trade-off: the displayed value lags reality by ~1 s. Best for atmospheric / broadcast-style HUDs where "looks like a live TV telemetry overlay" matters more than instantaneous accuracy.
+
+    **Match smoothness across vizs on the same dashboard.** If one viz uses `smoothness=2` (cinematic lag) and another uses `smoothness=12` (responsive), related telemetry appears de-synced — the responsive one reacts first and the cinematic one trails, which reads as a bug. Pick one value per app and apply it as the default to every smoothing-enabled viz (JS initialiser, formatter input `value=`, and every `savedsearches.conf` example stanza).
+
     **When to apply:**
 
     - ✅ Continuous numerics: metrics, percentages, rates, utilisation, temperature, pressure, levels, rotation angles, 2D coordinates.
