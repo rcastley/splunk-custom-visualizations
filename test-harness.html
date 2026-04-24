@@ -506,7 +506,7 @@ tailwind.config = {
         align-items: center;
         gap: 9px;
         padding: 0 16px;
-        height: 34px;
+        min-height: 34px;
         font-size: 11.5px;
         letter-spacing: 0.08em;
         text-transform: uppercase;
@@ -540,6 +540,69 @@ tailwind.config = {
         font-family: 'JetBrains Mono', monospace;
     }
     .help p, .help li { font-size: 13px; line-height: 1.65; }
+
+    /* Asset preview strip */
+    .asset-strip {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 16px;
+        border-top: 1px solid var(--border);
+        background: var(--card-2);
+    }
+    .asset-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .asset-group .asset-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        flex-shrink: 0;
+    }
+    .asset-thumb {
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        background: var(--bg);
+        image-rendering: pixelated;
+        cursor: pointer;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .asset-thumb:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 6px var(--accent-glow);
+    }
+    .tele .asset-thumb { margin: 4px 0; }
+    .asset-thumb.missing {
+        opacity: 0.25;
+        border-color: var(--warn);
+        cursor: default;
+    }
+    .asset-thumb.missing:hover {
+        border-color: var(--warn);
+        box-shadow: none;
+    }
+    .asset-icon-label {
+        font-size: 9px;
+        color: var(--muted);
+        text-align: center;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0;
+    }
+    .asset-icon-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+    }
+    .asset-sep {
+        width: 1px;
+        align-self: stretch;
+        background: var(--border);
+    }
 
     /* Dashed divider */
     .splk-divider {
@@ -1098,6 +1161,31 @@ tailwind.config = {
                 <span class="k">Theme</span>
                 <span class="v" x-text="isDark ? 'dark' : 'light'"></span>
             </div>
+            <template x-if="selectedViz">
+                <div class="tele" style="gap:10px">
+                    <span class="k">Preview</span>
+                    <img class="asset-thumb"
+                         :src="vizPreviewPath()"
+                         :class="{ missing: !assetStatus.preview }"
+                         @load="assetStatus.preview = true"
+                         @error="assetStatus.preview = false; $el.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22116%22 height=%2276%22><rect fill=%22%23222%22 width=%22116%22 height=%2276%22/><text x=%2258%22 y=%2242%22 fill=%22%23666%22 text-anchor=%22middle%22 font-size=%2210%22>missing</text></svg>'"
+                         style="height:76px; width:116px" title="preview.png (116x76)">
+                </div>
+            </template>
+            <template x-if="selectedViz">
+                <div class="tele" style="gap:8px">
+                    <span class="k">Icons</span>
+                    <template x-for="icon in assetIcons" :key="icon.file">
+                        <img class="asset-thumb"
+                             :src="vizIconPath(icon.file)"
+                             :class="{ missing: !icon.ok }"
+                             @load="icon.ok = true"
+                             @error="icon.ok = false; $el.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22><rect fill=%22%23222%22 width=%2236%22 height=%2236%22 rx=%222%22/><text x=%2218%22 y=%2222%22 fill=%22%23666%22 text-anchor=%22middle%22 font-size=%228%22>n/a</text></svg>'"
+                             :style="'height:' + icon.actual + 'px; width:' + icon.actual + 'px'"
+                             :title="icon.file + ' (' + icon.actual + 'x' + icon.actual + ')'">
+                    </template>
+                </div>
+            </template>
             <div class="tele ml-auto">
                 <span class="k">Mode</span>
                 <span class="v accent caret" x-text="isNoData ? 'no-data' : 'sample'"></span>
@@ -1420,6 +1508,13 @@ function harness() {
         gridRows: [],
         customSampleRows: null,
         customColumns: null,
+        assetStatus: { preview: false },
+        assetIcons: [
+            { file: 'appIcon.png', actual: 36, ok: false },
+            { file: 'appIcon_2x.png', actual: 72, ok: false },
+            { file: 'appIconAlt.png', actual: 36, ok: false },
+            { file: 'appIconAlt_2x.png', actual: 72, ok: false }
+        ],
 
         init: function() {
             if (this._initialized) return;
@@ -1507,6 +1602,29 @@ function harness() {
             return '';
         },
 
+        vizPreviewPath: function() {
+            var def = this.vizDefs[this.selectedViz];
+            if (!def) return '';
+            return def.path + '/preview.png';
+        },
+
+        vizIconPath: function(filename) {
+            var def = this.vizDefs[this.selectedViz];
+            if (!def) return '';
+            // App icons live at {app_root}/static/, derive from viz path
+            // path = examples/{name}/appserver/static/visualizations/{name}
+            // app root = everything before /appserver/
+            var appRoot = def.path.replace(/\/appserver\/.*$/, '');
+            return appRoot + '/static/' + filename;
+        },
+
+        resetAssetStatus: function() {
+            this.assetStatus.preview = false;
+            for (var i = 0; i < this.assetIcons.length; i++) {
+                this.assetIcons[i].ok = false;
+            }
+        },
+
         pickerCategoryCount: function() {
             for (var i = 0; i < this.vizGroups.length; i++) {
                 if (this.vizGroups[i].category === this.pickerCategory) return this.vizGroups[i].vizs.length;
@@ -1567,6 +1685,7 @@ function harness() {
             this.customSampleRows = null;
             this.customColumns = null;
             this.currentHarness = def.harness;
+            this.resetAssetStatus();
 
             if (def.harness.defaultSize) {
                 this.vizWidth = def.harness.defaultSize.width;
@@ -1814,7 +1933,8 @@ function harness() {
         fitToContainer: function() {
             var rect = this.$refs.vizWrapper.getBoundingClientRect();
             this.vizWidth = Math.floor(rect.width - 32);
-            this.vizHeight = Math.floor(rect.height - 32);
+            // Reserve 22px for scope readout above + 16px padding below
+            this.vizHeight = Math.floor(rect.height - 54);
             this.resizeViz();
         },
 
