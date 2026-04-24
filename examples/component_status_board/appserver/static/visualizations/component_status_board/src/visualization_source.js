@@ -549,6 +549,10 @@ define([
 
         reflow: function() {
             this.invalidateUpdateView();
+        },
+
+        destroy: function() {
+            SplunkVisualizationBase.prototype.destroy.call(this);
         }
     });
 });
