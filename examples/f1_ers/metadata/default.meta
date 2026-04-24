@@ -1,2 +1,5 @@
+[]
+access = read : [ * ], write : [ admin, sc_admin ]
+
 [visualizations/f1_ers]
 export = system

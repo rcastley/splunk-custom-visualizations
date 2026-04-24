@@ -1,2 +1,5 @@
+[]
+access = read : [ * ], write : [ admin, sc_admin ]
+
 [visualizations/line_trend_chart]
 export = system

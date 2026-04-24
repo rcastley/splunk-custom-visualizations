@@ -1,5 +1,5 @@
 []
-access = read : [ * ], write : [ admin ]
+access = read : [ * ], write : [ admin, sc_admin ]
 
 [visualizations/component_status_board]
 export = system
