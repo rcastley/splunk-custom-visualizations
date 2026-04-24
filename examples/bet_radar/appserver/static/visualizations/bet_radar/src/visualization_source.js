@@ -513,7 +513,7 @@ define([
 
             // Message text below emoji
             ctx.font = '500 ' + fontSize + 'px sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.30)';
+            ctx.fillStyle = 'rgba(255,255,255,0.50)';
             ctx.fillText(message, w / 2, h / 2 + emojiSize * 0.3);
 
             ctx.textAlign = 'start';

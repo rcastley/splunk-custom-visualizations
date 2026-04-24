@@ -603,7 +603,7 @@ define([
             ctx.fillText('\uD83C\uDFCE\uFE0F', w / 2, h / 2 - fontSize * 0.5 - gap);
 
             ctx.font = '500 ' + fontSize + 'px ' + F1_FONT;
-            ctx.fillStyle = 'rgba(255,255,255,0.30)';
+            ctx.fillStyle = 'rgba(255,255,255,0.50)';
             ctx.fillText(message, w / 2, h / 2 + emojiSize * 0.3);
 
             ctx.textAlign = 'start';
