@@ -50,6 +50,11 @@ jobs:
               find "$viz_dir" -maxdepth 1 -type f \( -name "*.json" -o -name "*.csv" -o -name "*.png" \) \
                 ! -name "harness.json" ! -name "package.json" ! -name "package-lock.json" \
                 -exec cp {} "$dest/" \;
+              # Copy app icons (static/) for asset preview in test harness
+              if [ -d "examples/$viz_name/static" ]; then
+                mkdir -p "_site/examples/$viz_name/static"
+                cp examples/$viz_name/static/appIcon*.png "_site/examples/$viz_name/static/" 2>/dev/null || true
+              fi
             fi
           done
 
