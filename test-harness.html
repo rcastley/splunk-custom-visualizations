@@ -1620,9 +1620,14 @@ function harness() {
 
         resetAssetStatus: function() {
             this.assetStatus.preview = false;
-            for (var i = 0; i < this.assetIcons.length; i++) {
-                this.assetIcons[i].ok = false;
-            }
+            // Replace the array to force Alpine to re-render x-for items,
+            // clearing any stale @error fallback src from the previous viz
+            this.assetIcons = [
+                { file: 'appIcon.png', actual: 36, ok: false },
+                { file: 'appIcon_2x.png', actual: 72, ok: false },
+                { file: 'appIconAlt.png', actual: 36, ok: false },
+                { file: 'appIconAlt_2x.png', actual: 72, ok: false }
+            ];
         },
 
         pickerCategoryCount: function() {
