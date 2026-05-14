@@ -1,0 +1,11 @@
+{
+  "name": "splunk-custom-visualizations-harness",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.js -i src/harness.tailwind.css -o shared/harness.css --minify",
+    "watch:css": "tailwindcss -c tailwind.config.js -i src/harness.tailwind.css -o shared/harness.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.13"
+  }
+}

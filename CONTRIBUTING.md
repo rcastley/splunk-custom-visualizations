@@ -96,6 +96,19 @@ $SPLUNK_HOME/bin/splunk restart
 
 Use `/_bump` in the Splunk URL to reload static assets without a full restart when changing only JS/CSS.
 
+## Harness CSS
+
+The test harness (`test-harness.html`) uses Tailwind, compiled locally into `shared/harness.css` so it works without a CDN. The compiled CSS is committed so contributors and users can serve the harness directly with no build step.
+
+If you change Tailwind classes in `test-harness.html`, rebuild and commit the CSS:
+
+```bash
+npm install        # first time only
+npm run build:css  # writes shared/harness.css
+```
+
+`npm run watch:css` rebuilds on save while iterating.
+
 ## Documentation
 
 All top-level documentation (`README.md`, `INSTRUCTIONS.md`, `CONTRIBUTING.md`, `EMBEDDING.md`, `TEST-HARNESS.md`) must pass `markdownlint-cli2`. Viz-specific READMEs under `examples/` and `splunk_health/` are ignored.

@@ -26,6 +26,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Tailwind CSS
+        run: |
+          npm install --no-audit --no-fund
+          npm run build:css
+
       - name: Prepare site
         run: |
           mkdir _site
