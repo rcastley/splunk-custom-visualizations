@@ -1,0 +1,34 @@
+{
+    "label": "Steampunk Gauge (10.4+)",
+    "defaultSize": { "width": 320, "height": 320 },
+    "noDataMessage": "Awaiting telemetry",
+    "fields": [
+        { "name": "value", "label": "Value", "type": "slider", "min": 0, "max": 100, "step": 1, "default": 72 },
+        { "name": "label", "label": "Label", "type": "text", "default": "Pressure" }
+    ],
+    "formatter": [
+        { "name": "valueField", "label": "Value Field", "type": "text", "default": "value" },
+        { "name": "labelField", "label": "Label Field", "type": "text", "default": "label" },
+        { "name": "minValue", "label": "Min Value", "type": "text", "default": "0" },
+        { "name": "maxValue", "label": "Max Value", "type": "text", "default": "100" },
+        { "name": "unit", "label": "Unit", "type": "text", "default": "" },
+        { "name": "decimals", "label": "Decimals", "type": "text", "default": "0" },
+        { "name": "zone1min", "label": "Zone 1 Min", "type": "text", "default": "0" },
+        { "name": "zone1max", "label": "Zone 1 Max", "type": "text", "default": "30" },
+        { "name": "zone1color", "label": "Zone 1 Colour", "type": "color", "default": "#a52319" },
+        { "name": "zone2min", "label": "Zone 2 Min", "type": "text", "default": "30" },
+        { "name": "zone2max", "label": "Zone 2 Max", "type": "text", "default": "80" },
+        { "name": "zone2color", "label": "Zone 2 Colour", "type": "color", "default": "#2e7d32" },
+        { "name": "zone3min", "label": "Zone 3 Min", "type": "text", "default": "80" },
+        { "name": "zone3max", "label": "Zone 3 Max", "type": "text", "default": "100" },
+        { "name": "zone3color", "label": "Zone 3 Colour", "type": "color", "default": "#a52319" },
+        { "name": "showReadout", "label": "Show Readout", "type": "radio", "options": ["true", "false"], "default": "true" },
+        { "name": "showRivets", "label": "Show Rivets", "type": "radio", "options": ["true", "false"], "default": "true" },
+        { "name": "showWear", "label": "Show Wear", "type": "radio", "options": ["true", "false"], "default": "true" },
+        { "name": "smoothness", "label": "Smoothness", "type": "text", "default": "8" }
+    ],
+    "data": {
+        "mode": "single_row",
+        "columns": ["value", "label"]
+    }
+}

@@ -2,7 +2,7 @@
 
 Use this reference when [Step 0 of the parent skill](../SKILL.md#step-0-choose-framework) selects **Track B** — that is, when the target Splunk version is 10.4+ **and** the viz only needs to run inside Dashboard Studio (not Simple XML), and refresh-stability matters.
 
-The complete worked example is `examples/steampunk_gauge_studio/`. Read it alongside this document.
+The complete worked example is `examples/steampunk_gauge_dse/`. Read it alongside this document.
 
 ## Why this track exists
 
@@ -67,7 +67,7 @@ This produces a viable starting layout, but its `package.mjs` and `package/app/a
 3. **`package.mjs` → `main()`** — reorder so `app.conf` is parsed first, then `stage/{appId}/` is wiped and re-created, then `stageAppConf()` runs. The upstream sequence writes `app.conf` and immediately deletes it.
 4. **`package.mjs` → `generateDefaultMeta()`** — prepend a global `[]\naccess = read : [ * ], write : [ admin, sc_admin ]` stanza so Splunk Cloud's `check_meta_default_write_access` rule passes.
 
-Easier: copy `examples/steampunk_gauge_studio/{build.mjs,package.mjs,build-plugins/}` into the new project as-is. Those copies already include the fixes.
+Easier: copy `examples/steampunk_gauge_dse/{build.mjs,package.mjs,build-plugins/}` into the new project as-is. Those copies already include the fixes.
 
 ### 2. Configure `package.json`
 
@@ -297,7 +297,7 @@ function parseData(data, options) {
 }
 ```
 
-A worked example with `_status` fallback handling lives in `examples/steampunk_gauge_studio/visualizations/steampunk_gauge_studio/src/visualization.js` — search for `parseData`.
+A worked example with `_status` fallback handling lives in `examples/steampunk_gauge_dse/visualizations/steampunk_gauge_dse/src/visualization.js` — search for `parseData`.
 
 #### `_status` no-data pattern
 
@@ -476,7 +476,7 @@ The `.spl` filter excludes dotfiles, so any `.DS_Store` / `.gitkeep` left behind
 
 ## Upstream bugs
 
-The `@splunk/create@11.0.0` template that scaffolds these projects has four known defects. The vendored `package.mjs` and `package/app/app.conf` in `examples/steampunk_gauge_studio/` already work around all four. See [`upstream-bugfix/BUG_REPORT.md`](../../../../upstream-bugfix/BUG_REPORT.md) for the full reproduction, root cause, and patch.
+The `@splunk/create@11.0.0` template that scaffolds these projects has four known defects. The vendored `package.mjs` and `package/app/app.conf` in `examples/steampunk_gauge_dse/` already work around all four. See [`upstream-bugfix/BUG_REPORT.md`](../../../../upstream-bugfix/BUG_REPORT.md) for the full reproduction, root cause, and patch.
 
 | # | File | Defect | Workaround |
 |---|------|--------|------------|
@@ -595,7 +595,7 @@ For a new Track B viz, check:
 
 ## Migrating a Track A viz to Track B
 
-If you already have a Track A viz and want a Track B counterpart (rather than a wholesale migration), build it as a **separate sibling app** and ship them side by side. Users on 10.2 install the legacy app; users on 10.4 install the studio app; the picker shows both as distinct entries. This is what `examples/steampunk_gauge/` and `examples/steampunk_gauge_studio/` do.
+If you already have a Track A viz and want a Track B counterpart (rather than a wholesale migration), build it as a **separate sibling app** and ship them side by side. Users on 10.2 install the legacy app; users on 10.4 install the studio app; the picker shows both as distinct entries. This is what `examples/steampunk_gauge/` and `examples/steampunk_gauge_dse/` do.
 
 Porting checklist (legacy → studio):
 
@@ -622,7 +622,7 @@ The drawing helpers themselves (Canvas 2D primitives) port over verbatim — the
 
 ## Reference example
 
-`examples/steampunk_gauge_studio/` — production-ready studio extension viz with:
+`examples/steampunk_gauge_dse/` — production-ready studio extension viz with:
 
 - Refresh-stable rendering (no visible repaint on scheduled refresh in Splunk 10.4)
 - All Track A patterns ported: zones, wear seed derived from config, smoothing animation, `_status` no-data message, HiDPI canvas

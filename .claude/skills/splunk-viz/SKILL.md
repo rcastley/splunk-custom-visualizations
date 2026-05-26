@@ -919,7 +919,7 @@ If Step 0 selected Track B, **stop reading this file** for scaffolding instructi
 - `metadata/default.meta` global write-access stanza requirement
 - The refresh-stability pattern (silently skip render during `loading: true`)
 
-A complete worked example lives at `examples/steampunk_gauge_studio/`. Refer to it for any detail not covered by the reference doc.
+A complete worked example lives at `examples/steampunk_gauge_dse/`. Refer to it for any detail not covered by the reference doc.
 
 **Critical Rules that still apply to Track B** (numbered in the Track A section below): 2 (HiDPI), 3 (zero-size canvas guard), 4 (null ctx), 5–6 (canvas state cleanup), 10 (font conventions), 12 (no `this` in helpers), 14 (XSS prevention if touching DOM), 24 (label alignment), 27 ("no data" via `_status` field — adapted for column-major shape), 29 (text readability), 30 (README markdown linting), 31 (Python venv for preview generation), 32 (real-time smoothing).
 

@@ -145,7 +145,7 @@ build_app_studio() {
     fi
     if [ ! -f "$APP_DIR/package.mjs" ] || [ ! -f "$APP_DIR/build.mjs" ]; then
         echo "Error: $APP_DIR is missing build.mjs or package.mjs."
-        echo "       Copy the patched scripts from examples/steampunk_gauge_studio/."
+        echo "       Copy the patched scripts from examples/steampunk_gauge_dse/."
         return 1
     fi
 
