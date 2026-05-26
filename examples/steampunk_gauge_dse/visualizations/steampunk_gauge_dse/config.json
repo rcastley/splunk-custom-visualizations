@@ -1,0 +1,89 @@
+{
+    "showTitleAndDescription": true,
+    "includeInToolbar": true,
+    "includeInVizSwitcher": true,
+    "showDrilldown": false,
+    "canSetTokens": [],
+    "hasEventHandlers": false,
+    "config": {
+        "name": "Steampunk Gauge (10.4+)",
+        "description": "Brass steampunk gauge with ivory dial face and classic needle.",
+        "category": "Custom",
+        "icon": null,
+        "dataContract": {
+            "requiredDataSources": ["primary"],
+            "optionalDataSources": []
+        },
+        "size": {
+            "initialWidth": 320,
+            "initialHeight": 320
+        },
+        "optionsSchema": {
+            "valueField": { "type": "string", "default": "value" },
+            "labelField": { "type": "string", "default": "label" },
+            "minValue": { "type": "number", "default": 0 },
+            "maxValue": { "type": "number", "default": 100 },
+            "unit": { "type": "string", "default": "" },
+            "decimals": { "type": "number", "default": 0 },
+            "zone1min": { "type": "number" },
+            "zone1max": { "type": "number" },
+            "zone1color": { "type": "string", "default": "#a52319" },
+            "zone2min": { "type": "number" },
+            "zone2max": { "type": "number" },
+            "zone2color": { "type": "string", "default": "#2e7d32" },
+            "zone3min": { "type": "number" },
+            "zone3max": { "type": "number" },
+            "zone3color": { "type": "string", "default": "#a52319" },
+            "showReadout": { "type": "boolean", "default": true },
+            "showRivets": { "type": "boolean", "default": true },
+            "showWear": { "type": "boolean", "default": true },
+            "smoothness": { "type": "number", "default": 8 }
+        },
+        "editorConfig": [
+            {
+                "label": "Data",
+                "layout": [
+                    [{ "editor": "editor.text", "label": "Value Field", "option": "valueField" }],
+                    [{ "editor": "editor.text", "label": "Label Field", "option": "labelField" }],
+                    [{ "editor": "editor.number", "label": "Min Value", "option": "minValue" }],
+                    [{ "editor": "editor.number", "label": "Max Value", "option": "maxValue" }],
+                    [{ "editor": "editor.text", "label": "Unit", "option": "unit" }],
+                    [{ "editor": "editor.number", "label": "Decimals", "option": "decimals" }]
+                ]
+            },
+            {
+                "label": "Zone 1",
+                "layout": [
+                    [{ "editor": "editor.number", "label": "Zone 1 Min", "option": "zone1min" }],
+                    [{ "editor": "editor.number", "label": "Zone 1 Max", "option": "zone1max" }],
+                    [{ "editor": "editor.color", "label": "Zone 1 Colour", "option": "zone1color" }]
+                ]
+            },
+            {
+                "label": "Zone 2",
+                "layout": [
+                    [{ "editor": "editor.number", "label": "Zone 2 Min", "option": "zone2min" }],
+                    [{ "editor": "editor.number", "label": "Zone 2 Max", "option": "zone2max" }],
+                    [{ "editor": "editor.color", "label": "Zone 2 Colour", "option": "zone2color" }]
+                ]
+            },
+            {
+                "label": "Zone 3",
+                "layout": [
+                    [{ "editor": "editor.number", "label": "Zone 3 Min", "option": "zone3min" }],
+                    [{ "editor": "editor.number", "label": "Zone 3 Max", "option": "zone3max" }],
+                    [{ "editor": "editor.color", "label": "Zone 3 Colour", "option": "zone3color" }]
+                ]
+            },
+            {
+                "label": "Appearance",
+                "layout": [
+                    [{ "editor": "editor.toggle", "label": "Show Readout", "option": "showReadout" }],
+                    [{ "editor": "editor.toggle", "label": "Show Rivets", "option": "showRivets" }],
+                    [{ "editor": "editor.toggle", "label": "Show Wear", "option": "showWear" }],
+                    [{ "editor": "editor.number", "label": "Smoothness", "option": "smoothness" }]
+                ]
+            }
+        ]
+    }
+}

@@ -20,3 +20,6 @@ examples/*/appserver/static/visualizations/*/visualization.js
 
 # npm
 package-lock.json
+
+# Python virtualenv (local dev only)
+.venv/

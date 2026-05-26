@@ -1,0 +1,24 @@
+{
+    "label": "Steampunk Odometer (10.4+)",
+    "defaultSize": { "width": 420, "height": 220 },
+    "noDataMessage": "Awaiting telemetry",
+    "fields": [
+        { "name": "value", "label": "Value", "type": "slider", "min": 0, "max": 999999, "step": 1, "default": 123456 },
+        { "name": "label", "label": "Label", "type": "text", "default": "Distance" }
+    ],
+    "formatter": [
+        { "name": "valueField", "label": "Value Field", "type": "text", "default": "value" },
+        { "name": "labelField", "label": "Label Field", "type": "text", "default": "label" },
+        { "name": "digits", "label": "Whole Digits", "type": "text", "default": "6" },
+        { "name": "decimals", "label": "Decimals", "type": "text", "default": "0" },
+        { "name": "unit", "label": "Unit", "type": "text", "default": "" },
+        { "name": "showRivets", "label": "Show Rivets", "type": "radio", "options": ["true", "false"], "default": "true" },
+        { "name": "showWear", "label": "Show Wear", "type": "radio", "options": ["true", "false"], "default": "true" },
+        { "name": "digitSpacing", "label": "Digit Spacing", "type": "text", "default": "50" },
+        { "name": "smoothness", "label": "Smoothness", "type": "text", "default": "8" }
+    ],
+    "data": {
+        "mode": "single_row",
+        "columns": ["value", "label"]
+    }
+}
