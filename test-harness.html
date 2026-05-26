@@ -1465,6 +1465,7 @@ function harness() {
         pickerPos: { left: 0, top: 0, width: 560 },
         currentHarness: null,
         currentInstance: null,
+        currentStudio: null, // { iframe, def, ready } when a Track B (studio) viz is mounted
         config: {},
         dataValues: {},
         isNoData: false,
@@ -1650,9 +1651,12 @@ function harness() {
             var def = this.vizDefs[name];
             if (!def) { this.setStatus('err', 'Unknown viz: ' + name); return; }
 
+            // Tear down any previously mounted viz of either kind.
             if (this.currentInstance && this.currentInstance.destroy) {
                 try { this.currentInstance.destroy(); } catch (e) {}
             }
+            this.currentInstance = null;
+            this.currentStudio = null;
             document.getElementById('vizRoot').innerHTML = '';
 
             this.config = {};
@@ -1679,6 +1683,16 @@ function harness() {
 
             var fontsReady = this.loadFontCSS();
             this.setStatus('nodata', 'Loading ' + name + '...');
+
+            // Track B (Studio Extension) vizs mount in an iframe; the bundled
+            // VisualizationAPI proxies through window.DashboardExtensionAPI which
+            // our studio shim provides. No AMD eval, no formatData/updateView.
+            if (def.framework === 'studio') {
+                fontsReady.then(function() {
+                    self.mountStudioViz(def);
+                });
+                return;
+            }
 
             self.loadDependencies(def, function() {
                 fetch(def.path + '/src/visualization_source.js', { cache: 'no-store' })
@@ -1762,7 +1776,103 @@ function harness() {
             }
         },
 
+        // ── Studio Extension (Track B) mounting ─────────────────────
+        mountStudioViz: function(def) {
+            var self = this;
+            var root = document.getElementById('vizRoot');
+            root.innerHTML = '';
+
+            // Resolve to an absolute URL — module scripts loaded from a
+            // srcdoc iframe cannot resolve relative URLs against the
+            // parent document.
+            var bundleUrl = new URL(def.bundlePath, window.location.href).href;
+            var shim = '(' + studioShimSource.toString() + ')();';
+            // NOTE: the literal string "<\/script>" must be written
+            // with an escaped slash so the surrounding script block on
+            // this page is not terminated early by the HTML tokenizer.
+            var srcdoc = [
+                '<!DOCTYPE html><html><head>',
+                '<style>html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;overflow:hidden;}',
+                '#root{width:100%;height:100%;}<\/style>',
+                '<\/head><body><div id="root"><\/div>',
+                '<script>', shim, '<\/script>',
+                '<script type="module" src="', bundleUrl, '"><\/script>',
+                '<\/body><\/html>'
+            ].join('');
+
+            var iframe = document.createElement('iframe');
+            iframe.style.cssText = 'width:100%;height:100%;border:0;background:transparent;display:block;';
+            iframe.setAttribute('title', def.name + ' (studio)');
+            iframe.srcdoc = srcdoc;
+
+            self.currentStudio = { iframe: iframe, def: def, ready: false };
+
+            iframe.addEventListener('load', function() {
+                // The iframe load event fires only after all deferred and
+                // module scripts have executed, so the viz has registered
+                // its listeners by now.
+                if (!self.currentStudio || self.currentStudio.iframe !== iframe) return;
+                self.currentStudio.ready = true;
+                requestAnimationFrame(function() {
+                    self.pushStudioState();
+                    self.setStatus('ok', 'Rendered (studio extension)');
+                });
+            });
+
+            iframe.addEventListener('error', function() {
+                self.setStatus('err', 'Failed to load studio iframe');
+            });
+
+            root.appendChild(iframe);
+        },
+
+        pushStudioState: function() {
+            if (!this.currentStudio || !this.currentStudio.ready) return;
+            var iframe = this.currentStudio.iframe;
+            var def = this.currentStudio.def;
+            var bridge = iframe.contentWindow && iframe.contentWindow.__harnessBridge;
+            if (!bridge) {
+                console.warn('[studio] iframe bridge missing for ' + def.name);
+                return;
+            }
+
+            bridge.setDimensions(this.vizWidth, this.vizHeight);
+
+            // Strip the legacy "display.visualizations.custom.test.test." namespace
+            // from the config keys — studio vizs receive a flat options object.
+            var ns = this.ns;
+            var raw = {};
+            for (var k in this.config) {
+                if (Object.prototype.hasOwnProperty.call(this.config, k) && k.indexOf(ns) === 0) {
+                    raw[k.slice(ns.length)] = this.config[k];
+                }
+            }
+            bridge.setOptions(coerceStudioOptions(raw, def.optionsSchema || {}));
+
+            var rowMajor;
+            if (this.isNoData) {
+                var msg = def.harness.noDataMessage || 'No data available';
+                rowMajor = { fields: [{ name: '_status' }], rows: [[msg]] };
+            } else {
+                rowMajor = buildSplunkData(def.harness, this.dataValues, this.config, this.customColumns, this.customSampleRows);
+            }
+            bridge.setDataSources({ primary: { data: rowToColumnMajor(rowMajor) } }, false);
+        },
+
         triggerUpdate: function() {
+            // Track B (studio extension) path: push state to the iframe
+            // via the DashboardExtensionAPI shim instead of running
+            // formatData/updateView directly on the host page.
+            if (this.currentStudio) {
+                try {
+                    this.pushStudioState();
+                    this.setStatus(this.isNoData ? 'nodata' : 'ok', this.isNoData ? 'Showing no-data state (studio)' : 'Rendered (studio extension)');
+                } catch (e) {
+                    this.setStatus('err', 'Studio update error: ' + e.message);
+                    console.error(e);
+                }
+                return;
+            }
             if (!this.currentInstance || !this.currentHarness) return;
             try {
                 var rawData;
@@ -1884,6 +1994,14 @@ function harness() {
         },
 
         resizeViz: function() {
+            // Studio vizs receive dimensions via the bridge; the
+            // iframe itself is sized by CSS so we only push the new
+            // dimensions, no data/options re-push needed.
+            if (this.currentStudio && this.currentStudio.ready) {
+                var bridge = this.currentStudio.iframe.contentWindow && this.currentStudio.iframe.contentWindow.__harnessBridge;
+                if (bridge) bridge.setDimensions(this.vizWidth, this.vizHeight);
+                return;
+            }
             if (this.currentInstance && this.currentInstance.reflow) {
                 this.currentInstance.reflow();
             }
