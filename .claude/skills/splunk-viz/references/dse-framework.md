@@ -47,7 +47,7 @@ Notes:
 - **No `appserver/` directory in source.** The packager (`package.mjs`) creates `appserver/static/visualizations/{app_name}/` inside the staged tarball and copies `dist/{app_name}/visualization.js` and `config.json` into it.
 - **No hand-written `default/visualizations.conf`.** The packager generates it from the discovered `config.json` files, including `framework_type = studio_visualization`.
 - **No `formatter.html`, no `savedsearches.conf`, no `savedsearches.conf.spec`.** All settings live in `config.json` → `optionsSchema` (with defaults) + `editorConfig` (UI layout).
-- **No `harness.json`.** Studio extension vizs are tested via `npm run dev` (esbuild watch) + installing the `.spl` in a real Splunk 10.4 instance. The Track A test-harness pattern does not apply.
+- **`harness.json` IS supported** (as of harness v2). Place it at `visualizations/{app_name}/harness.json` alongside `config.json`, and add the viz to the `studio.vizs` array in `harness-manifest.json`. The harness mounts the production ESM bundle in an iframe with a `DashboardExtensionAPI` shim — see [Testing](#testing).
 
 ## Step-by-step scaffolding
 
@@ -504,14 +504,70 @@ A correctly built Track B app passes with no failures and no warnings, provided:
 
 ## Testing
 
-The Track A `harness.json` + `test-harness.html` pattern does **not** work for Track B vizs — they require the `@splunk/dashboard-studio-extension` runtime which only the real Dashboard Studio host provides.
+Track B vizs work in the **same `test-harness.html`** as Track A — the harness mounts each studio viz in an `<iframe>` and installs a `window.DashboardExtensionAPI` shim before the production ESM bundle loads. The `@splunk/dashboard-studio-extension` package is a thin proxy (`const API = globalThis.DashboardExtensionAPI ?? FallbackProxy`), so the bundled viz binds to the shim with no rebuild needed.
 
-Recommended dev loop:
+### Adding a studio viz to the harness
 
-1. `npm run dev` in the viz directory — esbuild watches `src/` and rebuilds `dist/{app_name}/visualization.js` on every save.
-2. `npm run package` — re-creates the `.spl`.
-3. Re-upload the `.spl` in Splunk (Apps → Manage Apps → Install app from file → "Upgrade app" if it already exists).
-4. Hard-refresh the dashboard tab (`Cmd+Shift+R`).
+1. **Create `visualizations/{app_name}/harness.json`** alongside `config.json`. Use the same schema as Track A `harness.json` (fields, formatter, data, defaultSize, noDataMessage). The harness translates the row-major data it builds into column-major before pushing it via the shim, and strips the `display.visualizations.custom.test.test.` namespace from option keys before passing them to your viz. Option **types** are coerced based on `config.json` → `optionsSchema` (`type: "number"` → number, `type: "boolean"` → boolean, otherwise string), so your viz receives the same typed values the real Dashboard Studio runtime would send.
+
+2. **Register the viz in `harness-manifest.json`** under the `studio` block — NOT the top-level `vizs` array:
+
+   ```json
+   {
+     "studio": {
+       "pathTemplate": "examples/{name}/visualizations/{name}",
+       "bundleTemplate": "examples/{name}/dist/{name}/visualization.js",
+       "vizs": ["your_app_name"]
+     },
+     "categories": { "General": [ "...", "your_app_name" ] }
+   }
+   ```
+
+   Also add the name to its `categories` group so it shows up in the picker.
+
+3. **Build the bundle once** so `dist/{app_name}/visualization.js` exists:
+
+   ```bash
+   ./build.sh your_app_name   # or: cd examples/your_app_name && npm run build:prod
+   ```
+
+   The harness fetches the bundle from `examples/{name}/dist/{name}/visualization.js`. If you re-run `./build.sh` or `npm run build:prod`, just hard-refresh the harness tab.
+
+4. **Serve the repo over HTTP** (`python3 -m http.server 8080` from the repo root) and open `http://localhost:8080/test-harness.html`. The studio viz appears in the picker — selecting it spins up the iframe; the formatter controls and data sliders work exactly like Track A.
+
+### Dev loop
+
+For active development, run esbuild in watch mode AND keep the harness open:
+
+```bash
+cd examples/your_app_name
+npm run dev          # esbuild --watch → updates dist/{app_name}/visualization.js on every save
+```
+
+In another terminal:
+
+```bash
+python3 -m http.server 8080   # at repo root
+```
+
+Save a `src/visualization.js` change → hard-refresh the harness tab → the new bundle loads. (Soft refresh sometimes hits the browser's module cache.)
+
+### What the harness cannot test
+
+The iframe shim is a faithful proxy of the listener model but doesn't reproduce every host behaviour. Always do a final pass in real Splunk 10.4 to verify:
+
+- `setError`/`clearError` UX (the harness logs but doesn't display the error chrome the same way).
+- Trellis grouping, drilldown handling.
+- `_bump`/install-time caching, app icons, preview rendering inside the picker.
+- The refresh-stability behaviour with a `*` scheduled search (the harness has no `loading: true` toggle in the UI — you can drive it manually from devtools via `document.querySelector('iframe').contentWindow.__harnessBridge.setDataSources(currentDS, true)`).
+
+### Installing into real Splunk
+
+When you're ready to test in Splunk:
+
+1. `npm run package` (or `./build.sh your_app_name`) → produces a `.spl` in the top-level `dist/`.
+2. In Splunk: Apps → Manage Apps → Install app from file → upload the `.spl`. Choose "Upgrade app" if it already exists.
+3. Hard-refresh the dashboard tab (`Cmd+Shift+R`).
 
 A faster inner loop, once the app is installed: edit the file directly inside `$SPLUNK_HOME/etc/apps/{app_name}/appserver/static/visualizations/{app_name}/visualization.js`, then `/_bump` and hard-refresh. Reserve this for tight tweaks — always re-package + re-install before submitting to Splunk Cloud.
 
@@ -531,6 +587,8 @@ For a new Track B viz, check:
 - [ ] Canvas sizing is HiDPI-aware and only resizes when target dimensions change.
 - [ ] `_status` SPL fallback handled if a custom no-data message is requested.
 - [ ] `visualization.css` keeps `background: transparent` on root and canvas.
+- [ ] `visualizations/{app_name}/harness.json` exists with fields, formatter (defaults matching `optionsSchema` defaults), data mode, and `defaultSize`.
+- [ ] Viz name added to `studio.vizs` in `harness-manifest.json` AND the appropriate `categories` group.
 - [ ] `npm run build:prod && npm run package` produces a `.spl` in `dist/`.
 - [ ] (For Cloud) `splunk-appinspect inspect dist/...spl --mode test --included-tags cloud` reports no failures and no warnings.
 - [ ] README documents the columns, SPL examples, and the 10.4-only minimum version.
