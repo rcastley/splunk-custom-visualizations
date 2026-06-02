@@ -287,7 +287,8 @@ define([
             var flagH = Math.min(rowH * 0.5, 26);
             var flagBoxW = flagH * 1.5;
             var nameX = padX + flagBoxW + Math.max(10, w * 0.012);
-            var nameColW = Math.max(96, w * 0.15);
+            var nameColW = Math.max(120, w * 0.22);
+            var nameGap = Math.max(16, w * 0.018); // breathing room between name and bar
             var valueColW = Math.max(58, w * 0.085);
             var shareColW = showShare ? Math.max(40, w * 0.05) : 0;
             var gap = Math.max(14, w * 0.02);
@@ -329,7 +330,7 @@ define([
                 }
 
                 // Name
-                var nSize = fitText(ctx, it.name, nameColW, textSize, '600', FONT);
+                var nSize = fitText(ctx, it.name, nameColW - nameGap, textSize, '600', FONT);
                 ctx.font = '600 ' + nSize + 'px ' + FONT;
                 ctx.fillStyle = valueColor;
                 ctx.textAlign = 'left';
