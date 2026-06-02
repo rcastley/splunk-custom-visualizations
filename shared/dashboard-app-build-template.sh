@@ -148,7 +148,11 @@ merge_viz() {
     if [ -f "$SPEC_SRC" ]; then
         mkdir -p "$TARGET_APP/README"
         if [ -f "$SPEC_DEST" ]; then
-            grep -v "^display\\.visualizations\\.custom\\.$VIZ_NAME\\." "$SPEC_DEST" \
+            # Spec lines are namespaced with the parent app id:
+            # display.visualizations.custom.{app}.{viz}.{setting}
+            # Match the viz name after the app segment, else old entries are
+            # never removed and every rebuild appends another full copy.
+            grep -v "^display\\.visualizations\\.custom\\..*\\.$VIZ_NAME\\." "$SPEC_DEST" \
                 > "$SPEC_DEST.tmp" || true
             mv "$SPEC_DEST.tmp" "$SPEC_DEST"
         fi
@@ -219,7 +223,9 @@ echo ""
 echo "  Packaging..."
 xattr -rc "$TARGET_APP" 2>/dev/null || true
 
-run_with_spinner "$APP_NAME.tar.gz" bash -c "
+mkdir -p "$PARENT_DIR/dist"
+
+run_with_spinner "dist/$APP_NAME.tar.gz" bash -c "
     COPYFILE_DISABLE=1 tar --disable-copyfile \
         --exclude='.git*' \
         --exclude='.DS_Store' \
@@ -230,11 +236,11 @@ run_with_spinner "$APP_NAME.tar.gz" bash -c "
         --exclude='local' \
         --exclude='README.md' \
         --exclude='node_modules' \
-        -czf '$PARENT_DIR/$APP_NAME.tar.gz' \
+        -czf '$PARENT_DIR/dist/$APP_NAME.tar.gz' \
         -C '$PARENT_DIR' \
         '$APP_NAME'
 "
 
 echo ""
-echo "  📦 $PARENT_DIR/$APP_NAME.tar.gz"
+echo "  📦 $PARENT_DIR/dist/$APP_NAME.tar.gz"
 echo ""
