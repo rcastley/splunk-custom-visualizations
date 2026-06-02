@@ -26,10 +26,10 @@
             },
             "options": {
                 "backgroundColor": "transparent",
-                "worldcup_dashboard.single_value_delta.borderColor": "#666666",
+                "worldcup_dashboard.single_value_delta.borderColor": "#0285FF",
                 "worldcup_dashboard.single_value_delta.deltaSuffix": "×",
                 "worldcup_dashboard.single_value_delta.deltaText": "vs. matchday baseline",
-                "worldcup_dashboard.single_value_delta.fillColor": "#111726",
+                "worldcup_dashboard.single_value_delta.fillColor": "#0B112E",
                 "worldcup_dashboard.single_value_delta.title": "Active Customers",
                 "worldcup_dashboard.single_value_delta.valueSuffix": "K"
             },
@@ -42,10 +42,10 @@
             },
             "options": {
                 "backgroundColor": "transparent",
-                "worldcup_dashboard.single_value_delta.borderColor": "#666666",
+                "worldcup_dashboard.single_value_delta.borderColor": "#0285FF",
                 "worldcup_dashboard.single_value_delta.deltaSuffix": "pt",
                 "worldcup_dashboard.single_value_delta.deltaText": "login success rate",
-                "worldcup_dashboard.single_value_delta.fillColor": "#111726",
+                "worldcup_dashboard.single_value_delta.fillColor": "#0B112E",
                 "worldcup_dashboard.single_value_delta.title": "Customer Experience",
                 "worldcup_dashboard.single_value_delta.valueSuffix": "%"
             },
@@ -65,8 +65,8 @@
             },
             "options": {
                 "backgroundColor": "transparent",
-                "worldcup_dashboard.top_markets.borderColor": "#666666",
-                "worldcup_dashboard.top_markets.fillColor": "#111726",
+                "worldcup_dashboard.top_markets.borderColor": "#0285FF",
+                "worldcup_dashboard.top_markets.fillColor": "#0B112E",
                 "worldcup_dashboard.top_markets.tagText": "by active users",
                 "worldcup_dashboard.top_markets.title": "Customer Reach · Logins by Country"
             },
@@ -79,10 +79,10 @@
             },
             "options": {
                 "backgroundColor": "transparent",
-                "worldcup_dashboard.single_value_delta.borderColor": "#666666",
+                "worldcup_dashboard.single_value_delta.borderColor": "#0285FF",
                 "worldcup_dashboard.single_value_delta.deltaSuffix": "%",
                 "worldcup_dashboard.single_value_delta.deltaText": "World Cup-attributed",
-                "worldcup_dashboard.single_value_delta.fillColor": "#111726",
+                "worldcup_dashboard.single_value_delta.fillColor": "#0B112E",
                 "worldcup_dashboard.single_value_delta.showArrow": "false",
                 "worldcup_dashboard.single_value_delta.sparklineColor": "#F8CD4B",
                 "worldcup_dashboard.single_value_delta.title": "New Registrations"
@@ -96,8 +96,8 @@
             },
             "options": {
                 "backgroundColor": "transparent",
-                "worldcup_dashboard.top_markets.borderColor": "#666666",
-                "worldcup_dashboard.top_markets.fillColor": "#111726",
+                "worldcup_dashboard.top_markets.borderColor": "#0285FF",
+                "worldcup_dashboard.top_markets.fillColor": "#0B112E",
                 "worldcup_dashboard.top_markets.tagColor": "#61D27E",
                 "worldcup_dashboard.top_markets.tagText": "new sign-ups",
                 "worldcup_dashboard.top_markets.title": "Customer Reach · Registrations by Country"
@@ -111,10 +111,10 @@
             },
             "options": {
                 "backgroundColor": "transparent",
-                "worldcup_dashboard.single_value_delta.borderColor": "#666666",
+                "worldcup_dashboard.single_value_delta.borderColor": "#0285FF",
                 "worldcup_dashboard.single_value_delta.deltaSuffix": "×",
                 "worldcup_dashboard.single_value_delta.deltaText": "18.2K bets / min",
-                "worldcup_dashboard.single_value_delta.fillColor": "#111726",
+                "worldcup_dashboard.single_value_delta.fillColor": "#0B112E",
                 "worldcup_dashboard.single_value_delta.sparklineColor": "#895CF5",
                 "worldcup_dashboard.single_value_delta.title": "Live Stakes",
                 "worldcup_dashboard.single_value_delta.valuePrefix": "£",
