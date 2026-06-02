@@ -1,0 +1,38 @@
+{
+  "label": "Top Markets",
+  "defaultSize": { "width": 620, "height": 330 },
+  "noDataMessage": "Awaiting data",
+  "dependencies": ["flags.json"],
+  "fields": [],
+  "formatter": [
+    { "name": "countryField", "label": "Country Field", "type": "text", "default": "country" },
+    { "name": "valueField", "label": "Value Field", "type": "text", "default": "count" },
+    { "name": "title", "label": "Title", "type": "text", "default": "Customer Reach · Top Markets" },
+    { "name": "tagText", "label": "Tag Text", "type": "text", "default": "by active users" },
+    { "name": "topN", "label": "Top N", "type": "text", "default": "6" },
+    { "name": "showShare", "label": "Show Share %", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "abbreviate", "label": "Abbreviate Values", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "barColor1", "label": "Bar Start Colour", "type": "color", "default": "#0285FF" },
+    { "name": "barColor2", "label": "Bar End Colour", "type": "color", "default": "#CCE5FF" },
+    { "name": "valueColor", "label": "Text Colour", "type": "color", "default": "#ffffff" },
+    { "name": "tagColor", "label": "Tag Colour", "type": "color", "default": "#F8CD4B" },
+    { "name": "fillColor", "label": "Fill Colour", "type": "color", "default": "transparent" },
+    { "name": "showBorder", "label": "Show Border", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "borderColor", "label": "Border Colour", "type": "color", "default": "#2A3566" },
+    { "name": "cornerRadius", "label": "Corner Radius", "type": "text", "default": "16" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["country", "count"],
+    "sampleRows": [
+      ["International", "54100"],
+      ["Spain", "26000"],
+      ["Italy", "18400"],
+      ["Romania", "14100"],
+      ["Brazil", "10800"],
+      ["Denmark", "6400"],
+      ["France", "4200"],
+      ["Portugal", "3100"]
+    ]
+  }
+}

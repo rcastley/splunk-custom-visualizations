@@ -1,0 +1,15 @@
+display.visualizations.custom.worldcup_dashboard.top_markets.countryField = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.valueField = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.title = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.tagText = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.topN = <integer>
+display.visualizations.custom.worldcup_dashboard.top_markets.showShare = <boolean>
+display.visualizations.custom.worldcup_dashboard.top_markets.abbreviate = <boolean>
+display.visualizations.custom.worldcup_dashboard.top_markets.barColor1 = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.barColor2 = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.valueColor = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.tagColor = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.fillColor = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.showBorder = <boolean>
+display.visualizations.custom.worldcup_dashboard.top_markets.borderColor = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.cornerRadius = <integer>

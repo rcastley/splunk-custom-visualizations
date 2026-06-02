@@ -1,0 +1,14 @@
+{
+  "pathTemplate": "{name}/appserver/static/visualizations/{name}",
+  "fontCSS": "shared/fonts.css",
+  "categories": {
+    "World Cup Dashboard": [
+      "single_value_delta",
+      "top_markets"
+    ]
+  },
+  "vizs": [
+    "single_value_delta",
+    "top_markets"
+  ]
+}

@@ -1,0 +1,281 @@
+<dashboard version="2" theme="dark">
+    <label>Car Telemetry</label>
+    <tags>tv</tags>
+    <description></description>
+    <definition><![CDATA[
+{
+    "title": "World Cup 2026 — Customer Growth & Experience",
+    "description": "Executive overview. Demo data via makeresults — swap the dataSource queries for your real searches.",
+    "inputs": {},
+    "defaults": {
+        "dataSources": {
+            "ds.search": {
+                "options": {
+                    "queryParameters": {
+                        "earliest": "-24h",
+                        "latest": "now"
+                    }
+                }
+            }
+        }
+    },
+    "visualizations": {
+        "viz_active": {
+            "dataSources": {
+                "primary": "ds_active"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.single_value_delta.borderColor": "#666666",
+                "worldcup_dashboard.single_value_delta.deltaSuffix": "×",
+                "worldcup_dashboard.single_value_delta.deltaText": "vs. matchday baseline",
+                "worldcup_dashboard.single_value_delta.fillColor": "#111726",
+                "worldcup_dashboard.single_value_delta.title": "Active Customers",
+                "worldcup_dashboard.single_value_delta.valueSuffix": "K"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.single_value_delta"
+        },
+        "viz_experience": {
+            "dataSources": {
+                "primary": "ds_experience"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.single_value_delta.borderColor": "#666666",
+                "worldcup_dashboard.single_value_delta.deltaSuffix": "pt",
+                "worldcup_dashboard.single_value_delta.deltaText": "login success rate",
+                "worldcup_dashboard.single_value_delta.fillColor": "#111726",
+                "worldcup_dashboard.single_value_delta.title": "Customer Experience",
+                "worldcup_dashboard.single_value_delta.valueSuffix": "%"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.single_value_delta"
+        },
+        "viz_header": {
+            "options": {
+                "fontColor": "#FFFFFF",
+                "markdown": "# 🏆 World Cup 2026 \nFlutter UK&I · Paddy Power & Betfair · Executive view"
+            },
+            "type": "splunk.markdown"
+        },
+        "viz_logins_country": {
+            "dataSources": {
+                "primary": "ds_logins_country"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.top_markets.borderColor": "#666666",
+                "worldcup_dashboard.top_markets.fillColor": "#111726",
+                "worldcup_dashboard.top_markets.tagText": "by active users",
+                "worldcup_dashboard.top_markets.title": "Customer Reach · Logins by Country"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.top_markets"
+        },
+        "viz_regs": {
+            "dataSources": {
+                "primary": "ds_regs"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.single_value_delta.borderColor": "#666666",
+                "worldcup_dashboard.single_value_delta.deltaSuffix": "%",
+                "worldcup_dashboard.single_value_delta.deltaText": "World Cup-attributed",
+                "worldcup_dashboard.single_value_delta.fillColor": "#111726",
+                "worldcup_dashboard.single_value_delta.showArrow": "false",
+                "worldcup_dashboard.single_value_delta.sparklineColor": "#F8CD4B",
+                "worldcup_dashboard.single_value_delta.title": "New Registrations"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.single_value_delta"
+        },
+        "viz_regs_country": {
+            "dataSources": {
+                "primary": "ds_regs_country"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.top_markets.borderColor": "#666666",
+                "worldcup_dashboard.top_markets.fillColor": "#111726",
+                "worldcup_dashboard.top_markets.tagColor": "#61D27E",
+                "worldcup_dashboard.top_markets.tagText": "new sign-ups",
+                "worldcup_dashboard.top_markets.title": "Customer Reach · Registrations by Country"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.top_markets"
+        },
+        "viz_stakes": {
+            "dataSources": {
+                "primary": "ds_stakes"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.single_value_delta.borderColor": "#666666",
+                "worldcup_dashboard.single_value_delta.deltaSuffix": "×",
+                "worldcup_dashboard.single_value_delta.deltaText": "18.2K bets / min",
+                "worldcup_dashboard.single_value_delta.fillColor": "#111726",
+                "worldcup_dashboard.single_value_delta.sparklineColor": "#895CF5",
+                "worldcup_dashboard.single_value_delta.title": "Live Stakes",
+                "worldcup_dashboard.single_value_delta.valuePrefix": "£",
+                "worldcup_dashboard.single_value_delta.valueSuffix": "M"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.single_value_delta"
+        }
+    },
+    "dataSources": {
+        "ds_active": {
+            "name": "Active Customers",
+            "options": {
+                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(118 + i*0.34 + (random()%30)/10, 1), delta=3.1 | fields _time value delta | sort _time"
+            },
+            "type": "ds.search"
+        },
+        "ds_experience": {
+            "name": "Customer Experience",
+            "options": {
+                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(99.0 + i*0.014 + (random()%5)/10, 1), delta=0.3 | fields _time value delta | sort _time"
+            },
+            "type": "ds.search"
+        },
+        "ds_logins_country": {
+            "name": "Logins by Country",
+            "options": {
+                "query": "| makeresults count=8 | streamstats count as r | eval country=mvindex(split(\"International,Spain,Italy,Romania,Brazil,Denmark,France,Portugal\",\",\"),r-1), count=tonumber(mvindex(split(\"54100,26000,18400,14100,10800,6400,4200,3100\",\",\"),r-1)) | fields country count"
+            },
+            "type": "ds.search"
+        },
+        "ds_regs": {
+            "name": "New Registrations",
+            "options": {
+                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(7000 + i*95 + (random()%150), 0), delta=62 | fields _time value delta | sort _time"
+            },
+            "type": "ds.search"
+        },
+        "ds_regs_country": {
+            "name": "Registrations by Country",
+            "options": {
+                "query": "| makeresults count=7 | streamstats count as r | eval country=mvindex(split(\"Brazil,International,Spain,Italy,Romania,Denmark,Mexico\",\",\"),r-1), count=tonumber(mvindex(split(\"41200,33800,15600,11200,7400,4100,3050\",\",\"),r-1)) | fields country count"
+            },
+            "type": "ds.search"
+        },
+        "ds_stakes": {
+            "name": "Live Stakes",
+            "options": {
+                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(3.2 + i*0.05 + (random()%8)/100, 1), delta=2.8 | fields _time value delta | sort _time"
+            },
+            "type": "ds.search"
+        }
+    },
+    "layout": {
+        "globalInputs": [],
+        "layoutDefinitions": {
+            "layout_1": {
+                "options": {
+                    "backgroundColor": "#0B112E",
+                    "backgroundImage": {
+                        "sizeType": "contain",
+                        "src": "splunk-enterprise-kvstore://6a1eb9d57903a90a7405c0a1",
+                        "x": 0,
+                        "y": 0
+                    },
+                    "display": "auto-scale",
+                    "height": 1080,
+                    "width": 1920
+                },
+                "structure": [
+                    {
+                        "item": "viz_header",
+                        "position": {
+                            "h": 55,
+                            "w": 1400,
+                            "x": 20,
+                            "y": 15
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_active",
+                        "position": {
+                            "h": 150,
+                            "w": 335,
+                            "x": 20,
+                            "y": 80
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_regs",
+                        "position": {
+                            "h": 150,
+                            "w": 335,
+                            "x": 375,
+                            "y": 80
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_experience",
+                        "position": {
+                            "h": 150,
+                            "w": 335,
+                            "x": 730,
+                            "y": 80
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_stakes",
+                        "position": {
+                            "h": 150,
+                            "w": 335,
+                            "x": 1090,
+                            "y": 80
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_logins_country",
+                        "position": {
+                            "h": 380,
+                            "w": 690,
+                            "x": 20,
+                            "y": 255
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_regs_country",
+                        "position": {
+                            "h": 380,
+                            "w": 690,
+                            "x": 730,
+                            "y": 255
+                        },
+                        "type": "block"
+                    }
+                ],
+                "type": "absolute"
+            }
+        },
+        "options": {
+            "showTitleAndDescription": false
+        },
+        "tabs": {
+            "items": [
+                {
+                    "label": "New tab",
+                    "layoutId": "layout_1"
+                }
+            ]
+        }
+    },
+    "applicationProperties": {
+        "hideEdit": false,
+        "hideExport": false,
+        "hideOpenInSearch": false
+    }
+}
+    ]]></definition>
+</dashboard>

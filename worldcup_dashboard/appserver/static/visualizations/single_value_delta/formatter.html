@@ -1,0 +1,114 @@
+<div class="custom-control-group">
+
+    <!-- ── Data ── -->
+    <form class="splunk-formatter-section" section-label="Data">
+        <splunk-control-group label="Value Field" help="Column holding the metric (latest row = headline; full series = sparkline)">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.field" value="value"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Delta Field" help="Column holding the pre-computed delta. Leave search without it to hide the badge.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.deltaField" value="delta"></splunk-text-input>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Value ── -->
+    <form class="splunk-formatter-section" section-label="Value">
+        <splunk-control-group label="Title" help="Optional heading shown above the value. Leave blank to hide.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Alignment" help="Aligns the title, value and delta row">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.align" value="left">
+                <option value="left">Left</option>
+                <option value="center">Centre</option>
+                <option value="right">Right</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Value Prefix" help="Text before the value, e.g. £ or $">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.valuePrefix" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Value Suffix" help="Text after the value, e.g. K, M or %">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.valueSuffix" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Group Thousands" help="Insert thousands separators (9847 → 9,847)">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.groupThousands" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Value Colour" help="Colour of the headline value">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.valueColor" value="#ffffff"></splunk-color-picker>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Delta ── -->
+    <form class="splunk-formatter-section" section-label="Delta">
+        <splunk-control-group label="Delta Suffix" help="Text after the delta, e.g. ×, % or pt">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.deltaSuffix" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Trailing Text" help="Text to the right of the badge, e.g. vs. matchday baseline">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.deltaText" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Show Arrow" help="Show a ▲/▼ arrow indicating direction (off for share-style values like 62%)">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showArrow" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Higher Is Better" help="On: positive is good (green). Off: invert for metrics where lower is better (latency, churn).">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.higherIsBetter" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Positive Colour" help="Badge colour for the 'good' direction">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.upColor" value="#61D27E"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Negative Colour" help="Badge colour for the 'bad' direction">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.downColor" value="#D5225D"></splunk-color-picker>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Sparkline ── -->
+    <form class="splunk-formatter-section" section-label="Sparkline">
+        <splunk-control-group label="Show Sparkline" help="Plot the value series along the bottom">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showSparkline" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Sparkline Colour" help="Line and fill colour for the sparkline">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.sparklineColor" value="#61D27E"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Sparkline Fill" help="Draw a soft gradient area under the line">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.sparklineFill" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Appearance ── -->
+    <form class="splunk-formatter-section" section-label="Appearance">
+        <splunk-control-group label="Fill Colour" help="Panel background. Default transparent inherits the dashboard.">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.fillColor" type="custom" value="transparent">
+                <splunk-color>transparent</splunk-color>
+                <splunk-color>#0B112E</splunk-color>
+                <splunk-color>#16215B</splunk-color>
+                <splunk-color>#111726</splunk-color>
+                <splunk-color>#000000</splunk-color>
+            </splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Show Border" help="Draw a rounded border around the tile">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showBorder" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Border Colour" help="Colour of the rounded border">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.borderColor" value="#2A3566"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Corner Radius" help="Border corner radius in pixels">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.cornerRadius" value="16"></splunk-text-input>
+        </splunk-control-group>
+    </form>
+
+</div>

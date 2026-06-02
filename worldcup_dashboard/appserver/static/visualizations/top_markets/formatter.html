@@ -1,0 +1,79 @@
+<div class="custom-control-group">
+
+    <!-- ── Data ── -->
+    <form class="splunk-formatter-section" section-label="Data">
+        <splunk-control-group label="Country Field" help="Column with an ISO code (es, it) or country name (Spain). 'International' maps to a globe.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.countryField" value="country"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Value Field" help="Column with the per-country count. Share % is computed from the total.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.valueField" value="count"></splunk-text-input>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Display ── -->
+    <form class="splunk-formatter-section" section-label="Display">
+        <splunk-control-group label="Title" help="Heading shown top-left. Leave blank to hide.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value="Customer Reach · Top Markets"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Tag Text" help="Badge shown top-right, e.g. by active users. Leave blank to hide.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.tagText" value="by active users"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Top N" help="How many markets to show (sorted by value, descending)">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.topN" value="6"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Show Share %" help="Show each market's share of the total">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showShare" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Abbreviate Values" help="Shorten numbers (54100 → 54.1K). Off shows grouped integers.">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.abbreviate" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Colours ── -->
+    <form class="splunk-formatter-section" section-label="Colours">
+        <splunk-control-group label="Bar Start Colour" help="Left end of the bar gradient">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.barColor1" value="#0285FF"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Bar End Colour" help="Right end of the bar gradient">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.barColor2" value="#CCE5FF"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Text Colour" help="Country names and values">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.valueColor" value="#ffffff"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Tag Colour" help="Top-right badge colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.tagColor" value="#F8CD4B"></splunk-color-picker>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Appearance ── -->
+    <form class="splunk-formatter-section" section-label="Appearance">
+        <splunk-control-group label="Fill Colour" help="Panel background. Default transparent inherits the dashboard.">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.fillColor" type="custom" value="transparent">
+                <splunk-color>transparent</splunk-color>
+                <splunk-color>#0B112E</splunk-color>
+                <splunk-color>#16215B</splunk-color>
+                <splunk-color>#111726</splunk-color>
+                <splunk-color>#000000</splunk-color>
+            </splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Show Border" help="Draw a rounded border around the panel">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showBorder" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Border Colour" help="Colour of the rounded border">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.borderColor" value="#2A3566"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Corner Radius" help="Border corner radius in pixels">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.cornerRadius" value="16"></splunk-text-input>
+        </splunk-control-group>
+    </form>
+
+</div>

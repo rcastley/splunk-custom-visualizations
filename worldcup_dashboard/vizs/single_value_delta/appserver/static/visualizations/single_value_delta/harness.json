@@ -1,0 +1,40 @@
+{
+  "label": "Single Value + Delta",
+  "defaultSize": { "width": 480, "height": 150 },
+  "noDataMessage": "Awaiting data",
+  "fields": [
+    { "name": "delta", "label": "Delta value", "type": "text", "default": "3.1" }
+  ],
+  "formatter": [
+    { "name": "field", "label": "Value Field", "type": "text", "default": "value" },
+    { "name": "deltaField", "label": "Delta Field", "type": "text", "default": "delta" },
+    { "name": "title", "label": "Title", "type": "text", "default": "Active Customers" },
+    { "name": "align", "label": "Alignment", "type": "select", "options": ["left", "center", "right"], "default": "left" },
+    { "name": "valuePrefix", "label": "Value Prefix", "type": "text", "default": "" },
+    { "name": "valueSuffix", "label": "Value Suffix", "type": "text", "default": "K" },
+    { "name": "groupThousands", "label": "Group Thousands", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "valueColor", "label": "Value Colour", "type": "color", "default": "#ffffff" },
+    { "name": "deltaSuffix", "label": "Delta Suffix", "type": "text", "default": "×" },
+    { "name": "deltaText", "label": "Trailing Text", "type": "text", "default": "vs. matchday baseline" },
+    { "name": "showArrow", "label": "Show Arrow", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "higherIsBetter", "label": "Higher Is Better", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "upColor", "label": "Positive Colour", "type": "color", "default": "#61D27E" },
+    { "name": "downColor", "label": "Negative Colour", "type": "color", "default": "#D5225D" },
+    { "name": "showSparkline", "label": "Show Sparkline", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "sparklineColor", "label": "Sparkline Colour", "type": "color", "default": "#61D27E" },
+    { "name": "sparklineFill", "label": "Sparkline Fill", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "fillColor", "label": "Fill Colour", "type": "color", "default": "transparent" },
+    { "name": "showBorder", "label": "Show Border", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "borderColor", "label": "Border Colour", "type": "color", "default": "#2A3566" },
+    { "name": "cornerRadius", "label": "Corner Radius", "type": "text", "default": "16" }
+  ],
+  "data": {
+    "mode": "multi_row",
+    "columns": ["value", "delta"],
+    "sampleRows": [
+      ["110.2", "3.1"], ["112.6", "3.1"], ["111.8", "3.1"], ["115.3", "3.1"],
+      ["118.0", "3.1"], ["116.9", "3.1"], ["120.4", "3.1"], ["122.1", "3.1"],
+      ["121.5", "3.1"], ["124.8", "3.1"], ["126.2", "3.1"], ["127.0", "3.1"], ["128.4", "3.1"]
+    ]
+  }
+}

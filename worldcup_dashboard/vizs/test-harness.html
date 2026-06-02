@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>splunk&gt; viz harness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=">
+<link rel="stylesheet" href="shared/harness.css">
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<style>
+    /* ─── Splunk Observability Terminal ──────────────────────────── */
+
+    [x-cloak] { display: none !important; }
+
+    html, body {
+        /* Host Grotesk for UI — readable at small sizes, technical character.
+           JetBrains Mono is used selectively on terminal/code/tabular surfaces. */
+        font-family: 'Host Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+        font-feature-settings: 'ss01' 1, 'ss02' 1, 'cv11' 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+    /* Isolate the viz from the harness's OpenType feature flags.
+       Host Grotesk's ss01/ss02 stylistic sets inherit via font-feature-settings
+       and accidentally activate same-named stylistic sets in viz fonts
+       (e.g. Formula1's ss01/ss02 swap in broken-edge S, A, E letterforms),
+       making the harness render viz text differently from Splunk, whose
+       iframes don't inherit parent-document features. */
+    #vizRoot, #vizRoot * {
+        font-feature-settings: normal;
+        font-variant-ligatures: normal;
+    }
+    /* JetBrains Mono OpenType features — scoped to mono surfaces only */
+    .font-mono,
+    code, kbd, samp, pre,
+    .splk-brand,
+    .data-grid,
+    .caret::after,
+    .sec-label::before,
+    input[type="number"],
+    input[type="text"],
+    .tele .v {
+        font-feature-settings: 'calt' 1, 'zero' 1, 'ss02' 1;
+        font-variant-ligatures: contextual;
+    }
+
+    /* ─── Official Splunk Brand Palette — single source of truth ───
+       Every semantic token in .theme-dark / .theme-light below
+       derives from one of these named brand colors, either directly
+       or via color-mix(). If a color isn't named here, it doesn't
+       belong in the harness. Names mirror the Splunk brand system
+       (e.g. bf-color-magenta-50, bf-background-neutral-dark-5). */
+    :root {
+        /* Neutrals — dark */
+        --neutral-dark-5:    #04070B;
+        --neutral-dark-15:   #0B1118;
+
+        /* Neutrals — light */
+        --neutral-light-98:  #F2F5FA;
+        --neutral-light-95:  #E9EEF4;
+
+        /* Brand stratum */
+        --splunk-blue:       #000B3F;
+
+        /* Palette 50s */
+        --magenta-50:        #FF007F;
+        --medium-blue-50:    #0A60FF;
+        --cisco-blue-50:     #02C8FF;
+        --orange-50:         #FF9000;
+    }
+
+    .theme-dark {
+        --bg:          var(--neutral-dark-5);
+        --card:        var(--neutral-dark-15);
+        --card-2:      var(--splunk-blue);
+        --border:      color-mix(in srgb, var(--splunk-blue)      55%, var(--neutral-light-98) 10%);
+        --border-2:    color-mix(in srgb, var(--splunk-blue)      40%, var(--neutral-light-98) 18%);
+        --text:        var(--neutral-light-98);
+        --muted:       color-mix(in srgb, var(--neutral-light-98) 45%, var(--splunk-blue)      55%);
+        --subtle:      var(--neutral-light-95);
+        --accent:      var(--magenta-50);
+        --accent-soft: color-mix(in srgb, var(--magenta-50)       12%, transparent);
+        --accent-glow: color-mix(in srgb, var(--magenta-50)       45%, transparent);
+        --accent-2:    var(--cisco-blue-50);
+        --accent-3:    var(--medium-blue-50);
+        --btn:         color-mix(in srgb, var(--neutral-dark-15)  70%, var(--splunk-blue)      30%);
+        --btn-hover:   color-mix(in srgb, var(--neutral-dark-15)  50%, var(--splunk-blue)      50%);
+        --ok:          var(--cisco-blue-50);
+        --warn:        var(--orange-50);
+        --err:         var(--magenta-50);
+        --grid:        color-mix(in srgb, var(--neutral-light-98) 4.5%, transparent);
+        /* Elevated panel surface — subtle splunk-blue tint atop the card stratum */
+        --panel:       color-mix(in srgb, var(--splunk-blue)      35%, var(--neutral-dark-15)  65%);
+        --panel-border: color-mix(in srgb, var(--splunk-blue)     70%, var(--neutral-light-98) 14%);
+    }
+    .theme-light {
+        --bg:          var(--neutral-light-98);
+        --card:        #FFFFFF;
+        --card-2:      var(--neutral-light-95);
+        --border:      color-mix(in srgb, var(--neutral-dark-5)   12%, var(--neutral-light-98) 88%);
+        --border-2:    color-mix(in srgb, var(--neutral-dark-5)   24%, var(--neutral-light-98) 76%);
+        --text:        var(--neutral-dark-5);
+        --muted:       color-mix(in srgb, var(--neutral-dark-5)   55%, var(--neutral-light-98) 45%);
+        --subtle:      var(--neutral-dark-15);
+        --accent:      var(--magenta-50);
+        --accent-soft: color-mix(in srgb, var(--magenta-50)        9%, transparent);
+        --accent-glow: color-mix(in srgb, var(--magenta-50)       30%, transparent);
+        --accent-2:    var(--splunk-blue);
+        --accent-3:    var(--medium-blue-50);
+        --btn:         #FFFFFF;
+        --btn-hover:   var(--neutral-light-95);
+        --ok:          var(--medium-blue-50);
+        --warn:        var(--orange-50);
+        --err:         var(--magenta-50);
+        --grid:        color-mix(in srgb, var(--splunk-blue)       6%, transparent);
+        /* Elevated panel surface — light-95 with a hint of splunk-blue
+           for a cool undertone that echoes the dark-mode tint */
+        --panel:       color-mix(in srgb, var(--neutral-light-95) 94%, var(--splunk-blue) 6%);
+        --panel-border: color-mix(in srgb, var(--neutral-dark-5)  22%, var(--neutral-light-98) 78%);
+    }
+
+    /* Dot-grid background */
+    body {
+        background-color: var(--bg);
+        background-image: radial-gradient(circle, var(--grid) 1px, transparent 1px);
+        background-size: 22px 22px;
+        background-position: -1px -1px;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 0; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+    ::-webkit-scrollbar-corner { background: transparent; }
+    * { scrollbar-width: thin; scrollbar-color: var(--border-2) transparent; }
+
+    /* Section label — the >_ chevron motif (sans for legibility, mono chevron) */
+    .sec-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .sec-label::before {
+        font-family: 'JetBrains Mono', monospace;
+        content: '>_';
+        color: var(--accent);
+        font-weight: 800;
+        letter-spacing: 0;
+        text-shadow: 0 0 8px var(--accent-glow);
+        font-size: 13px;
+    }
+
+    /* ─── Sidebar section card ──────────────────────────────
+       Each sidebar section is its own elevated panel. The
+       background uses the splunk-blue stratum (dark) or
+       light-95 stratum (light) derived via --panel, and the
+       border derives from the same stratum for a cohesive
+       edge. The 2px left edge is tinted per-section from the
+       brand palette, so the strata ribbon at the top of the
+       sidebar reads as a *key* to the sections below. */
+    .sidebar-section {
+        --section-accent: var(--panel-border);
+        --section-accent-glow: color-mix(in srgb, var(--section-accent) 45%, transparent);
+        position: relative;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-left: 2px solid var(--section-accent);
+        border-radius: 2px;
+        padding: 13px 14px 12px;
+        margin: 10px 12px 0;
+    }
+    .sidebar-section:last-child {
+        margin-bottom: 12px;
+    }
+    /* Chevron picks up the section accent, so the >_ motif reads as
+       an owned color rather than a uniform magenta. */
+    .sidebar-section .sec-label::before {
+        color: var(--section-accent);
+        text-shadow: 0 0 8px var(--section-accent-glow);
+    }
+    /* Per-section brand identities — Panel Size owns cisco-blue
+       (measurement), Visualization keeps magenta (hero), Data /
+       Fields take medium-blue (structure), Formatter takes
+       orange (output controls). */
+    .sidebar-section[data-section="panel-size"] { --section-accent: var(--cisco-blue-50); }
+    .sidebar-section[data-section="viz"]        { --section-accent: var(--magenta-50); }
+    .sidebar-section[data-section="data"]       { --section-accent: var(--medium-blue-50); }
+    .sidebar-section[data-section="fields"]     { --section-accent: var(--medium-blue-50); }
+    .sidebar-section[data-section="formatter"]  { --section-accent: var(--orange-50); }
+
+    /* ─── Primary action variant on .btn-ghost.
+       Each section has one primary action — Fit (Panel Size),
+       Edit (Data when closed). Kept deliberately quiet: the
+       ghost base with accent-colored text, no fill. Solid
+       magenta fills read "hot" in light mode and conflict
+       with viz colour. Progression: ghost < primary < active. */
+    .btn-ghost.btn-primary {
+        border-color: var(--border);
+        color: var(--accent);
+        font-weight: 800;
+        letter-spacing: 0.15em;
+    }
+    .btn-ghost.btn-primary:hover {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: var(--accent);
+        box-shadow: 0 0 12px -4px var(--accent-glow);
+    }
+
+    /* ─── Scope readout — turns the four corner brackets into a
+       live window chrome. Anchored above the scope frame so the
+       corners now clearly belong to an *instrumented* scope, not
+       a decorative one. */
+    .scope-readout {
+        position: absolute;
+        top: -22px;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        pointer-events: none;
+        user-select: none;
+        line-height: 1;
+    }
+    .scope-readout .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ok);
+    }
+    .scope-readout .live::before {
+        content: '';
+        width: 5px; height: 5px;
+        border-radius: 50%;
+        /* currentColor so the no-data variant (orange) recolours the dot too */
+        background: currentColor;
+        animation: splk-pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .scope-readout .target {
+        color: var(--text);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+    }
+    .scope-readout .sep { color: var(--border-2); }
+    .scope-readout .dim {
+        color: var(--muted);
+        margin-left: auto;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.08em;
+    }
+
+    /* ─── Keyboard focus — explicit 2px magenta-glow ring.
+       Border-color alone was too quiet; this reads loud and
+       matches the accent language already in use. */
+    :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: 2px;
+    }
+    /* Ghost buttons already have a visible border, so the glow
+       replaces the outline with a softer corona. */
+    .btn-ghost:focus-visible {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-soft), 0 0 14px -4px var(--accent-glow);
+    }
+
+    /* Blinking caret */
+    @keyframes splk-caret {
+        0%, 55% { opacity: 1; }
+        56%, 100% { opacity: 0; }
+    }
+    .caret::after {
+        font-family: 'JetBrains Mono', monospace;
+        content: '_';
+        color: var(--accent);
+        animation: splk-caret 1.1s step-end infinite;
+        margin-left: 1px;
+        font-weight: 800;
+    }
+
+    /* Pulse-glow status dot */
+    @keyframes splk-pulse {
+        0%   { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+        70%  { box-shadow: 0 0 0 5px transparent; opacity: 0.65; }
+        100% { box-shadow: 0 0 0 0 transparent; opacity: 1; }
+    }
+    .pulse-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        animation: splk-pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .pulse-dot.status-ok    { background: var(--ok);    color: var(--ok); }
+    .pulse-dot.status-warn  { background: var(--warn);  color: var(--warn); }
+    .pulse-dot.status-err   { background: var(--err);   color: var(--err); }
+
+    /* Viz stage — the area the viz sits on. Normally inherits the page bg.
+       In light mode, users can toggle a dark backdrop to preview dark-first vizzes. */
+    .viz-stage {
+        background: transparent;
+        transition: background-color 0.18s ease;
+        /* Soft inner ring lets the stage read as a distinct surface when dark. */
+        border-radius: 3px;
+    }
+    .viz-stage--dark {
+        background: var(--neutral-dark-5);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--neutral-dark-5) 70%, transparent);
+        /* Re-map readout tokens locally so scope labels read against the dark patch */
+        --text:     var(--neutral-light-98);
+        --muted:    color-mix(in srgb, var(--neutral-light-98) 55%, var(--neutral-dark-5) 45%);
+        --border-2: color-mix(in srgb, var(--neutral-light-98) 24%, var(--neutral-dark-5) 76%);
+    }
+
+    /* Corner brackets for the viz scope */
+    .scope-corner {
+        position: absolute;
+        width: 12px; height: 12px;
+        border: 0 solid var(--accent);
+        pointer-events: none;
+        z-index: 5;
+        opacity: 0.9;
+    }
+    .scope-corner.tl { top: -1px;    left: -1px;    border-top-width: 1.5px;    border-left-width: 1.5px; }
+    .scope-corner.tr { top: -1px;    right: -1px;   border-top-width: 1.5px;    border-right-width: 1.5px; }
+    .scope-corner.bl { bottom: -1px; left: -1px;    border-bottom-width: 1.5px; border-left-width: 1.5px; }
+    .scope-corner.br { bottom: -1px; right: -1px;   border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+    /* Ghost button — uniform uppercase, Host Grotesk */
+    .btn-ghost {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        padding: 7px 12px;
+        border: 1px solid var(--border);
+        background: var(--btn);
+        color: var(--subtle);
+        cursor: pointer;
+        border-radius: 2px;
+        transition: border-color 0.12s, color 0.12s, background 0.12s, box-shadow 0.12s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        white-space: nowrap;
+    }
+    .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-soft);
+    }
+    .btn-ghost.active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-soft);
+        box-shadow: 0 0 0 1px var(--accent-soft) inset, 0 0 12px -4px var(--accent-glow);
+    }
+    .btn-icon {
+        width: 32px; height: 32px; padding: 0;
+    }
+
+    /* ─── Segmented toggle — the formatter radio groups (true/false,
+       slow/medium/fast, etc). Shares every visual primitive with
+       .btn-ghost (uppercase, letter-spaced, 2px radius, terminal
+       font weight) so the sidebar reads as one family, just sized
+       slightly tighter for inline option groups. */
+    .btn-segment {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 5px 11px;
+        border: 1px solid var(--border);
+        background: var(--btn);
+        color: var(--subtle);
+        cursor: pointer;
+        border-radius: 2px;
+        transition: border-color 0.12s, color 0.12s, background 0.12s, box-shadow 0.12s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+    }
+    .btn-segment:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+    .btn-segment.active {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent-soft) inset, 0 0 10px -4px var(--accent-glow);
+    }
+
+    /* Inputs / selects */
+    input[type="number"], input[type="text"] {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12.5px;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        border-radius: 2px;
+    }
+    input[type="range"] { accent-color: var(--accent); height: 3px; }
+    input[type="color"] { padding: 2px; cursor: pointer; }
+
+    select {
+        font-size: 13px;
+        font-weight: 500;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='none' stroke='%23FF007F' stroke-width='1.6' stroke-linecap='square' d='M1 1l4 4 4-4'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        padding-right: 24px !important;
+        border-radius: 2px;
+    }
+    .theme-light select {
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='none' stroke='%23FF007F' stroke-width='1.6' stroke-linecap='square' d='M1 1l4 4 4-4'/></svg>");
+    }
+
+    /* Resize handle */
+    .resize-handle {
+        position: absolute; bottom: 0; right: 0; width: 18px; height: 18px;
+        cursor: nwse-resize; display: flex; align-items: center; justify-content: center;
+        z-index: 11; opacity: 0.55; transition: opacity 0.15s;
+        color: var(--accent);
+    }
+    .resize-handle:hover { opacity: 1; }
+
+    /* Data grid */
+    .data-grid {
+        border-collapse: collapse; width: 100%;
+        font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    }
+    .data-grid th {
+        background: var(--card-2); color: var(--muted); font-weight: 700; padding: 6px 9px;
+        border: 1px solid var(--border); text-align: left; font-size: 11px; text-transform: uppercase;
+        letter-spacing: 0.08em; position: sticky; top: 0; z-index: 1;
+    }
+    .data-grid td {
+        padding: 4px 8px; border: 1px solid var(--border); color: var(--text);
+        min-width: 50px; max-width: 180px; white-space: nowrap; overflow: hidden; cursor: text;
+        font-variant-numeric: tabular-nums;
+    }
+    .data-grid td:focus { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--bg); }
+    /* Row hover uses cisco-blue, not magenta. In a dense grid the
+       magenta tint read as "warning" — cisco-blue reads as "signal". */
+    .data-grid tr:hover td { background: color-mix(in srgb, var(--cisco-blue-50) 7%, transparent); }
+    .data-grid .row-num {
+        color: var(--muted); font-size: 10.5px; text-align: right; min-width: 30px;
+        max-width: 30px; padding: 4px 6px; cursor: default; user-select: none;
+        background: var(--card-2);
+    }
+    .data-grid .row-num:focus { outline: none; }
+
+    /* Telemetry strip (footer) */
+    .tele {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 0 16px;
+        min-height: 34px;
+        font-size: 11.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-right: 1px solid var(--border);
+        min-width: 0;
+    }
+    .tele:last-child { border-right: 0; }
+    .tele .k { color: var(--muted); font-weight: 700; flex-shrink: 0; letter-spacing: 0.12em; }
+    .tele .v {
+        /* Mono for values — preserves tabular alignment and terminal character */
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        text-transform: none;
+        letter-spacing: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 280px;
+    }
+    .tele .v.accent { color: var(--accent); }
+
+    /* Help panel code tag */
+    .help code {
+        background: var(--card-2);
+        color: var(--accent);
+        border-left: 2px solid var(--accent);
+        padding: 2px 6px;
+        font-size: 12.5px;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .help p, .help li { font-size: 13px; line-height: 1.65; }
+
+    /* Asset preview strip */
+    .asset-strip {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 16px;
+        border-top: 1px solid var(--border);
+        background: var(--card-2);
+    }
+    .asset-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .asset-group .asset-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        flex-shrink: 0;
+    }
+    .asset-thumb {
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        background: var(--bg);
+        image-rendering: pixelated;
+        cursor: pointer;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .asset-thumb:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 6px var(--accent-glow);
+    }
+    .tele .asset-thumb { margin: 4px 0; }
+    .asset-thumb.missing {
+        opacity: 0.25;
+        border-color: var(--warn);
+        cursor: default;
+    }
+    .asset-thumb.missing:hover {
+        border-color: var(--warn);
+        box-shadow: none;
+    }
+    .asset-icon-label {
+        font-size: 9px;
+        color: var(--muted);
+        text-align: center;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0;
+    }
+    .asset-icon-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+    }
+    .asset-sep {
+        width: 1px;
+        align-self: stretch;
+        background: var(--border);
+    }
+
+    /* Dashed divider */
+    .splk-divider {
+        height: 1px;
+        background: repeating-linear-gradient(90deg, var(--border-2) 0 6px, transparent 6px 10px);
+    }
+
+    /* Brand mark */
+    .splk-brand {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800;
+        font-size: 16px;
+        letter-spacing: -0.02em;
+        color: var(--text);
+        line-height: 1;
+    }
+    .splk-brand .chev {
+        color: var(--accent);
+        text-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    /* ─── Brand strata — official 4-stop ribbon.
+       Magenta-50 · Medium-Blue-50 · Cisco-Blue-50 · Orange-50.
+       Each stop is an individual span with a title tooltip that
+       exposes the palette token name, so the ribbon doubles as a
+       live palette reference. Hover any stop to reveal the name
+       and hex. */
+    .brand-strata {
+        display: flex;
+        height: 2px;
+        width: 100%;
+        position: relative;
+        cursor: help;
+    }
+    .brand-strata .strata-stop {
+        display: block;
+        height: 100%;
+        transition: height 0.2s ease;
+    }
+    .brand-strata:hover .strata-stop { height: 4px; }
+    .brand-strata::after {
+        /* faint glow under the magenta stop — the anchor of the palette */
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 0;
+        width: 22%;
+        height: 10px;
+        background: linear-gradient(180deg, var(--accent-glow), transparent);
+        opacity: 0.55;
+        pointer-events: none;
+    }
+    .theme-light .brand-strata::after { opacity: 0.35; }
+
+    /* Slight text selection colour */
+    ::selection { background: var(--accent-soft); color: var(--text); }
+
+    /* Viz picker cascading menu — floating terminal window */
+    .picker-window {
+        position: fixed;
+        z-index: 80;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-top: 2px solid var(--accent);
+        border-radius: 2px;
+        box-shadow:
+            0 28px 56px -14px rgba(0, 0, 0, 0.7),
+            0 4px 10px rgba(0, 0, 0, 0.35),
+            0 0 0 1px var(--accent-soft),
+            0 0 56px -20px var(--accent-glow);
+        overflow: hidden;
+    }
+    .theme-light .picker-window {
+        box-shadow:
+            0 20px 40px -12px rgba(20, 20, 20, 0.18),
+            0 4px 8px rgba(20, 20, 20, 0.1),
+            0 0 0 1px var(--accent-soft),
+            0 0 32px -14px var(--accent-glow);
+    }
+
+    .picker-chrome {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--border);
+        background: var(--card-2);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-weight: 700;
+        user-select: none;
+    }
+    .picker-chrome .title { color: var(--muted); }
+    .picker-chrome .title::before {
+        font-family: 'JetBrains Mono', monospace;
+        content: '>_ ';
+        color: var(--accent);
+        font-weight: 800;
+        text-shadow: 0 0 8px var(--accent-glow);
+    }
+    .picker-chrome .count {
+        color: var(--accent);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+    .picker-chrome .close {
+        margin-left: auto;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        cursor: pointer;
+        border: 1px solid transparent;
+        background: transparent;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1;
+        border-radius: 2px;
+        transition: all 0.1s;
+    }
+    .picker-chrome .close:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: var(--accent-soft);
+    }
+
+    .picker-body {
+        display: flex;
+        min-height: 0;
+    }
+
+    .picker-cat {
+        width: 180px;
+        border-right: 1px solid var(--border);
+        padding: 5px 0;
+        max-height: 340px;
+        overflow-y: auto;
+        background: var(--card);
+    }
+    .picker-cat-item {
+        width: 100%;
+        text-align: left;
+        padding: 10px 14px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+        color: var(--subtle);
+        background: transparent;
+        border: 0;
+        border-left: 3px solid transparent;
+        cursor: pointer;
+        transition: background 0.1s, color 0.1s, border-color 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .picker-cat-item:hover {
+        background: var(--btn);
+        color: var(--text);
+    }
+    .picker-cat-item.active {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-left-color: var(--accent);
+    }
+    .picker-cat-item .arrow {
+        opacity: 0;
+        color: var(--accent);
+        transition: opacity 0.1s, transform 0.1s;
+        transform: translateX(-2px);
+    }
+    .picker-cat-item.active .arrow {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    .picker-cat-item .count {
+        margin-left: auto;
+        font-size: 10px;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+    }
+    .picker-cat-item.active .count { color: var(--accent); }
+
+    .picker-list {
+        flex: 1;
+        padding: 5px 0;
+        max-height: 340px;
+        overflow-y: auto;
+        background: var(--bg);
+    }
+    .picker-viz {
+        width: 100%;
+        text-align: left;
+        padding: 10px 14px;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--text);
+        background: transparent;
+        border: 0;
+        border-left: 3px solid transparent;
+        cursor: pointer;
+        transition: background 0.08s, color 0.08s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .picker-viz:hover {
+        background: var(--btn);
+    }
+    .picker-viz.selected {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-left-color: var(--accent);
+        font-weight: 600;
+    }
+    .picker-viz .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--border-2);
+        flex-shrink: 0;
+        transition: background 0.1s, box-shadow 0.1s;
+    }
+    .picker-viz:hover .dot { background: var(--muted); }
+    .picker-viz.selected .dot {
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .picker-footer {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 12px;
+        border-top: 1px solid var(--border);
+        background: var(--card-2);
+        font-size: 10.5px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+    }
+    .picker-footer .cat {
+        color: var(--accent);
+        font-weight: 700;
+        text-shadow: 0 0 6px var(--accent-glow);
+    }
+    .picker-footer .sep { color: var(--border-2); }
+
+    /* Popover entry animation */
+    @keyframes picker-in {
+        from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .picker-window { animation: picker-in 0.14s cubic-bezier(0.2, 0.9, 0.3, 1); transform-origin: top left; }
+</style>
+</head>
+<body class="h-screen font-sans">
+
+<div x-data="harness()" x-init="init()" class="flex h-screen overflow-hidden bg-gh-bg text-gh-text" :class="isDark ? 'theme-dark' : 'theme-light'">
+
+    <!-- Sidebar -->
+    <div class="w-[360px] min-w-[360px] bg-gh-card border-r border-gh-border flex flex-col overflow-hidden">
+        <div class="brand-strata shrink-0">
+            <span class="strata-stop" style="flex:0 0 22%; background: var(--magenta-50);"     title="magenta-50 · #FF007F"></span>
+            <span class="strata-stop" style="flex:0 0 25%; background: var(--medium-blue-50);" title="medium-blue-50 · #0A60FF"></span>
+            <span class="strata-stop" style="flex:0 0 27%; background: var(--cisco-blue-50);"  title="cisco-blue-50 · #02C8FF"></span>
+            <span class="strata-stop" style="flex:1 1 26%; background: var(--orange-50);"      title="orange-50 · #FF9000"></span>
+        </div>
+        <div class="px-4 pt-5 pb-4 border-b border-gh-border shrink-0">
+            <div class="flex items-center gap-3">
+                <img class="h-9" src="splunk-logo.png" alt="Splunk" :style="isDark ? '' : 'filter: invert(1)'" />
+                <div class="w-px h-7 bg-gh-border"></div>
+                <div class="leading-tight">
+                    <p class="text-[13px] font-bold tracking-[0.18em] uppercase text-gh-text">viz<span class="text-gh-accent">&gt;</span> harness</p>
+                    <p class="text-[10.5px] text-gh-muted tracking-[0.1em] mt-1 caret">$ local dev mode</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scrollable sections region -->
+        <div class="sidebar-scroll flex-1 overflow-y-auto min-h-0">
+
+        <!-- Panel Size -->
+        <div class="sidebar-section" data-section="panel-size">
+            <div class="sec-label">Panel Size</div>
+            <div class="flex items-center gap-2">
+                <input type="number" x-model="vizWidth" @change="resizeViz()" min="100" max="2000" step="10"
+                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded-sm text-gh-text text-[13px] focus:border-gh-accent outline-none">
+                <span class="text-[13px] text-gh-muted">&times;</span>
+                <input type="number" x-model="vizHeight" @change="resizeViz()" min="100" max="1200" step="10"
+                    class="w-[70px] p-1.5 px-2 bg-gh-bg border border-gh-border rounded-sm text-gh-text text-[13px] focus:border-gh-accent outline-none">
+                <button @click="fitToContainer()" class="btn-ghost btn-primary ml-auto">
+                    Fit
+                </button>
+            </div>
+        </div>
+
+        <!-- Viz picker -->
+        <div class="sidebar-section" data-section="viz">
+            <div class="sec-label">Visualization</div>
+            <button type="button" @click="togglePicker($event.currentTarget)"
+                class="w-full flex items-center justify-between p-1.5 px-2.5 bg-gh-bg border border-gh-border rounded-sm text-gh-text text-[13px] cursor-pointer hover:border-gh-accent focus:border-gh-accent outline-none transition-colors"
+                :class="vizPickerOpen && 'border-gh-accent'">
+                <span class="truncate" x-text="currentVizLabel() || '— Select a viz —'"
+                    :class="!selectedViz && 'text-gh-muted'"></span>
+                <span class="text-gh-accent ml-2 text-[11px]" x-text="vizPickerOpen ? '▾' : '▸'"></span>
+            </button>
+            <div class="flex gap-1.5 mt-2">
+                <button @click="toggleNoData()" class="btn-ghost" :class="isNoData && 'active'">
+                    No-Data
+                </button>
+                <button @click="resetDefaults()" class="btn-ghost">
+                    Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Data Editor -->
+        <div x-show="currentHarness" x-cloak class="sidebar-section" data-section="data">
+            <div class="flex items-center justify-between mb-2.5">
+                <div class="sec-label !mb-0">Data</div>
+                <div class="flex gap-1">
+                    <button @click="showDataEditor = !showDataEditor; if(showDataEditor) initDataGrid()"
+                        class="btn-ghost" style="padding:4px 10px; font-size:10.5px"
+                        :class="showDataEditor ? 'active' : 'btn-primary'">
+                        Edit
+                    </button>
+                </div>
+            </div>
+            <div x-show="showDataEditor" x-cloak>
+                <div class="overflow-auto max-h-[350px] border border-gh-border rounded-sm" style="scrollbar-width:thin">
+                    <table class="data-grid">
+                        <thead>
+                            <tr>
+                                <th class="row-num">#</th>
+                                <template x-for="(col, ci) in gridColumns" :key="ci">
+                                    <th x-text="col"></th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(row, ri) in gridRows" :key="ri">
+                                <tr>
+                                    <td class="row-num" x-text="ri + 1"></td>
+                                    <template x-for="(cell, ci) in row" :key="ci">
+                                        <td contenteditable="true"
+                                            x-text="cell"
+                                            @blur="updateGridCell(ri, ci, $el.textContent)"
+                                            @keydown.enter.prevent="$el.blur()"
+                                            @keydown.tab.prevent="focusNextCell($el, ri, ci, $event.shiftKey)"
+                                        ></td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex gap-1.5 mt-2">
+                    <button @click="addGridRow()" class="btn-ghost" style="padding:5px 9px; font-size:10.5px" title="Add row">+ Row</button>
+                    <button @click="removeGridRow()" class="btn-ghost" style="padding:5px 9px; font-size:10.5px" title="Remove last row">&minus; Row</button>
+                    <button @click="addGridColumn()" class="btn-ghost" style="padding:5px 9px; font-size:10.5px" title="Add column">+ Col</button>
+                    <button @click="removeGridColumn()" class="btn-ghost" style="padding:5px 9px; font-size:10.5px" title="Remove last column">&minus; Col</button>
+                    <span class="text-[10.5px] text-gh-muted ml-auto self-center tracking-wider uppercase" x-text="gridRows.length + ' rows'"></span>
+                </div>
+                <div class="flex gap-1.5 mt-1.5">
+                    <button @click="initDataGrid()" class="btn-ghost" style="padding:5px 9px; font-size:10.5px">Reset</button>
+                    <button @click="pasteCSVPrompt()" class="btn-ghost" style="padding:5px 9px; font-size:10.5px">Paste CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data fields -->
+        <div x-show="currentHarness && currentHarness.fields.length > 0 && !showDataEditor" x-cloak class="sidebar-section" data-section="fields">
+            <div class="sec-label">Data Fields</div>
+            <template x-for="f in (currentHarness ? currentHarness.fields : [])" :key="f.name">
+                <div class="mb-2.5">
+                    <label class="block text-[13px] text-gh-subtle mb-1.5" x-text="f.label"></label>
+
+                    <!-- Slider -->
+                    <template x-if="f.type === 'slider'">
+                        <div class="flex items-center gap-2">
+                            <input type="range" :min="f.min" :max="f.max" :step="f.step || 1"
+                                :value="dataValues[f.name]"
+                                @input="dataValues[f.name] = $el.value; triggerUpdate()"
+                                class="flex-1">
+                            <span class="text-[13px] text-gh-accent font-semibold min-w-[52px] text-right tabular-nums"
+                                x-text="dataValues[f.name]"></span>
+                        </div>
+                    </template>
+
+                    <!-- Select -->
+                    <template x-if="f.type === 'select'">
+                        <select @change="dataValues[f.name] = $el.value; triggerUpdate()"
+                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded-sm text-gh-text text-[13px] cursor-pointer focus:border-gh-accent outline-none">
+                            <template x-for="o in f.options" :key="typeof o === 'object' ? o.v : o">
+                                <option :value="typeof o === 'object' ? o.v : o"
+                                    :selected="(typeof o === 'object' ? o.v : o) === String(dataValues[f.name])"
+                                    x-text="typeof o === 'object' ? o.l : o"></option>
+                            </template>
+                        </select>
+                    </template>
+
+                    <!-- Text -->
+                    <template x-if="f.type === 'text' || (!f.type && f.type !== 'slider' && f.type !== 'select')">
+                        <input type="text" :value="dataValues[f.name] || ''"
+                            @change="dataValues[f.name] = $el.value; triggerUpdate()"
+                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded-sm text-gh-text text-[13px] focus:border-gh-accent outline-none">
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <!-- Formatter settings -->
+        <div x-show="currentHarness && currentHarness.formatter.length > 0" x-cloak class="sidebar-section" data-section="formatter">
+            <div class="sec-label">Formatter Settings</div>
+            <template x-for="s in (currentHarness ? currentHarness.formatter : [])" :key="s.name">
+                <div class="mb-2.5">
+                    <label class="block text-[13px] text-gh-subtle mb-1.5" x-text="s.label"></label>
+
+                    <!-- Radio -->
+                    <template x-if="s.type === 'radio'">
+                        <div class="flex gap-1.5 flex-wrap">
+                            <template x-for="o in s.options" :key="o">
+                                <label class="btn-segment"
+                                    :class="config[ns + s.name] === o && 'active'">
+                                    <input type="radio" :name="'fmt_' + s.name" :value="o" class="hidden"
+                                        :checked="config[ns + s.name] === o"
+                                        @change="config[ns + s.name] = o; triggerUpdate()">
+                                    <span x-text="o"></span>
+                                </label>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Select -->
+                    <template x-if="s.type === 'select'">
+                        <select @change="config[ns + s.name] = $el.value; triggerUpdate()"
+                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded-sm text-gh-text text-[13px] cursor-pointer focus:border-gh-accent outline-none">
+                            <template x-for="o in s.options" :key="typeof o === 'object' ? o.v : o">
+                                <option :value="typeof o === 'object' ? o.v : o"
+                                    :selected="(typeof o === 'object' ? o.v : o) === config[ns + s.name]"
+                                    x-text="typeof o === 'object' ? o.l : o"></option>
+                            </template>
+                        </select>
+                    </template>
+
+                    <!-- Color -->
+                    <template x-if="s.type === 'color'">
+                        <div class="flex items-center gap-2">
+                            <input type="color" :value="config[ns + s.name]"
+                                @input="config[ns + s.name] = $el.value; $refs['ctxt_' + s.name] && ($refs['ctxt_' + s.name].value = $el.value); triggerUpdate()"
+                                class="w-7 h-7 border border-gh-border rounded-sm bg-transparent cursor-pointer p-0">
+                            <input type="text" :value="config[ns + s.name]" :ref="'ctxt_' + s.name"
+                                @change="config[ns + s.name] = $el.value; triggerUpdate()"
+                                class="flex-1 p-1.5 px-2 bg-gh-bg border border-gh-border rounded-sm text-gh-text text-[13px] focus:border-gh-accent outline-none">
+                        </div>
+                    </template>
+
+                    <!-- Text -->
+                    <template x-if="s.type === 'text'">
+                        <input type="text" :value="config[ns + s.name] || ''"
+                            @change="config[ns + s.name] = $el.value; triggerUpdate()"
+                            class="w-full p-1.5 px-2 bg-gh-bg border border-gh-border rounded-sm text-gh-text text-[13px] focus:border-gh-accent outline-none">
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        </div><!-- /sidebar-scroll -->
+    </div>
+
+    <!-- Main panel -->
+    <div class="flex-1 flex flex-col p-4 gap-3 overflow-hidden">
+        <div class="flex items-center gap-2 shrink-0 justify-end">
+            <!-- Viz dark background toggle (only useful in light mode) -->
+            <button x-show="!isDark" x-cloak @click="toggleVizDarkBg()"
+                :title="vizDarkBg ? 'Viz stage: dark — click for light' : 'Viz stage: light — click for dark'"
+                class="btn-ghost btn-icon" :class="vizDarkBg && 'active'">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 3 A9 9 0 0 1 12 21 Z" fill="currentColor" stroke="none"/>
+                </svg>
+            </button>
+            <!-- Theme toggle -->
+            <button @click="toggleTheme()" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                class="btn-ghost btn-icon">
+                <svg x-show="isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <svg x-show="!isDark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </button>
+            <!-- GitHub link -->
+            <a href="https://github.com/rcastley/splunk-custom-visualizations" target="_blank" rel="noopener" title="View on GitHub"
+                class="btn-ghost btn-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+            </a>
+            <!-- Help toggle -->
+            <button @click="showHelp = !showHelp" title="Help"
+                class="btn-ghost btn-icon" :class="showHelp && 'active'">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex-1 flex items-center justify-center overflow-hidden relative min-h-0 viz-stage" x-ref="vizWrapper"
+             :class="(vizDarkBg && !isDark) && 'viz-stage--dark'">
+            <div class="relative" :style="'width:' + vizWidth + 'px;height:' + vizHeight + 'px'">
+                <!-- Scope readout — LIVE chip + current target + dims -->
+                <div class="scope-readout">
+                    <span class="live" x-show="selectedViz && !isNoData" x-cloak>Live</span>
+                    <span class="live" style="color: var(--warn)" x-show="selectedViz && isNoData" x-cloak>No-Data</span>
+                    <span class="target" x-text="selectedViz || '— no viz —'"></span>
+                    <span class="sep">·</span>
+                    <span class="dim" x-text="vizWidth + '×' + vizHeight"></span>
+                </div>
+                <!-- scope corner brackets -->
+                <span class="scope-corner tl"></span>
+                <span class="scope-corner tr"></span>
+                <span class="scope-corner bl"></span>
+                <span class="scope-corner br"></span>
+                <div class="w-full h-full overflow-hidden p-3" :style="'background:transparent;border:1px solid ' + ((isDark || vizDarkBg) ? 'rgba(168,177,192,0.08)' : 'rgba(0,0,0,0.08)')">
+                    <div id="vizRoot" class="w-full h-full relative overflow-hidden"></div>
+                </div>
+                <div class="resize-handle" @mousedown="startResize($event)" title="drag to resize">
+                    <svg width="11" height="11" viewBox="0 0 10 10" stroke="currentColor" fill="none">
+                        <line x1="9" y1="1" x2="1" y2="9" stroke-width="1.5"/>
+                        <line x1="9" y1="5" x2="5" y2="9" stroke-width="1.5"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Telemetry strip -->
+        <div class="flex items-stretch shrink-0 border border-gh-border bg-gh-card overflow-hidden" style="border-radius:2px">
+            <div class="tele">
+                <span class="pulse-dot"
+                    :class="{ 'status-ok': statusType === 'ok', 'status-warn': statusType === 'nodata', 'status-err': statusType === 'err' }"></span>
+                <span class="k">Status</span>
+                <span class="v" x-text="statusText"></span>
+            </div>
+            <div class="tele">
+                <span class="k">Theme</span>
+                <span class="v" x-text="isDark ? 'dark' : 'light'"></span>
+            </div>
+            <template x-if="selectedViz">
+                <div class="tele" style="gap:10px">
+                    <span class="k">Preview</span>
+                    <img class="asset-thumb"
+                         :src="vizPreviewPath()"
+                         :class="{ missing: !assetStatus.preview }"
+                         @load="assetStatus.preview = true"
+                         @error="assetStatus.preview = false; $el.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22116%22 height=%2276%22><rect fill=%22%23222%22 width=%22116%22 height=%2276%22/><text x=%2258%22 y=%2242%22 fill=%22%23666%22 text-anchor=%22middle%22 font-size=%2210%22>missing</text></svg>'"
+                         style="height:76px; width:116px" title="preview.png (116x76)">
+                </div>
+            </template>
+            <template x-if="selectedViz">
+                <div class="tele" style="gap:8px">
+                    <span class="k">Icons</span>
+                    <template x-for="icon in assetIcons" :key="icon.file">
+                        <img class="asset-thumb"
+                             :src="vizIconPath(icon.file)"
+                             :class="{ missing: !icon.ok }"
+                             @load="icon.ok = true"
+                             @error="icon.ok = false; $el.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22><rect fill=%22%23222%22 width=%2236%22 height=%2236%22 rx=%222%22/><text x=%2218%22 y=%2222%22 fill=%22%23666%22 text-anchor=%22middle%22 font-size=%228%22>n/a</text></svg>'"
+                             :style="'height:' + icon.actual + 'px; width:' + icon.actual + 'px'"
+                             :title="icon.file + ' (' + icon.actual + 'x' + icon.actual + ')'">
+                    </template>
+                </div>
+            </template>
+            <div class="tele ml-auto">
+                <span class="k">Mode</span>
+                <span class="v accent caret" x-text="isNoData ? 'no-data' : 'sample'"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help slide-out panel -->
+    <div x-show="showHelp" x-cloak
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="translate-x-full"
+        class="w-[400px] min-w-[400px] bg-gh-card border-l border-gh-border flex flex-col overflow-y-auto">
+
+        <div class="p-4 border-b border-gh-border flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="font-mono text-gh-accent font-bold text-[14px] leading-none">&gt;_</span>
+                <h2 class="text-[12px] font-bold uppercase tracking-[0.16em] text-gh-text">man harness</h2>
+            </div>
+            <button @click="showHelp = false" class="btn-ghost btn-icon" title="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="help p-5 text-[13px] text-gh-subtle leading-relaxed space-y-5">
+            <div>
+                <h3 class="sec-label mb-2">Getting Started</h3>
+                <ol class="list-decimal list-inside space-y-1 text-gh-subtle">
+                    <li>Select a visualization from the dropdown</li>
+                    <li>Adjust data fields using sliders, dropdowns, and text inputs</li>
+                    <li>Tweak formatter settings &mdash; the canvas re-renders in real-time</li>
+                    <li>Click <strong class="text-gh-text">Test No Data</strong> to verify the no-data message</li>
+                    <li>Resize the panel to test responsive behaviour</li>
+                </ol>
+            </div>
+
+            <div>
+                <h3 class="sec-label mb-2">Theme</h3>
+                <p>Use the <strong class="text-gh-text">sun/moon</strong> icon to toggle between light and dark mode. This changes both the harness UI and the theme reported to the visualization via <code class="bg-gh-bg px-1 py-0.5 rounded">getCurrentTheme()</code>, so your viz renders in the correct mode.</p>
+                <p class="mt-2">When the harness is in light mode, a <strong class="text-gh-text">contrast</strong> icon appears next to the theme toggle. It drops a dark backdrop behind the viz stage only &mdash; useful for previewing a dark-themed viz without switching the whole harness (and therefore the viz's reported theme) over. The viz still receives <code class="bg-gh-bg px-1 py-0.5 rounded">light</code> from <code class="bg-gh-bg px-1 py-0.5 rounded">getCurrentTheme()</code>; only the stage backdrop changes.</p>
+            </div>
+
+            <div>
+                <h3 class="sec-label mb-2">Panel Size</h3>
+                <p>Set exact dimensions with the width &times; height inputs, or click <strong class="text-gh-text">Fit</strong> to fill the available space. The visualization receives a <code class="bg-gh-bg px-1 py-0.5 rounded">reflow()</code> call on resize.</p>
+            </div>
+
+            <div>
+                <h3 class="sec-label mb-2">Data Fields</h3>
+                <p>These controls inject values into the Splunk-format data passed to the viz. Slider values update in real-time. Fields starting with <code class="bg-gh-bg px-1 py-0.5 rounded">_</code> are control fields (e.g., row count) that affect data generation but aren't data columns.</p>
+            </div>
+
+            <div>
+                <h3 class="sec-label mb-2">Formatter Settings</h3>
+                <p>These mirror the viz's <code class="bg-gh-bg px-1 py-0.5 rounded">formatter.html</code> settings. They map to <code class="bg-gh-bg px-1 py-0.5 rounded">config[ns + 'settingName']</code> in the viz JS. Defaults must match the JS fallback values.</p>
+            </div>
+
+            <div>
+                <h3 class="sec-label mb-2">Adding a New Viz</h3>
+                <ol class="list-decimal list-inside space-y-1 text-gh-subtle">
+                    <li>Create a <code class="bg-gh-bg px-1 py-0.5 rounded">harness.json</code> alongside your viz's <code class="bg-gh-bg px-1 py-0.5 rounded">formatter.html</code></li>
+                    <li>Add the viz name to <code class="bg-gh-bg px-1 py-0.5 rounded">harness-manifest.json</code></li>
+                </ol>
+                <p class="mt-1.5">No changes to this HTML file needed.</p>
+            </div>
+
+            <div>
+                <h3 class="sec-label mb-2">Limitations</h3>
+                <ul class="list-disc list-inside space-y-1 text-gh-subtle">
+                    <li>Data is static or slider-driven, not from live SPL</li>
+                    <li><code class="bg-gh-bg px-1 py-0.5 rounded">this.drilldown()</code> is a no-op in the mock</li>
+                    <li>Source loads via <code class="bg-gh-bg px-1 py-0.5 rounded">eval()</code> &mdash; check the console for errors</li>
+                </ul>
+            </div>
+
+            <div class="pt-3 mt-1" style="border-top:1px dashed var(--border-2)">
+                <p class="text-gh-muted text-[11.5px] leading-relaxed">$ cat <strong class="text-gh-accent">TEST-HARNESS.md</strong> &mdash; full documentation including harness.json schema, data modes, and troubleshooting.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Viz picker popover (rendered at root so it escapes the sidebar's clipping context) -->
+    <div x-show="vizPickerOpen" x-cloak
+        @click.outside="vizPickerOpen = false"
+        @keydown.escape.window="vizPickerOpen = false"
+        class="picker-window"
+        :style="'left:' + pickerPos.left + 'px; top:' + pickerPos.top + 'px; width:' + pickerPos.width + 'px'">
+        <div class="picker-chrome">
+            <span class="title">select viz</span>
+            <span class="count" x-text="vizList.length + ' total'"></span>
+            <button type="button" class="close" @click="vizPickerOpen = false" title="Close [Esc]">×</button>
+        </div>
+        <div class="picker-body">
+            <div class="picker-cat">
+                <template x-for="g in vizGroups" :key="g.category">
+                    <button type="button" class="picker-cat-item"
+                        :class="pickerCategory === g.category && 'active'"
+                        @mouseenter="pickerCategory = g.category"
+                        @focus="pickerCategory = g.category"
+                        @click="pickerCategory = g.category">
+                        <span class="arrow">▸</span>
+                        <span x-text="g.category"></span>
+                        <span class="count" x-text="g.vizs.length"></span>
+                    </button>
+                </template>
+            </div>
+            <div class="picker-list">
+                <template x-for="g in vizGroups" :key="g.category">
+                    <div x-show="pickerCategory === g.category">
+                        <template x-for="v in g.vizs" :key="v.name">
+                            <button type="button" class="picker-viz"
+                                :class="selectedViz === v.name && 'selected'"
+                                @click="selectedViz = v.name; switchViz(v.name); vizPickerOpen = false">
+                                <span class="dot"></span>
+                                <span x-text="v.label"></span>
+                            </button>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <div class="picker-footer">
+            <span class="font-mono text-gh-muted">&gt;_</span>
+            <span class="cat" x-text="pickerCategory || '—'"></span>
+            <span class="sep">/</span>
+            <span x-text="pickerCategoryCount() + ' vizs'"></span>
+            <span class="ml-auto" x-text="selectedViz ? ('current: ' + currentVizLabel()) : 'none selected'"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// Splunk Visualization API Mock
+// ══════════════════════════════════════════════════════════
+
+var _modules = {};
+var _currentTheme = 'dark';
+
+(function() {
+    var VisualizationError = function(msg) { this.message = msg; this.name = 'VisualizationError'; };
+    VisualizationError.prototype = Object.create(Error.prototype);
+
+    var BaseProto = {
+        initialize: function() {},
+        destroy: function() {},
+        getPropertyNamespaceInfo: function() { return { propertyNamespace: 'display.visualizations.custom.test.test.' }; },
+        drilldown: function() {},
+        invalidateUpdateView: function() {
+            var self = this;
+            if (self._updatePending) return;
+            self._updatePending = true;
+            requestAnimationFrame(function() { self._updatePending = false; if (window._harnessUpdate) window._harnessUpdate(); });
+        },
+        invalidateFormatData: function() { this.invalidateUpdateView(); },
+        invalidateReflow: function() { this.invalidateUpdateView(); }
+    };
+
+    var Base = {
+        ROW_MAJOR_OUTPUT_MODE: 'row_major',
+        FIELD_VALUE_DRILLDOWN: 'fieldValue',
+        VisualizationError: VisualizationError,
+        prototype: BaseProto,
+        extend: function(proto) {
+            var Ctor = function() {};
+            Ctor.prototype = Object.create(BaseProto);
+            Ctor.prototype.constructor = Ctor;
+            for (var k in proto) { if (proto.hasOwnProperty(k)) Ctor.prototype[k] = proto[k]; }
+            Ctor.VisualizationError = VisualizationError;
+            Ctor.ROW_MAJOR_OUTPUT_MODE = 'row_major';
+            Ctor.FIELD_VALUE_DRILLDOWN = 'fieldValue';
+            return Ctor;
+        }
+    };
+
+    _modules['api/SplunkVisualizationBase'] = Base;
+    _modules['api/SplunkVisualizationUtils'] = {
+        escapeHtml: function(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; },
+        makeSafeUrl: function(u) { return u; },
+        getCurrentTheme: function() { return _currentTheme; },
+        normalizeBoolean: function(v) { return v === true || v === 'true' || v === '1'; }
+    };
+})();
+
+window.define = function(deps, factory) {
+    if (typeof deps === 'function') { factory = deps; deps = []; }
+    var resolved = (deps || []).map(function(d) { return _modules[d]; });
+    window._VizClass = factory.apply(null, resolved);
+};
+window.define.amd = true;
+
+window.require = function(deps, callback) {
+    if (typeof deps === 'string') return _modules[deps];
+    if (Array.isArray(deps) && callback) {
+        callback.apply(null, deps.map(function(d) { return _modules[d] || {}; }));
+    }
+};
+
+
+// ══════════════════════════════════════════════════════════
+// Data Builders
+// ══════════════════════════════════════════════════════════
+
+function buildSplunkData(harness, vals, config, customColumns, customSampleRows) {
+    var data = harness.data;
+    if (customColumns && customSampleRows) {
+        var fields = customColumns.map(function(c) { return { name: c }; });
+        return { fields: fields, rows: customSampleRows };
+    }
+    if (data.mode === 'multi_row') return buildMultiRow(harness, vals);
+    return buildSingleRow(harness, vals, config);
+}
+
+function buildSingleRow(harness, vals, config) {
+    var data = harness.data;
+    var ns = 'display.visualizations.custom.test.test.';
+    var fields = [];
+    var row = [];
+
+    for (var i = 0; i < data.columns.length; i++) {
+        var colName = data.columns[i];
+        if (data.dynamicColumnName && data.dynamicColumnName.column === colName) {
+            fields.push({ name: config[ns + data.dynamicColumnName.configKey] || colName });
+        } else {
+            fields.push({ name: colName });
+        }
+        var val = vals[colName];
+        var fieldDef = findFieldDef(harness.fields, colName);
+        if (fieldDef && fieldDef.transform === 'divide100' && val !== undefined) {
+            val = parseFloat(val) / 100;
+        }
+        row.push(val !== undefined ? String(val) : '0');
+    }
+    return { fields: fields, rows: [row] };
+}
+
+function buildMultiRow(harness, vals) {
+    var data = harness.data;
+    var fields = data.columns.map(function(c) { return { name: c }; });
+    var allRows = (data.sampleRows || []).slice();
+
+    if (data.rowCountField && vals[data.rowCountField] !== undefined) {
+        allRows = allRows.slice(0, parseInt(vals[data.rowCountField], 10) || allRows.length);
+    }
+
+    // Replace relative time columns with now - offset (in seconds)
+    var relCol = data.relativeTimeColumn;
+    if (relCol) {
+        var relIdx = data.columns.indexOf(relCol);
+        if (relIdx !== -1) {
+            var nowSec = Math.floor(Date.now() / 1000);
+            allRows = allRows.map(function(row) {
+                var newRow = row.slice();
+                var offset = parseInt(newRow[relIdx], 10) || 0;
+                newRow[relIdx] = String(nowSec - offset);
+                return newRow;
+            });
+        }
+    }
+
+    var overrides = {};
+    for (var key in vals) {
+        if (key.charAt(0) === '_') continue;
+        var colIdx = data.columns.indexOf(key);
+        if (colIdx !== -1) overrides[colIdx] = String(vals[key]);
+    }
+
+    if (Object.keys(overrides).length > 0) {
+        allRows = allRows.map(function(row) {
+            var newRow = row.slice();
+            for (var idx in overrides) newRow[idx] = overrides[idx];
+            return newRow;
+        });
+    }
+    return { fields: fields, rows: allRows };
+}
+
+function findFieldDef(fields, name) {
+    for (var i = 0; i < fields.length; i++) {
+        if (fields[i].name === name) return fields[i];
+    }
+    return null;
+}
+
+
+// ══════════════════════════════════════════════════════════
+// Alpine Component
+// ══════════════════════════════════════════════════════════
+
+function harness() {
+    return {
+        ns: 'display.visualizations.custom.test.test.',
+        vizDefs: {},
+        vizList: [],
+        vizGroups: [],
+        manifestConfig: {},
+        selectedViz: '',
+        vizPickerOpen: false,
+        pickerCategory: '',
+        pickerPos: { left: 0, top: 0, width: 560 },
+        currentHarness: null,
+        currentInstance: null,
+        config: {},
+        dataValues: {},
+        isNoData: false,
+        isDark: localStorage.getItem('harness-dark') !== 'false',
+        vizDarkBg: localStorage.getItem('harness-viz-dark-bg') === 'true',
+        showHelp: false,
+        statusType: 'nodata',
+        statusText: 'Loading manifest...',
+        vizWidth: 600,
+        vizHeight: 400,
+        showDataEditor: false,
+        gridColumns: [],
+        gridRows: [],
+        customSampleRows: null,
+        customColumns: null,
+        assetStatus: { preview: false },
+        assetIcons: [
+            { file: 'appIcon.png', actual: 36, ok: false },
+            { file: 'appIcon_2x.png', actual: 72, ok: false },
+            { file: 'appIconAlt.png', actual: 36, ok: false },
+            { file: 'appIconAlt_2x.png', actual: 72, ok: false }
+        ],
+
+        init: function() {
+            if (this._initialized) return;
+            this._initialized = true;
+            var self = this;
+            _currentTheme = this.isDark ? 'dark' : 'light';
+            window._harnessUpdate = function() { self.triggerUpdate(); };
+            window.addEventListener('resize', function() { self.vizPickerOpen = false; });
+
+            fetch('harness-manifest.json', { cache: 'no-store' })
+                .then(function(r) { return r.json(); })
+                .then(function(manifest) {
+                    self.manifestConfig = manifest;
+                    var names = manifest.vizs;
+                    var pathTemplate = manifest.pathTemplate || '{name}/appserver/static/visualizations/{name}';
+                    var fetches = names.map(function(name) {
+                        var basePath = pathTemplate.replace(/\{name\}/g, name);
+                        return fetch(basePath + '/harness.json', { cache: 'no-store' })
+                            .then(function(r) { if (!r.ok) throw new Error('No harness.json'); return r.json(); })
+                            .then(function(h) { return { name: name, path: basePath, harness: h, label: h.label || name }; })
+                            .catch(function(e) { console.warn('Skipping ' + name + ': ' + e.message); return null; });
+                    });
+
+                    Promise.all(fetches).then(function(results) {
+                        var list = [];
+                        for (var i = 0; i < results.length; i++) {
+                            if (!results[i]) continue;
+                            var r = results[i];
+                            self.vizDefs[r.name] = { name: r.name, path: r.path, harness: r.harness };
+                            list.push({ name: r.name, label: r.label });
+                        }
+                        list.sort(function(a, b) { return a.label.localeCompare(b.label); });
+                        self.vizList = list;
+
+                        // Build grouped list honouring manifest.categories order
+                        var cats = manifest.categories || {};
+                        var byName = {};
+                        for (var k = 0; k < list.length; k++) byName[list[k].name] = list[k];
+                        var groups = [];
+                        var seen = {};
+                        for (var cat in cats) {
+                            var items = [];
+                            for (var m = 0; m < cats[cat].length; m++) {
+                                var n = cats[cat][m];
+                                if (byName[n]) { items.push(byName[n]); seen[n] = true; }
+                            }
+                            if (items.length) groups.push({ category: cat, vizs: items });
+                        }
+                        var other = list.filter(function(v) { return !seen[v.name]; });
+                        if (other.length) groups.push({ category: 'Other', vizs: other });
+                        self.vizGroups = groups.length ? groups : [{ category: 'All', vizs: list }];
+
+                        self.statusType = 'ok';
+                        self.statusText = 'Loaded ' + list.length + ' vizs \u2014 select one to begin';
+
+                        var saved = localStorage.getItem('harness-viz');
+                        if (saved && self.vizDefs[saved]) {
+                            self.selectedViz = saved;
+                            self.switchViz(saved);
+                        }
+                    });
+                })
+                .catch(function(e) {
+                    self.statusType = 'err';
+                    self.statusText = 'Failed to load manifest: ' + e.message;
+                });
+        },
+
+        toggleTheme: function() {
+            this.isDark = !this.isDark;
+            _currentTheme = this.isDark ? 'dark' : 'light';
+            localStorage.setItem('harness-dark', this.isDark);
+            this.triggerUpdate();
+        },
+
+        toggleVizDarkBg: function() {
+            this.vizDarkBg = !this.vizDarkBg;
+            localStorage.setItem('harness-viz-dark-bg', this.vizDarkBg);
+        },
+
+        currentVizLabel: function() {
+            for (var i = 0; i < this.vizList.length; i++) {
+                if (this.vizList[i].name === this.selectedViz) return this.vizList[i].label;
+            }
+            return '';
+        },
+
+        vizPreviewPath: function() {
+            var def = this.vizDefs[this.selectedViz];
+            if (!def) return '';
+            return def.path + '/preview.png';
+        },
+
+        vizIconPath: function(filename) {
+            var def = this.vizDefs[this.selectedViz];
+            if (!def) return '';
+            // App icons live at {app_root}/static/, derive from viz path
+            // path = examples/{name}/appserver/static/visualizations/{name}
+            // app root = everything before /appserver/
+            var appRoot = def.path.replace(/\/appserver\/.*$/, '');
+            return appRoot + '/static/' + filename;
+        },
+
+        resetAssetStatus: function() {
+            this.assetStatus.preview = false;
+            // Replace the array to force Alpine to re-render x-for items,
+            // clearing any stale @error fallback src from the previous viz
+            this.assetIcons = [
+                { file: 'appIcon.png', actual: 36, ok: false },
+                { file: 'appIcon_2x.png', actual: 72, ok: false },
+                { file: 'appIconAlt.png', actual: 36, ok: false },
+                { file: 'appIconAlt_2x.png', actual: 72, ok: false }
+            ];
+        },
+
+        pickerCategoryCount: function() {
+            for (var i = 0; i < this.vizGroups.length; i++) {
+                if (this.vizGroups[i].category === this.pickerCategory) return this.vizGroups[i].vizs.length;
+            }
+            return 0;
+        },
+
+        togglePicker: function(trigger) {
+            this.vizPickerOpen = !this.vizPickerOpen;
+            if (!this.vizPickerOpen) return;
+
+            // Anchor popover to trigger button (position: fixed escapes sidebar clipping)
+            if (trigger && trigger.getBoundingClientRect) {
+                var rect = trigger.getBoundingClientRect();
+                var popoverWidth = 560;
+                var popoverHeight = 440;
+                var gap = 6;
+                var left = rect.left;
+                var top = rect.bottom + gap;
+                // Nudge back into viewport if overflowing right / bottom
+                if (left + popoverWidth > window.innerWidth - 12) {
+                    left = window.innerWidth - popoverWidth - 12;
+                }
+                if (top + popoverHeight > window.innerHeight - 12) {
+                    top = Math.max(12, rect.top - popoverHeight - gap);
+                }
+                this.pickerPos = { left: left, top: top, width: popoverWidth };
+            }
+
+            // Default: highlight the category containing the current viz, else first group
+            for (var i = 0; i < this.vizGroups.length; i++) {
+                var g = this.vizGroups[i];
+                for (var j = 0; j < g.vizs.length; j++) {
+                    if (g.vizs[j].name === this.selectedViz) {
+                        this.pickerCategory = g.category;
+                        return;
+                    }
+                }
+            }
+            this.pickerCategory = this.vizGroups.length ? this.vizGroups[0].category : '';
+        },
+
+        switchViz: function(name) {
+            if (!name) return;
+            localStorage.setItem('harness-viz', name);
+            var def = this.vizDefs[name];
+            if (!def) { this.setStatus('err', 'Unknown viz: ' + name); return; }
+
+            if (this.currentInstance && this.currentInstance.destroy) {
+                try { this.currentInstance.destroy(); } catch (e) {}
+            }
+            document.getElementById('vizRoot').innerHTML = '';
+
+            this.config = {};
+            this.dataValues = {};
+            this.isNoData = false;
+            this.showDataEditor = false;
+            this.customSampleRows = null;
+            this.customColumns = null;
+            this.currentHarness = def.harness;
+            this.resetAssetStatus();
+
+            if (def.harness.defaultSize) {
+                this.vizWidth = def.harness.defaultSize.width;
+                this.vizHeight = def.harness.defaultSize.height;
+            }
+
+            var self = this;
+            for (var i = 0; i < def.harness.formatter.length; i++) {
+                this.config[this.ns + def.harness.formatter[i].name] = def.harness.formatter[i].default;
+            }
+            for (var j = 0; j < def.harness.fields.length; j++) {
+                this.dataValues[def.harness.fields[j].name] = def.harness.fields[j].default;
+            }
+
+            var fontsReady = this.loadFontCSS();
+            this.setStatus('nodata', 'Loading ' + name + '...');
+
+            self.loadDependencies(def, function() {
+                fetch(def.path + '/src/visualization_source.js', { cache: 'no-store' })
+                    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+                    .then(function(code) {
+                        window._VizClass = null;
+                        eval(code);
+                        if (!window._VizClass) { self.setStatus('err', 'Failed to load viz class'); return; }
+                        // Get root fresh — DOM may have re-rendered since switchViz started
+                        var root = document.getElementById('vizRoot');
+                        root.innerHTML = '';
+                        var instance = new window._VizClass();
+                        instance.el = root;
+                        try { if (instance.initialize) instance.initialize(); } catch (e) {
+                            self.setStatus('err', 'Init error: ' + e.message);
+                            return;
+                        }
+                        self.currentInstance = instance;
+                        // Wait for fonts, then use rAF to ensure layout is complete before first render
+                        fontsReady.then(function() {
+                            requestAnimationFrame(function() {
+                                requestAnimationFrame(function() {
+                                    self.triggerUpdate();
+                                });
+                            });
+                        });
+                    })
+                    .catch(function(e) { self.setStatus('err', 'Failed to load: ' + e.message); });
+            });
+        },
+
+        loadFontCSS: function() {
+            var fontPath = this.manifestConfig.fontCSS;
+            if (!fontPath) return Promise.resolve();
+            var cssReady;
+            var existing = document.getElementById('harness-font-css');
+            if (existing) {
+                cssReady = Promise.resolve();
+            } else {
+                cssReady = new Promise(function(resolve) {
+                    var link = document.createElement('link');
+                    link.id = 'harness-font-css';
+                    link.rel = 'stylesheet';
+                    link.href = fontPath;
+                    link.onload = function() { resolve(); };
+                    link.onerror = function() { resolve(); };
+                    document.head.appendChild(link);
+                });
+            }
+            return cssReady.then(function() {
+                if (!document.fonts || !document.fonts.forEach) return;
+                // @font-face rules register in 'unloaded' status — force activation,
+                // otherwise the first canvas draw falls back until the font is used once.
+                var loaders = [];
+                document.fonts.forEach(function(ff) {
+                    loaders.push(ff.load().catch(function() {}));
+                });
+                return Promise.all(loaders).then(function() { return document.fonts.ready; });
+            });
+        },
+
+        loadDependencies: function(def, callback) {
+            var deps = def.harness.dependencies || [];
+            if (deps.length === 0) { callback(); return; }
+            var pending = deps.length;
+
+            for (var i = 0; i < deps.length; i++) {
+                (function(dep) {
+                    fetch(def.path + '/' + dep, { cache: 'no-store' })
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            _modules['../' + dep] = data;
+                            _modules['./' + dep] = data;
+                            if (--pending === 0) callback();
+                        })
+                        .catch(function() {
+                            console.warn('Could not load dependency: ' + dep);
+                            if (--pending === 0) callback();
+                        });
+                })(deps[i]);
+            }
+        },
+
+        triggerUpdate: function() {
+            if (!this.currentInstance || !this.currentHarness) return;
+            try {
+                var rawData;
+                if (this.isNoData) {
+                    var msg = this.currentHarness.noDataMessage || 'No data available';
+                    rawData = { fields: [{ name: '_status' }], rows: [[msg]] };
+                } else {
+                    rawData = buildSplunkData(this.currentHarness, this.dataValues, this.config, this.customColumns, this.customSampleRows);
+                }
+                var formatted = this.currentInstance.formatData(rawData, this.config);
+                this.currentInstance.updateView(formatted, this.config);
+                this.setStatus(this.isNoData ? 'nodata' : 'ok', this.isNoData ? 'Showing no-data state' : 'Rendered with sample data');
+            } catch (e) {
+                if (e.name === 'VisualizationError') {
+                    this.setStatus('nodata', 'VisualizationError: ' + e.message);
+                } else {
+                    this.setStatus('err', 'Error: ' + e.message);
+                    console.error(e);
+                }
+            }
+        },
+
+        toggleNoData: function() {
+            this.isNoData = !this.isNoData;
+            this.triggerUpdate();
+        },
+
+        resetDefaults: function() {
+            this.customSampleRows = null;
+            this.customColumns = null;
+            this.showDataEditor = false;
+            if (this.selectedViz) this.switchViz(this.selectedViz);
+        },
+
+        initDataGrid: function() {
+            if (!this.currentHarness || !this.currentHarness.data) return;
+            var data = this.currentHarness.data;
+            this.gridColumns = (data.columns || []).slice();
+            this.gridRows = (data.sampleRows || []).map(function(r) { return r.slice(); });
+            this.customSampleRows = null;
+            this.customColumns = null;
+            this.triggerUpdate();
+        },
+
+        updateGridCell: function(ri, ci, val) {
+            this.gridRows[ri][ci] = val;
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        addGridRow: function() {
+            var empty = [];
+            for (var i = 0; i < this.gridColumns.length; i++) empty.push('');
+            this.gridRows.push(empty);
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        removeGridRow: function() {
+            if (this.gridRows.length <= 1) return;
+            this.gridRows.pop();
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        addGridColumn: function() {
+            var name = prompt('Column name:');
+            if (!name) return;
+            this.gridColumns.push(name.trim());
+            for (var i = 0; i < this.gridRows.length; i++) this.gridRows[i].push('');
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        removeGridColumn: function() {
+            if (this.gridColumns.length <= 1) return;
+            this.gridColumns.pop();
+            for (var i = 0; i < this.gridRows.length; i++) this.gridRows[i].pop();
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        focusNextCell: function(el, ri, ci, reverse) {
+            var table = el.closest('table');
+            if (!table) return;
+            var nextCi = reverse ? ci - 1 : ci + 1;
+            var nextRi = ri;
+            var numCols = this.gridColumns.length;
+            if (nextCi >= numCols) { nextCi = 0; nextRi++; }
+            if (nextCi < 0) { nextCi = numCols - 1; nextRi--; }
+            if (nextRi < 0 || nextRi >= this.gridRows.length) return;
+            var rows = table.querySelectorAll('tbody tr');
+            if (rows[nextRi]) {
+                var cells = rows[nextRi].querySelectorAll('td[contenteditable]');
+                if (cells[nextCi]) cells[nextCi].focus();
+            }
+        },
+
+        pasteCSVPrompt: function() {
+            var csv = prompt('Paste CSV data (header row + data rows):');
+            if (!csv) return;
+            var lines = csv.trim().split('\n');
+            if (lines.length < 2) return;
+            this.gridColumns = lines[0].split(',').map(function(s) { return s.trim(); });
+            this.gridRows = [];
+            for (var i = 1; i < lines.length; i++) {
+                var line = lines[i].trim();
+                if (!line) continue;
+                this.gridRows.push(line.split(',').map(function(s) { return s.trim(); }));
+            }
+            this.customColumns = this.gridColumns.slice();
+            this.customSampleRows = this.gridRows.map(function(r) { return r.slice(); });
+            this.triggerUpdate();
+        },
+
+        resizeViz: function() {
+            if (this.currentInstance && this.currentInstance.reflow) {
+                this.currentInstance.reflow();
+            }
+        },
+
+        startResize: function(e) {
+            e.preventDefault();
+            var self = this;
+            var startX = e.clientX, startY = e.clientY;
+            var startW = self.vizWidth, startH = self.vizHeight;
+            function onMove(ev) {
+                self.vizWidth = Math.max(200, startW + ev.clientX - startX);
+                self.vizHeight = Math.max(100, startH + ev.clientY - startY);
+                self.resizeViz();
+            }
+            function onUp() {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+            }
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        },
+
+        fitToContainer: function() {
+            var rect = this.$refs.vizWrapper.getBoundingClientRect();
+            this.vizWidth = Math.floor(rect.width - 32);
+            // Reserve 22px for scope readout above + 16px padding below
+            this.vizHeight = Math.floor(rect.height - 54);
+            this.resizeViz();
+        },
+
+        setStatus: function(type, msg) {
+            this.statusType = type;
+            this.statusText = msg;
+        }
+    };
+}
+</script>
+</body>
+</html>
