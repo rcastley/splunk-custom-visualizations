@@ -1,0 +1,41 @@
+<form class="splunk-formatter-section" section-label="Colors">
+    <splunk-control-group label="Low Color" help="Colour for empty / low-activity cells">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.lowColor" type="custom" value="#ebedf0">
+            <splunk-color>#ebedf0</splunk-color>
+            <splunk-color>#161b22</splunk-color>
+            <splunk-color>#1b1f23</splunk-color>
+            <splunk-color>#2d333b</splunk-color>
+            <splunk-color>#0d1117</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+
+    <splunk-control-group label="High Color" help="Colour for highest-activity cells">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.highColor" type="custom" value="#216e39">
+            <splunk-color>#216e39</splunk-color>
+            <splunk-color>#39d353</splunk-color>
+            <splunk-color>#0e4429</splunk-color>
+            <splunk-color>#ff8c00</splunk-color>
+            <splunk-color>#9333ea</splunk-color>
+            <splunk-color>#1f6feb</splunk-color>
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>
+
+<form class="splunk-formatter-section" section-label="Layout">
+    <splunk-control-group label="Cell Size" help="Side length of each day cell in pixels">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.cellSize" value="12">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Cell Gap" help="Gap between cells in pixels">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.cellGap" value="2">
+        </splunk-text-input>
+    </splunk-control-group>
+
+    <splunk-control-group label="Show Month Labels" help="Display month labels above the columns">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showMonthLabels" value="yes">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+</form>
