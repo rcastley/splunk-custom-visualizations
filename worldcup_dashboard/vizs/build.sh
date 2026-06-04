@@ -16,6 +16,7 @@ PARENT_DIR="$(dirname "$TARGET_APP")"
 APPS=(
     single_value_delta
     top_markets
+    category_breakdown
 )
 
 if [ ! -d "$TARGET_APP/default" ]; then

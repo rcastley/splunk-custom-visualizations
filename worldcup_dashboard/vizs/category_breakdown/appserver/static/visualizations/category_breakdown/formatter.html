@@ -1,0 +1,161 @@
+<div class="custom-control-group">
+
+    <!-- ── Data ── -->
+    <form class="splunk-formatter-section" section-label="Data">
+        <splunk-control-group label="Category Field" help="Column with the category name (one row per category, aggregated in SPL)">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.categoryField" value="category"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Value Field" help="Column with the aggregated value per category">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.valueField" value="count"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Delta Field" help="Optional column with a precomputed headline delta. Omit to hide the badge.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.deltaField" value="delta"></splunk-text-input>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Headline ── -->
+    <form class="splunk-formatter-section" section-label="Headline">
+        <splunk-control-group label="Primary Category" help="If set (e.g. SUCCESS), the headline becomes a rate (primary ÷ total %) and this category is excluded from the bars. Leave blank for a total.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.primaryCategory" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Headline Label" help="Text to the right of the headline, e.g. cashout success rate">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.headlineLabel" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Headline Suffix" help="Text after the headline number, e.g. % for a rate. Leave blank for a total.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.headlineSuffix" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Headline Colour" help="Used when Colour Mode is Fixed">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.headlineColor" value="#ffffff"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Abbreviate Values" help="Shorten numbers (54100 → 54.1K)">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.abbreviate" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Delta Suffix" help="Text after the delta, e.g. pt or %">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.deltaSuffix" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Show Arrow" help="Show a ▲/▼ direction arrow on the delta">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showArrow" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Higher Is Better" help="On: positive delta is good (green). Off: invert for metrics where lower is better.">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.higherIsBetter" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Positive Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.upColor" value="#61D27E"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Negative Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.downColor" value="#D5225D"></splunk-color-picker>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Thresholds (RAG) ── -->
+    <form class="splunk-formatter-section" section-label="Thresholds">
+        <splunk-control-group label="Colour Mode" help="Fixed uses the Headline Colour. Thresholds colours the headline by the bands below.">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.colorMode" value="fixed">
+                <option value="fixed">Fixed</option>
+                <option value="thresholds">Thresholds</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 1 — Threshold" help="Headline ≥ this uses Colour 1. Set to your minimum to catch all. Blank disables.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold1" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 1 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor1" value="#D5225D"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 2 — Threshold">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold2" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 2 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor2" value="#F8784B"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 3 — Threshold">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold3" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 3 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor3" value="#F8CD4B"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 4 — Threshold">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold4" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 4 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor4" value="#A7D94B"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 5 — Threshold">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold5" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 5 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor5" value="#61D27E"></splunk-color-picker>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Bars ── -->
+    <form class="splunk-formatter-section" section-label="Bars">
+        <splunk-control-group label="Title" help="Heading shown top-left. Leave blank to hide.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Tag Text" help="Badge shown top-right. Leave blank to hide.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.tagText" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Tag Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.tagColor" value="#F8CD4B"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Top N" help="How many categories to show as bars (sorted descending)">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.topN" value="6"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Roll Up Tail" help="Sum everything below Top N into a single 'Other' bar">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showOther" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Other Label" help="Label for the rolled-up bar">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.otherLabel" value="Other"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Show Share %" help="Show each bar's share of the breakdown total">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showShare" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Bar Start Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.barColor1" value="#0285FF"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Bar End Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.barColor2" value="#CCE5FF"></splunk-color-picker>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Appearance ── -->
+    <form class="splunk-formatter-section" section-label="Appearance">
+        <splunk-control-group label="Fill Colour" help="Panel background. Default transparent inherits the dashboard.">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.fillColor" type="custom" value="transparent">
+                <splunk-color>transparent</splunk-color>
+                <splunk-color>#0B112E</splunk-color>
+                <splunk-color>#16215B</splunk-color>
+                <splunk-color>#111726</splunk-color>
+                <splunk-color>#000000</splunk-color>
+            </splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Show Border">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showBorder" value="true">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Border Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.borderColor" value="#2A3566"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Corner Radius" help="Border corner radius in pixels">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.cornerRadius" value="16"></splunk-text-input>
+        </splunk-control-group>
+    </form>
+
+</div>

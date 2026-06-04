@@ -6,7 +6,6 @@
 {
     "title": "World Cup 2026 — Customer Growth & Experience",
     "description": "Executive overview. Demo data via makeresults — swap the dataSource queries for your real searches.",
-    "inputs": {},
     "defaults": {
         "dataSources": {
             "ds.search": {
@@ -20,6 +19,29 @@
         }
     },
     "visualizations": {
+        "viz_7rMmaltW": {
+            "dataSources": {
+                "primary": "ds_8T1EljtZ"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.single_value_delta.borderColor": "#0285FF",
+                "worldcup_dashboard.single_value_delta.deltaSuffix": "×",
+                "worldcup_dashboard.single_value_delta.deltaText": "vs. matchday baseline",
+                "worldcup_dashboard.single_value_delta.fillColor": "#0B112E",
+                "worldcup_dashboard.single_value_delta.title": "Active Customers",
+                "worldcup_dashboard.single_value_delta.valueSuffix": "K"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.single_value_delta"
+        },
+        "viz_XdOi1le1": {
+            "options": {
+                "fontColor": "#FFFFFF",
+                "markdown": "# 🏆 Soccer\nFlutter UK&I · Paddy Power & Betfair · Executive view"
+            },
+            "type": "splunk.markdown"
+        },
         "viz_active": {
             "dataSources": {
                 "primary": "ds_active"
@@ -36,6 +58,21 @@
             "title": "",
             "type": "worldcup_dashboard.single_value_delta"
         },
+        "viz_ePPTgje3": {
+            "dataSources": {
+                "primary": "ds_OxlytOEl"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.top_markets.borderColor": "#0285FF",
+                "worldcup_dashboard.top_markets.fillColor": "#0B112E",
+                "worldcup_dashboard.top_markets.tagColor": "#61D27E",
+                "worldcup_dashboard.top_markets.tagText": "new sign-ups",
+                "worldcup_dashboard.top_markets.title": "Customer Reach · Registrations by Country"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.top_markets"
+        },
         "viz_experience": {
             "dataSources": {
                 "primary": "ds_experience"
@@ -43,11 +80,52 @@
             "options": {
                 "backgroundColor": "transparent",
                 "worldcup_dashboard.single_value_delta.borderColor": "#0285FF",
+                "worldcup_dashboard.single_value_delta.colorMode": "thresholds",
                 "worldcup_dashboard.single_value_delta.deltaSuffix": "pt",
                 "worldcup_dashboard.single_value_delta.deltaText": "login success rate",
                 "worldcup_dashboard.single_value_delta.fillColor": "#0B112E",
+                "worldcup_dashboard.single_value_delta.threshold1": "95",
+                "worldcup_dashboard.single_value_delta.threshold2": "96",
+                "worldcup_dashboard.single_value_delta.threshold3": "97",
+                "worldcup_dashboard.single_value_delta.threshold4": "98",
+                "worldcup_dashboard.single_value_delta.threshold5": "99",
                 "worldcup_dashboard.single_value_delta.title": "Customer Experience",
                 "worldcup_dashboard.single_value_delta.valueSuffix": "%"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.single_value_delta"
+        },
+        "viz_fPlOdudt": {
+            "dataSources": {
+                "primary": "ds_hwUWUm5w"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.single_value_delta.borderColor": "#0285FF",
+                "worldcup_dashboard.single_value_delta.deltaSuffix": "%",
+                "worldcup_dashboard.single_value_delta.deltaText": "World Cup-attributed",
+                "worldcup_dashboard.single_value_delta.fillColor": "#0B112E",
+                "worldcup_dashboard.single_value_delta.showArrow": "false",
+                "worldcup_dashboard.single_value_delta.sparklineColor": "#F8CD4B",
+                "worldcup_dashboard.single_value_delta.title": "New Registrations"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.single_value_delta"
+        },
+        "viz_fasSF2jM": {
+            "dataSources": {
+                "primary": "ds_idwFKqmr"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.single_value_delta.borderColor": "#0285FF",
+                "worldcup_dashboard.single_value_delta.deltaSuffix": "×",
+                "worldcup_dashboard.single_value_delta.deltaText": "18.2K bets / min",
+                "worldcup_dashboard.single_value_delta.fillColor": "#0B112E",
+                "worldcup_dashboard.single_value_delta.sparklineColor": "#895CF5",
+                "worldcup_dashboard.single_value_delta.title": "Live Stakes",
+                "worldcup_dashboard.single_value_delta.valuePrefix": "£",
+                "worldcup_dashboard.single_value_delta.valueSuffix": "M"
             },
             "title": "",
             "type": "worldcup_dashboard.single_value_delta"
@@ -55,13 +133,27 @@
         "viz_header": {
             "options": {
                 "fontColor": "#FFFFFF",
-                "markdown": "# 🏆 World Cup 2026 \nFlutter UK&I · Paddy Power & Betfair · Executive view"
+                "markdown": "# 🏆 Soccer\nFlutter UK&I · Paddy Power & Betfair · Executive view"
             },
             "type": "splunk.markdown"
         },
         "viz_logins_country": {
             "dataSources": {
                 "primary": "ds_logins_country"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.top_markets.borderColor": "#0285FF",
+                "worldcup_dashboard.top_markets.fillColor": "#0B112E",
+                "worldcup_dashboard.top_markets.tagText": "by active users",
+                "worldcup_dashboard.top_markets.title": "Customer Reach · Logins by Country"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.top_markets"
+        },
+        "viz_nMFwEylK": {
+            "dataSources": {
+                "primary": "ds_iQP7vI3f"
             },
             "options": {
                 "backgroundColor": "transparent",
@@ -122,9 +214,96 @@
             },
             "title": "",
             "type": "worldcup_dashboard.single_value_delta"
+        },
+        "viz_vR09DyJw": {
+            "dataSources": {
+                "primary": "ds_nNbe6CBf"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.single_value_delta.borderColor": "#0285FF",
+                "worldcup_dashboard.single_value_delta.colorMode": "thresholds",
+                "worldcup_dashboard.single_value_delta.deltaSuffix": "pt",
+                "worldcup_dashboard.single_value_delta.deltaText": "login success rate",
+                "worldcup_dashboard.single_value_delta.fillColor": "#0B112E",
+                "worldcup_dashboard.single_value_delta.threshold1": "95",
+                "worldcup_dashboard.single_value_delta.threshold2": "96",
+                "worldcup_dashboard.single_value_delta.threshold3": "97",
+                "worldcup_dashboard.single_value_delta.threshold4": "98",
+                "worldcup_dashboard.single_value_delta.threshold5": "99",
+                "worldcup_dashboard.single_value_delta.title": "Customer Experience",
+                "worldcup_dashboard.single_value_delta.valueSuffix": "%"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.single_value_delta"
+        },
+        "viz_sbg_cashout": {
+            "dataSources": {
+                "primary": "ds_sbg_cashout"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.category_breakdown.borderColor": "#0285FF",
+                "worldcup_dashboard.category_breakdown.fillColor": "#0B112E",
+                "worldcup_dashboard.category_breakdown.primaryCategory": "SUCCESS",
+                "worldcup_dashboard.category_breakdown.headlineLabel": "cashout success rate",
+                "worldcup_dashboard.category_breakdown.headlineSuffix": "%",
+                "worldcup_dashboard.category_breakdown.deltaSuffix": "pt",
+                "worldcup_dashboard.category_breakdown.colorMode": "thresholds",
+                "worldcup_dashboard.category_breakdown.threshold1": "0",
+                "worldcup_dashboard.category_breakdown.bandColor1": "#D5225D",
+                "worldcup_dashboard.category_breakdown.threshold2": "95",
+                "worldcup_dashboard.category_breakdown.bandColor2": "#F8CD4B",
+                "worldcup_dashboard.category_breakdown.threshold3": "97",
+                "worldcup_dashboard.category_breakdown.bandColor3": "#61D27E",
+                "worldcup_dashboard.category_breakdown.title": "SBG Cashout",
+                "worldcup_dashboard.category_breakdown.tagText": "last 60 min",
+                "worldcup_dashboard.category_breakdown.topN": "4"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.category_breakdown"
+        },
+        "viz_sbg_bingo": {
+            "dataSources": {
+                "primary": "ds_sbg_bingo"
+            },
+            "options": {
+                "backgroundColor": "transparent",
+                "worldcup_dashboard.category_breakdown.borderColor": "#0285FF",
+                "worldcup_dashboard.category_breakdown.fillColor": "#0B112E",
+                "worldcup_dashboard.category_breakdown.headlineLabel": "total plays",
+                "worldcup_dashboard.category_breakdown.title": "SBG Bingo Game Play",
+                "worldcup_dashboard.category_breakdown.tagText": "top games",
+                "worldcup_dashboard.category_breakdown.tagColor": "#61D27E",
+                "worldcup_dashboard.category_breakdown.barColor1": "#895CF5",
+                "worldcup_dashboard.category_breakdown.topN": "6"
+            },
+            "title": "",
+            "type": "worldcup_dashboard.category_breakdown"
+        },
+        "viz_sbg_header": {
+            "options": {
+                "fontColor": "#FFFFFF",
+                "markdown": "# 🎰 SBG — Sky Betting & Gaming\nCashout reliability · Bingo game play · Executive view"
+            },
+            "type": "splunk.markdown"
         }
     },
     "dataSources": {
+        "ds_8T1EljtZ": {
+            "name": "Active Customers copy 1",
+            "options": {
+                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(118 + i*0.34 + (random()%30)/10, 1), delta=3.1 | fields _time value delta | sort _time"
+            },
+            "type": "ds.search"
+        },
+        "ds_OxlytOEl": {
+            "name": "Registrations by Country copy 6",
+            "options": {
+                "query": "| makeresults count=7 | streamstats count as r | eval country=mvindex(split(\"Brazil,International,Spain,Italy,Romania,Denmark,Mexico\",\",\"),r-1), count=tonumber(mvindex(split(\"41200,33800,15600,11200,7400,4100,3050\",\",\"),r-1)) | fields country count"
+            },
+            "type": "ds.search"
+        },
         "ds_active": {
             "name": "Active Customers",
             "options": {
@@ -135,7 +314,28 @@
         "ds_experience": {
             "name": "Customer Experience",
             "options": {
-                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(99.0 + i*0.014 + (random()%5)/10, 1), delta=0.3 | fields _time value delta | sort _time"
+                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(97.0 + i*0.014 + (random()%5)/10, 1), delta=0.3 | fields _time value delta | sort _time"
+            },
+            "type": "ds.search"
+        },
+        "ds_hwUWUm5w": {
+            "name": "New Registrations copy 2",
+            "options": {
+                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(7000 + i*95 + (random()%150), 0), delta=62 | fields _time value delta | sort _time"
+            },
+            "type": "ds.search"
+        },
+        "ds_iQP7vI3f": {
+            "name": "Logins by Country copy 5",
+            "options": {
+                "query": "| makeresults count=8 | streamstats count as r | eval country=mvindex(split(\"International,Spain,Italy,Romania,Brazil,Denmark,France,Portugal\",\",\"),r-1), count=tonumber(mvindex(split(\"54100,26000,18400,14100,10800,6400,4200,3100\",\",\"),r-1)) | fields country count"
+            },
+            "type": "ds.search"
+        },
+        "ds_idwFKqmr": {
+            "name": "Live Stakes copy 4",
+            "options": {
+                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(3.2 + i*0.05 + (random()%8)/100, 1), delta=2.8 | fields _time value delta | sort _time"
             },
             "type": "ds.search"
         },
@@ -143,6 +343,13 @@
             "name": "Logins by Country",
             "options": {
                 "query": "| makeresults count=8 | streamstats count as r | eval country=mvindex(split(\"International,Spain,Italy,Romania,Brazil,Denmark,France,Portugal\",\",\"),r-1), count=tonumber(mvindex(split(\"54100,26000,18400,14100,10800,6400,4200,3100\",\",\"),r-1)) | fields country count"
+            },
+            "type": "ds.search"
+        },
+        "ds_nNbe6CBf": {
+            "name": "Customer Experience copy 3",
+            "options": {
+                "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(96.0 + i*0.014 + (random()%5)/10, 1), delta=-0.3 | fields _time value delta | sort _time"
             },
             "type": "ds.search"
         },
@@ -166,6 +373,20 @@
                 "query": "| makeresults count=30 | streamstats count as i | eval _time=now()-(30-i)*180, value=round(3.2 + i*0.05 + (random()%8)/100, 1), delta=2.8 | fields _time value delta | sort _time"
             },
             "type": "ds.search"
+        },
+        "ds_sbg_cashout": {
+            "name": "SBG Cashout",
+            "options": {
+                "query": "| makeresults count=7 | streamstats count as r | eval category=mvindex(split(\"SUCCESS,NOT_ELIGIBLE,MARKET_SUSPENDED,GENERAL_FAILURE,INVALID_QUOTE,BET_CLOSED,INVALID_RUNNER\",\",\"),r-1) | eval count=tonumber(mvindex(split(\"4800,72,21,11,7,5,3\",\",\"),r-1)) + (random()%21) - 10 | eval count=if(count<0,0,count) | eval delta=if(category=\"SUCCESS\",round((random()%12)/10,1),null()) | fields category count delta"
+            },
+            "type": "ds.search"
+        },
+        "ds_sbg_bingo": {
+            "name": "SBG Bingo Game Play",
+            "options": {
+                "query": "| makeresults count=12 | streamstats count as r | eval category=mvindex(split(\"Fluffy Favourites,Rainbow Riches,Fruity Burst,Bouncy Balls,Enchanted Prince,Sky Premium Room,Shamans Dream,White Wizard,The Magical Jackpot,Fluffy Favorites Jackpot,Bonanza,Slingo\",\",\"),r-1) | eval count=tonumber(mvindex(split(\"5200,3100,2400,1900,1500,1200,950,800,600,450,300,220\",\",\"),r-1)) + (random()%201) - 100 | eval count=if(count<0,0,count) | fields category count"
+            },
+            "type": "ds.search"
         }
     },
     "layout": {
@@ -176,7 +397,7 @@
                     "backgroundColor": "#0B112E",
                     "backgroundImage": {
                         "sizeType": "contain",
-                        "src": "splunk-enterprise-kvstore://6a1eb9d57903a90a7405c0a1",
+                        "src": "/static/app/worldcup_dashboard/images/background.png",
                         "x": 0,
                         "y": 0
                     },
@@ -191,14 +412,14 @@
                             "h": 55,
                             "w": 1400,
                             "x": 20,
-                            "y": 15
+                            "y": 10
                         },
                         "type": "block"
                     },
                     {
                         "item": "viz_active",
                         "position": {
-                            "h": 150,
+                            "h": 200,
                             "w": 335,
                             "x": 20,
                             "y": 80
@@ -208,7 +429,7 @@
                     {
                         "item": "viz_regs",
                         "position": {
-                            "h": 150,
+                            "h": 200,
                             "w": 335,
                             "x": 375,
                             "y": 80
@@ -218,7 +439,7 @@
                     {
                         "item": "viz_experience",
                         "position": {
-                            "h": 150,
+                            "h": 200,
                             "w": 335,
                             "x": 730,
                             "y": 80
@@ -228,7 +449,7 @@
                     {
                         "item": "viz_stakes",
                         "position": {
-                            "h": 150,
+                            "h": 200,
                             "w": 335,
                             "x": 1090,
                             "y": 80
@@ -240,8 +461,8 @@
                         "position": {
                             "h": 380,
                             "w": 690,
-                            "x": 20,
-                            "y": 255
+                            "x": 30,
+                            "y": 670
                         },
                         "type": "block"
                     },
@@ -250,9 +471,126 @@
                         "position": {
                             "h": 380,
                             "w": 690,
-                            "x": 730,
-                            "y": 255
+                            "x": 750,
+                            "y": 670
                         },
+                        "type": "block"
+                    }
+                ],
+                "type": "absolute"
+            },
+            "layout_dQKvFi2n": {
+                "options": {
+                    "backgroundImage": {
+                        "sizeType": "contain",
+                        "src": "/static/app/worldcup_dashboard/images/background.png",
+                        "x": 0,
+                        "y": 0
+                    },
+                    "height": 1080,
+                    "width": 1920
+                },
+                "structure": [
+                    {
+                        "item": "viz_XdOi1le1",
+                        "position": {
+                            "h": 60,
+                            "w": 1900,
+                            "x": 20,
+                            "y": 10
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_7rMmaltW",
+                        "position": {
+                            "h": 280,
+                            "w": 620,
+                            "x": 20,
+                            "y": 70
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_fPlOdudt",
+                        "position": {
+                            "h": 280,
+                            "w": 640,
+                            "x": 650,
+                            "y": 70
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_vR09DyJw",
+                        "position": {
+                            "h": 360,
+                            "w": 620,
+                            "x": 20,
+                            "y": 360
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_fasSF2jM",
+                        "position": {
+                            "h": 360,
+                            "w": 640,
+                            "x": 650,
+                            "y": 360
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_nMFwEylK",
+                        "position": {
+                            "h": 280,
+                            "w": 600,
+                            "x": 1300,
+                            "y": 70
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_ePPTgje3",
+                        "position": {
+                            "h": 360,
+                            "w": 600,
+                            "x": 1300,
+                            "y": 360
+                        },
+                        "type": "block"
+                    }
+                ],
+                "type": "absolute"
+            },
+            "layout_sbg": {
+                "options": {
+                    "backgroundColor": "#0B112E",
+                    "backgroundImage": {
+                        "sizeType": "contain",
+                        "src": "/static/app/worldcup_dashboard/images/background.png",
+                        "x": 0,
+                        "y": 0
+                    },
+                    "display": "auto-scale",
+                    "height": 1080,
+                    "width": 1920
+                },
+                "structure": [
+                    {
+                        "item": "viz_sbg_header",
+                        "position": { "h": 60, "w": 1880, "x": 20, "y": 10 },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_sbg_cashout",
+                        "position": { "h": 440, "w": 930, "x": 20, "y": 90 },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_sbg_bingo",
+                        "position": { "h": 440, "w": 930, "x": 970, "y": 90 },
                         "type": "block"
                     }
                 ],
@@ -265,8 +603,16 @@
         "tabs": {
             "items": [
                 {
-                    "label": "New tab",
+                    "label": "Paddy Power",
                     "layoutId": "layout_1"
+                },
+                {
+                    "label": "Betfair",
+                    "layoutId": "layout_dQKvFi2n"
+                },
+                {
+                    "label": "SBG",
+                    "layoutId": "layout_sbg"
                 }
             ]
         }

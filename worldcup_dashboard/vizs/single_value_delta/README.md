@@ -36,6 +36,11 @@ same visualization with different settings.
   percentage, a multiplier (`×`), points (`pt`) or anything else.
 - Colour is automatic from the delta's sign. "Higher Is Better" inverts it for
   metrics where lower is good (latency, churn).
+- **RAG value colouring**: set Colour Mode to `thresholds` to colour the headline
+  value (text only) by up to 5 (threshold, colour) stops. The value takes the
+  colour of the highest stop whose threshold it meets or exceeds; set the lowest
+  stop to your minimum (e.g. `0`) to catch all values. Leave a stop's threshold
+  blank to use fewer — e.g. 3 stops for classic Red/Amber/Green.
 - Background is transparent by default so the tile inherits the dashboard.
 
 ## Search
@@ -58,14 +63,18 @@ index=prod_session action=login brand IN (paddypower, betfair)
 | Value Prefix | Text before the value (e.g. `£`) | (empty) |
 | Value Suffix | Text after the value (e.g. `K`, `%`) | (empty) |
 | Group Thousands | Insert thousands separators | `true` |
-| Value Colour | Headline value colour | `#ffffff` |
+| Value Colour | Headline value colour (used when Colour Mode is Fixed) | `#ffffff` |
+| Colour Mode | `fixed` (Value Colour) or `thresholds` (RAG by value) | `fixed` |
+| Stop 1–5 Threshold | Value ≥ threshold uses that stop's colour; highest match wins. Blank disables a stop | (empty) |
+| Stop 1–5 Colour | Colour for each stop | red→green ramp |
 | Delta Suffix | Text after the delta (e.g. `×`, `%`, `pt`) | (empty) |
 | Trailing Text | Text to the right of the badge | (empty) |
 | Show Arrow | Show a ▲/▼ direction arrow | `true` |
 | Higher Is Better | Invert good/bad colouring | `true` |
 | Positive Colour | Badge colour for the good direction | `#61D27E` |
 | Negative Colour | Badge colour for the bad direction | `#D5225D` |
-| Show Sparkline | Plot the value series | `true` |
+| Show Sparkline | Plot a series along the bottom | `true` |
+| Sparkline Field | Column to plot. Blank = the value field. Set a different column (e.g. a per-minute rate) for a trend independent of the headline | (empty) |
 | Sparkline Colour | Line and fill colour | `#61D27E` |
 | Sparkline Fill | Soft gradient under the line | `true` |
 | Fill Colour | Panel background | `transparent` |

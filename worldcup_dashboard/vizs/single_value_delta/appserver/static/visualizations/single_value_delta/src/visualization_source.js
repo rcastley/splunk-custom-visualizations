@@ -114,6 +114,27 @@ define([
         ctx.stroke();
     }
 
+    // RAG colouring: up to 5 (threshold, colour) stops. Returns the colour of
+    // the highest stop whose threshold `num` meets/exceeds, or null if `num` is
+    // below every stop (blank/non-numeric thresholds are skipped).
+    function pickThresholdColor(config, ns, num) {
+        var stops = [];
+        for (var i = 1; i <= 5; i++) {
+            var t = config[ns + 'threshold' + i];
+            if (t === undefined || t === null || t === '') continue;
+            var tn = parseFloat(t);
+            if (isNaN(tn)) continue;
+            stops.push({ t: tn, c: config[ns + 'bandColor' + i] || '#ffffff' });
+        }
+        if (!stops.length) return null;
+        stops.sort(function(a, b) { return a.t - b.t; });
+        var chosen = null;
+        for (var k = 0; k < stops.length; k++) {
+            if (num >= stops[k].t) chosen = stops[k].c;
+        }
+        return chosen;
+    }
+
     // ── Visualization class ─────────────────────────────────────
 
     return SplunkVisualizationBase.extend({
@@ -193,6 +214,7 @@ define([
             var valueSuffix = config[ns + 'valueSuffix'] || '';
             var groupT      = (config[ns + 'groupThousands'] || 'true') === 'true';
             var valueColor  = config[ns + 'valueColor']  || '#ffffff';
+            var colorMode   = config[ns + 'colorMode']   || 'fixed';
 
             // Delta
             var deltaSuffix    = config[ns + 'deltaSuffix']    || '';
@@ -203,9 +225,10 @@ define([
             var downColor      = config[ns + 'downColor'] || '#D5225D';
 
             // Sparkline
-            var showSparkline = (config[ns + 'showSparkline'] || 'true') === 'true';
-            var sparkColor    = config[ns + 'sparklineColor'] || '#61D27E';
-            var sparkFill     = (config[ns + 'sparklineFill'] || 'true') === 'true';
+            var showSparkline  = (config[ns + 'showSparkline'] || 'true') === 'true';
+            var sparkColor     = config[ns + 'sparklineColor'] || '#61D27E';
+            var sparkFill      = (config[ns + 'sparklineFill'] || 'true') === 'true';
+            var sparklineField = config[ns + 'sparklineField'] || ''; // optional: plot a different column than the value
 
             // Appearance
             var fillColor    = config[ns + 'fillColor']    || 'transparent';
@@ -220,11 +243,21 @@ define([
             var lastRow = rows[rows.length - 1];
 
             var valueStr = '—';
+            var valueNum = NaN;
             if (colIdx[fieldName] !== undefined && lastRow[colIdx[fieldName]] !== undefined && lastRow[colIdx[fieldName]] !== null) {
                 valueStr = String(lastRow[colIdx[fieldName]]);
+                valueNum = parseFloat(valueStr);
                 if (groupT && /^-?\d+(\.\d+)?$/.test(valueStr)) {
                     valueStr = groupThousands(valueStr);
                 }
+            }
+
+            // RAG threshold colouring — applies to the value text only.
+            // The value takes the colour of the highest stop whose threshold it
+            // meets/exceeds; below all stops it keeps the fixed Value Colour.
+            if (colorMode === 'thresholds' && !isNaN(valueNum)) {
+                var ragColor = pickThresholdColor(config, ns, valueNum);
+                if (ragColor) valueColor = ragColor;
             }
 
             var deltaStr = '';
@@ -234,10 +267,13 @@ define([
             var deltaNum = parseFloat(deltaStr);
             var hasDelta = deltaStr !== '' && !isNaN(deltaNum);
 
+            // Sparkline series: use the dedicated Sparkline Field if set and
+            // present (e.g. a per-minute rate), otherwise the value column.
+            var seriesCol = (sparklineField && colIdx[sparklineField] !== undefined) ? sparklineField : fieldName;
             var series = [];
-            if (showSparkline && colIdx[fieldName] !== undefined) {
+            if (showSparkline && colIdx[seriesCol] !== undefined) {
                 for (var r = 0; r < rows.length; r++) {
-                    var v = parseFloat(rows[r][colIdx[fieldName]]);
+                    var v = parseFloat(rows[r][colIdx[seriesCol]]);
                     if (!isNaN(v)) series.push(v);
                 }
             }
@@ -285,7 +321,7 @@ define([
 
             // Title
             if (title) {
-                var titleSize = Math.max(9, Math.min(13, h * 0.10));
+                var titleSize = Math.max(9, h * 0.095); // scales with panel height
                 ctx.font = '500 ' + titleSize + 'px ' + FONT;
                 ctx.fillStyle = hexToRgba(valueColor, 0.55);
                 ctx.textAlign = align;
@@ -349,7 +385,7 @@ define([
                 var shownDelta = showArrow ? deltaStr.replace(/^-/, '') : deltaStr;
                 var pillText = (showArrow && arrow ? (arrow + ' ') : '') + shownDelta + deltaSuffix;
 
-                var dFont = Math.max(10, Math.min(14, deltaH * 0.58));
+                var dFont = Math.max(10, deltaH * 0.55); // scales with panel (deltaH = h * 0.14)
                 ctx.font = '600 ' + dFont + 'px ' + FONT;
                 var tw = ctx.measureText(pillText).width;
                 var pillPad = dFont * 0.65;

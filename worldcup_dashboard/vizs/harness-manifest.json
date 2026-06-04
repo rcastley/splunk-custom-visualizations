@@ -4,11 +4,13 @@
   "categories": {
     "World Cup Dashboard": [
       "single_value_delta",
-      "top_markets"
+      "top_markets",
+      "category_breakdown"
     ]
   },
   "vizs": [
     "single_value_delta",
-    "top_markets"
+    "top_markets",
+    "category_breakdown"
   ]
 }

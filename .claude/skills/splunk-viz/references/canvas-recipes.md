@@ -23,6 +23,58 @@ function valueToColor(val, min, max, lowColor, midColor, highColor) {
 }
 ```
 
+## Threshold (RAG) Colour Mapping
+
+For status colouring where a value should snap to a discrete band (Red/Amber/Green,
+or a finer N-step scale) rather than a continuous gradient, use threshold **stops**.
+The value takes the colour of the highest stop whose threshold it meets/exceeds.
+
+```javascript
+// Up to N (threshold, colour) stops read from config. Returns the colour of the
+// highest stop whose threshold `num` meets/exceeds, or null if below every stop
+// (blank / non-numeric thresholds are skipped). Pure — takes config, not `this`.
+function pickThresholdColor(config, ns, num, maxStops) {
+    var stops = [];
+    for (var i = 1; i <= (maxStops || 5); i++) {
+        var t = config[ns + 'threshold' + i];
+        if (t === undefined || t === null || t === '') continue;   // blank = disabled
+        var tn = parseFloat(t);
+        if (isNaN(tn)) continue;
+        stops.push({ t: tn, c: config[ns + 'bandColor' + i] || '#ffffff' });
+    }
+    if (!stops.length) return null;
+    stops.sort(function(a, b) { return a.t - b.t; });
+    var chosen = null;
+    for (var k = 0; k < stops.length; k++) {
+        if (num >= stops[k].t) chosen = stops[k].c;
+    }
+    return chosen;            // null → caller keeps its fixed colour
+}
+
+// In updateView, after reading the numeric value:
+var color = config[ns + 'valueColor'] || '#ffffff';
+if ((config[ns + 'colorMode'] || 'fixed') === 'thresholds' && !isNaN(valueNum)) {
+    var rag = pickThresholdColor(config, ns, valueNum, 5);
+    if (rag) color = rag;
+}
+```
+
+Formatter / config pattern that goes with it:
+
+- **`colorMode` toggle** — `fixed` (default, uses the existing colour) vs `thresholds`.
+  Default to `fixed` so existing panels are unchanged until the user opts in.
+- **Paired stops** — `threshold1..N` (text inputs) + `bandColor1..N` (colour pickers).
+  Leaving a threshold blank disables that stop, so 3 stops give classic RAG and up
+  to N give a finer scale — no separate "how many bands" setting needed.
+- **"Highest stop wins" + `>=`** is the model. Tell users to set the lowest stop to
+  their minimum (e.g. `0`) so every value lands in a band; below all stops the
+  helper returns `null` and the caller falls back to the fixed colour.
+- **Scope deliberately.** Decide whether the colour applies to the value text only,
+  or also the sparkline/border, and document it — don't recolour everything by default.
+- Document every `thresholdN` / `bandColorN` key in `savedsearches.conf.spec`
+  (`<float>` / `<string>`) and mirror the defaults in `savedsearches.conf`,
+  `formatter.html`, and `harness.json` (rule 19).
+
 ## Rounded Rectangles
 
 ```javascript

@@ -6,6 +6,17 @@ display.visualizations.custom.worldcup_dashboard.single_value_delta.valuePrefix 
 display.visualizations.custom.worldcup_dashboard.single_value_delta.valueSuffix = <string>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.groupThousands = <boolean>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.valueColor = <string>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.colorMode = <string>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.threshold1 = <float>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.bandColor1 = <string>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.threshold2 = <float>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.bandColor2 = <string>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.threshold3 = <float>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.bandColor3 = <string>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.threshold4 = <float>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.bandColor4 = <string>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.threshold5 = <float>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.bandColor5 = <string>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.deltaSuffix = <string>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.deltaText = <string>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.showArrow = <boolean>
@@ -13,6 +24,7 @@ display.visualizations.custom.worldcup_dashboard.single_value_delta.higherIsBett
 display.visualizations.custom.worldcup_dashboard.single_value_delta.upColor = <string>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.downColor = <string>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.showSparkline = <boolean>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.sparklineField = <string>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.sparklineColor = <string>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.sparklineFill = <boolean>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.fillColor = <string>

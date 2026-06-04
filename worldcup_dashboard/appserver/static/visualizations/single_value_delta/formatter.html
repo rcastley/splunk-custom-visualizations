@@ -69,11 +69,14 @@
 
     <!-- ── Sparkline ── -->
     <form class="splunk-formatter-section" section-label="Sparkline">
-        <splunk-control-group label="Show Sparkline" help="Plot the value series along the bottom">
+        <splunk-control-group label="Show Sparkline" help="Plot a series along the bottom">
             <splunk-radio-input name="{{VIZ_NAMESPACE}}.showSparkline" value="true">
                 <option value="true">On</option>
                 <option value="false">Off</option>
             </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Sparkline Field" help="Column to plot. Leave blank to use the value field. Set a different column (e.g. a per-minute rate) to show a trend independent of the headline.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.sparklineField" value=""></splunk-text-input>
         </splunk-control-group>
         <splunk-control-group label="Sparkline Colour" help="Line and fill colour for the sparkline">
             <splunk-color-picker name="{{VIZ_NAMESPACE}}.sparklineColor" value="#61D27E"></splunk-color-picker>
@@ -83,6 +86,46 @@
                 <option value="true">On</option>
                 <option value="false">Off</option>
             </splunk-radio-input>
+        </splunk-control-group>
+    </form>
+
+    <!-- ── Thresholds (RAG) ── -->
+    <form class="splunk-formatter-section" section-label="Thresholds">
+        <splunk-control-group label="Colour Mode" help="Fixed uses the Value Colour. Thresholds colours the value by the bands below.">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.colorMode" value="fixed">
+                <option value="fixed">Fixed</option>
+                <option value="thresholds">Thresholds</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 1 — Threshold" help="Value ≥ this uses Colour 1. Lowest band — set to your minimum (e.g. 0) to catch all values. Blank disables this stop.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold1" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 1 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor1" value="#D5225D"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 2 — Threshold" help="Value ≥ this uses Colour 2. Blank disables this stop.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold2" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 2 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor2" value="#F8784B"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 3 — Threshold" help="Value ≥ this uses Colour 3. Blank disables this stop.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold3" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 3 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor3" value="#F8CD4B"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 4 — Threshold" help="Value ≥ this uses Colour 4. Blank disables this stop.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold4" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 4 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor4" value="#A7D94B"></splunk-color-picker>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 5 — Threshold" help="Value ≥ this uses Colour 5. Highest band. Blank disables this stop.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.threshold5" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Stop 5 — Colour">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.bandColor5" value="#61D27E"></splunk-color-picker>
         </splunk-control-group>
     </form>
 
