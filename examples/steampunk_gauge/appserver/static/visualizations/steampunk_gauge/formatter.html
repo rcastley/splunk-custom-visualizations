@@ -1,0 +1,88 @@
+<form class="splunk-formatter-section" section-label="Data">
+    <splunk-control-group label="Value Field" help="Column name containing the numeric value to display">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.valueField" value="value">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Label Field" help="Column name containing the label text shown on the dial">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.labelField" value="label">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Min Value" help="Lower bound of the gauge scale">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.minValue" value="0">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Max Value" help="Upper bound of the gauge scale">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.maxValue" value="100">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Unit" help="Unit shown next to the value, or alone on the dial when Show Readout is off (e.g. PSI, °C)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.unit" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Decimals" help="Number of decimal places shown on the value readout">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.decimals" value="0">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Zones">
+    <splunk-control-group label="Zone 1 Min" help="Lower bound of zone 1 in value units (leave empty to disable)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.zone1min" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Zone 1 Max" help="Upper bound of zone 1 in value units (leave empty to disable)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.zone1max" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Zone 1 Colour" help="Colour used for the arc, tick marks, tick numbers and readout while the value sits inside zone 1">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.zone1color" type="splunkSemantic" value="#a52319">
+        </splunk-color-picker>
+    </splunk-control-group>
+    <splunk-control-group label="Zone 2 Min" help="Lower bound of zone 2 in value units (leave empty to disable)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.zone2min" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Zone 2 Max" help="Upper bound of zone 2 in value units (leave empty to disable)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.zone2max" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Zone 2 Colour" help="Colour used for the arc, tick marks, tick numbers and readout while the value sits inside zone 2">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.zone2color" type="splunkSemantic" value="#2e7d32">
+        </splunk-color-picker>
+    </splunk-control-group>
+    <splunk-control-group label="Zone 3 Min" help="Lower bound of zone 3 in value units (leave empty to disable)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.zone3min" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Zone 3 Max" help="Upper bound of zone 3 in value units (leave empty to disable)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.zone3max" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Zone 3 Colour" help="Colour used for the arc, tick marks, tick numbers and readout while the value sits inside zone 3">
+        <splunk-color-picker name="{{VIZ_NAMESPACE}}.zone3color" type="splunkSemantic" value="#a52319">
+        </splunk-color-picker>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Appearance">
+    <splunk-control-group label="Show Readout" help="Show the digital value+unit readout below the centre. Off = only the unit text is shown on the dial">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showReadout" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Rivets" help="Decorative brass rivets around the bezel">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showRivets" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Wear" help="Aged stains and patina on the ivory dial face">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showWear" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Smoothness" help="Needle follow speed per second (0 disables tweening, 8 default)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.smoothness" value="8">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>

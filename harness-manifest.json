@@ -1,6 +1,14 @@
 {
   "pathTemplate": "examples/{name}/appserver/static/visualizations/{name}",
   "fontCSS": "shared/fonts.css",
+  "studio": {
+    "pathTemplate": "examples/{name}/visualizations/{name}",
+    "bundleTemplate": "examples/{name}/dist/{name}/visualization.js",
+    "vizs": [
+      "steampunk_gauge_dse",
+      "steampunk_odometer_dse"
+    ]
+  },
   "categories": {
     "Splunk": [
       "splunk_status_board",
@@ -33,6 +41,10 @@
       "custom_single_value",
       "component_status_board",
       "gauge",
+      "steampunk_gauge",
+      "steampunk_gauge_dse",
+      "steampunk_odometer",
+      "steampunk_odometer_dse",
       "radar_chart",
       "line_trend_chart",
       "live_ticker",
@@ -45,6 +57,8 @@
     "custom_single_value",
     "component_status_board",
     "gauge",
+    "steampunk_gauge",
+    "steampunk_odometer",
     "radar_chart",
     "line_trend_chart",
     "live_ticker",

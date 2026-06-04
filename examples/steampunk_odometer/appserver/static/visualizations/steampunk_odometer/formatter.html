@@ -1,0 +1,44 @@
+<form class="splunk-formatter-section" section-label="Data">
+    <splunk-control-group label="Value Field" help="Column name containing the numeric value to display">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.valueField" value="value">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Label Field" help="Column name containing the label text engraved below the drums">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.labelField" value="label">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Whole Digits" help="Number of integer digit drums (1-12)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.digits" value="6">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Decimals" help="Number of decimal digit drums (0-4)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.decimals" value="0">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Unit" help="Optional unit shown next to the drums (e.g. km, MWh)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.unit" value="">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
+<form class="splunk-formatter-section" section-label="Appearance">
+    <splunk-control-group label="Show Rivets" help="Decorative brass rivets at the corners of the panel">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showRivets" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Show Wear" help="Aged stains and patina on the brass panel and drum surfaces">
+        <splunk-radio-input name="{{VIZ_NAMESPACE}}.showWear" value="true">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </splunk-radio-input>
+    </splunk-control-group>
+    <splunk-control-group label="Digit Spacing" help="Vertical spacing between digits on each drum (0 = tight, 100 = loose, 50 default)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.digitSpacing" value="80">
+        </splunk-text-input>
+    </splunk-control-group>
+    <splunk-control-group label="Smoothness" help="Drum roll speed per second (0 disables tweening, 8 default)">
+        <splunk-text-input name="{{VIZ_NAMESPACE}}.smoothness" value="8">
+        </splunk-text-input>
+    </splunk-control-group>
+</form>
