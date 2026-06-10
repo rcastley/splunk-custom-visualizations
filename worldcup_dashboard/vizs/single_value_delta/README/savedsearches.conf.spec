@@ -31,3 +31,6 @@ display.visualizations.custom.worldcup_dashboard.single_value_delta.fillColor = 
 display.visualizations.custom.worldcup_dashboard.single_value_delta.showBorder = <boolean>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.borderColor = <string>
 display.visualizations.custom.worldcup_dashboard.single_value_delta.cornerRadius = <integer>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.showAccent = <boolean>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.accentColor = <string>
+display.visualizations.custom.worldcup_dashboard.single_value_delta.accentPosition = <string>

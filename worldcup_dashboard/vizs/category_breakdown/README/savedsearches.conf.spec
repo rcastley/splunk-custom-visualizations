@@ -35,3 +35,6 @@ display.visualizations.custom.worldcup_dashboard.category_breakdown.fillColor = 
 display.visualizations.custom.worldcup_dashboard.category_breakdown.showBorder = <boolean>
 display.visualizations.custom.worldcup_dashboard.category_breakdown.borderColor = <string>
 display.visualizations.custom.worldcup_dashboard.category_breakdown.cornerRadius = <integer>
+display.visualizations.custom.worldcup_dashboard.category_breakdown.showAccent = <boolean>
+display.visualizations.custom.worldcup_dashboard.category_breakdown.accentColor = <string>
+display.visualizations.custom.worldcup_dashboard.category_breakdown.accentPosition = <string>

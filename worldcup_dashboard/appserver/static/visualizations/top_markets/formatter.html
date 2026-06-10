@@ -1,5 +1,28 @@
 <div class="custom-control-group">
 
+    <!-- ── Title & Accent (first) ── -->
+    <form class="splunk-formatter-section" section-label="Title">
+        <splunk-control-group label="Title" help="Heading shown top-left. Leave blank to hide.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value="Customer Reach · Top Markets"></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Show Accent" help="Draw a coloured accent strip on an edge of the panel (great for brand colours)">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showAccent" value="false">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Accent Position" help="Which edge the accent strip sits on">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.accentPosition" value="top">
+                <option value="left">Left</option>
+                <option value="top">Top</option>
+                <option value="right">Right</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Accent Colour" help="Colour of the accent strip">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.accentColor" value="#0285FF"></splunk-color-picker>
+        </splunk-control-group>
+    </form>
+
     <!-- ── Data ── -->
     <form class="splunk-formatter-section" section-label="Data">
         <splunk-control-group label="Country Field" help="Column with an ISO code (es, it) or country name (Spain). 'International' maps to a globe.">
@@ -12,9 +35,6 @@
 
     <!-- ── Display ── -->
     <form class="splunk-formatter-section" section-label="Display">
-        <splunk-control-group label="Title" help="Heading shown top-left. Leave blank to hide.">
-            <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value="Customer Reach · Top Markets"></splunk-text-input>
-        </splunk-control-group>
         <splunk-control-group label="Tag Text" help="Badge shown top-right, e.g. by active users. Leave blank to hide.">
             <splunk-text-input name="{{VIZ_NAMESPACE}}.tagText" value="by active users"></splunk-text-input>
         </splunk-control-group>

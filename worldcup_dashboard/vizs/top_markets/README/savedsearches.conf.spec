@@ -13,3 +13,6 @@ display.visualizations.custom.worldcup_dashboard.top_markets.fillColor = <string
 display.visualizations.custom.worldcup_dashboard.top_markets.showBorder = <boolean>
 display.visualizations.custom.worldcup_dashboard.top_markets.borderColor = <string>
 display.visualizations.custom.worldcup_dashboard.top_markets.cornerRadius = <integer>
+display.visualizations.custom.worldcup_dashboard.top_markets.showAccent = <boolean>
+display.visualizations.custom.worldcup_dashboard.top_markets.accentColor = <string>
+display.visualizations.custom.worldcup_dashboard.top_markets.accentPosition = <string>

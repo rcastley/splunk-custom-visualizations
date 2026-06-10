@@ -37,10 +37,12 @@ same visualization with different settings.
 - Colour is automatic from the delta's sign. "Higher Is Better" inverts it for
   metrics where lower is good (latency, churn).
 - **RAG value colouring**: set Colour Mode to `thresholds` to colour the headline
-  value (text only) by up to 5 (threshold, colour) stops. The value takes the
-  colour of the highest stop whose threshold it meets or exceeds; set the lowest
-  stop to your minimum (e.g. `0`) to catch all values. Leave a stop's threshold
-  blank to use fewer — e.g. 3 stops for classic Red/Amber/Green.
+  **number** by up to 5 (threshold, colour) stops. The number takes the colour of
+  the highest stop whose threshold it meets or exceeds; set the lowest stop to your
+  minimum (e.g. `0`) to catch all values. Leave a stop's threshold blank to use
+  fewer — e.g. 3 stops for classic Red/Amber/Green. Only the number is band-coloured
+  — the title, delta trailing text and the value's prefix/suffix stay on the base
+  Value Colour. (The accent strip also reflects the band — see Top Accent.)
 - Background is transparent by default so the tile inherits the dashboard.
 
 ## Search
@@ -81,6 +83,9 @@ index=prod_session action=login brand IN (paddypower, betfair)
 | Show Border | Draw a rounded border | `true` |
 | Border Colour | Border colour | `#2A3566` |
 | Corner Radius | Border corner radius (px) | `16` |
+| Show Accent | Coloured accent strip on an edge of the panel (brand colours) | `false` |
+| Accent Position | Edge for the accent: `left` / `top` / `right` | `top` |
+| Accent Colour | Colour of the accent strip. When Colour Mode is `thresholds` the accent inherits the value's RAG band colour instead | `#0285FF` |
 
 ## Time Range
 

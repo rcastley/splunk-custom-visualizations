@@ -197,6 +197,9 @@ define([
             var showBorder   = (config[ns + 'showBorder']  || 'true') === 'true';
             var borderColor  = config[ns + 'borderColor']  || '#2A3566';
             var cornerRadius = parseInt(config[ns + 'cornerRadius'], 10); if (isNaN(cornerRadius)) cornerRadius = 16;
+            var showAccent     = (config[ns + 'showAccent'] || 'false') === 'true';
+            var accentColor    = config[ns + 'accentColor'] || '#0285FF';
+            var accentPosition = config[ns + 'accentPosition'] || 'top';
 
             // ── Build, sort, slice ──
             var colIdx = data.colIdx, rows = data.rows;
@@ -238,6 +241,30 @@ define([
             roundRect(ctx, 0.75, 0.75, w - 1.5, h - 1.5, cornerRadius);
             if (fillColor && fillColor !== 'transparent') { ctx.fillStyle = fillColor; ctx.fill(); }
             if (showBorder) { ctx.strokeStyle = borderColor; ctx.lineWidth = 1.5; ctx.stroke(); }
+
+            // Accent strip (brand colour) on the chosen edge (left/top/right) + glow.
+            if (showAccent && accentColor && accentColor !== 'transparent') {
+                var aThick = Math.max(3, Math.min(w, h) * 0.012);
+                var aGlow = aThick * 7;
+                var ac0 = hexToRgba(accentColor, 0.22), ac1 = hexToRgba(accentColor, 0);
+                var ag;
+                if (accentPosition === 'left') {
+                    ag = ctx.createLinearGradient(0, 0, aGlow, 0);
+                    ag.addColorStop(0, ac0); ag.addColorStop(1, ac1);
+                    ctx.fillStyle = ag; ctx.fillRect(0, 0, aGlow, h);
+                    ctx.fillStyle = accentColor; ctx.fillRect(0, 0, aThick, h);
+                } else if (accentPosition === 'right') {
+                    ag = ctx.createLinearGradient(w, 0, w - aGlow, 0);
+                    ag.addColorStop(0, ac0); ag.addColorStop(1, ac1);
+                    ctx.fillStyle = ag; ctx.fillRect(w - aGlow, 0, aGlow, h);
+                    ctx.fillStyle = accentColor; ctx.fillRect(w - aThick, 0, aThick, h);
+                } else {
+                    ag = ctx.createLinearGradient(0, 0, 0, aGlow);
+                    ag.addColorStop(0, ac0); ag.addColorStop(1, ac1);
+                    ctx.fillStyle = ag; ctx.fillRect(0, 0, w, aGlow);
+                    ctx.fillStyle = accentColor; ctx.fillRect(0, 0, w, aThick);
+                }
+            }
 
             var padX = Math.max(18, w * 0.035);
             var padY = Math.max(16, h * 0.06);

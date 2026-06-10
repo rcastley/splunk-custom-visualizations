@@ -38,7 +38,10 @@
     { "name": "fillColor", "label": "Fill Colour", "type": "color", "default": "transparent" },
     { "name": "showBorder", "label": "Show Border", "type": "radio", "options": ["true", "false"], "default": "true" },
     { "name": "borderColor", "label": "Border Colour", "type": "color", "default": "#2A3566" },
-    { "name": "cornerRadius", "label": "Corner Radius", "type": "text", "default": "16" }
+    { "name": "cornerRadius", "label": "Corner Radius", "type": "text", "default": "16" },
+    { "name": "showAccent", "label": "Top Accent", "type": "radio", "options": ["true", "false"], "default": "true" },
+    { "name": "accentColor", "label": "Accent Colour", "type": "color", "default": "#61D27E" },
+    { "name": "accentPosition", "label": "Accent Position", "type": "select", "options": ["left", "top", "right"], "default": "top" }
   ],
   "data": {
     "mode": "multi_row",

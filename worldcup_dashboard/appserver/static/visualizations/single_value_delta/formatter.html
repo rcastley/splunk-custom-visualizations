@@ -1,5 +1,28 @@
 <div class="custom-control-group">
 
+    <!-- ── Title & Accent (first) ── -->
+    <form class="splunk-formatter-section" section-label="Title">
+        <splunk-control-group label="Title" help="Optional heading shown above the value. Leave blank to hide.">
+            <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value=""></splunk-text-input>
+        </splunk-control-group>
+        <splunk-control-group label="Show Accent" help="Draw a coloured accent strip on an edge of the panel (great for brand colours)">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.showAccent" value="false">
+                <option value="true">On</option>
+                <option value="false">Off</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Accent Position" help="Which edge the accent strip sits on">
+            <splunk-radio-input name="{{VIZ_NAMESPACE}}.accentPosition" value="top">
+                <option value="left">Left</option>
+                <option value="top">Top</option>
+                <option value="right">Right</option>
+            </splunk-radio-input>
+        </splunk-control-group>
+        <splunk-control-group label="Accent Colour" help="Colour of the accent strip">
+            <splunk-color-picker name="{{VIZ_NAMESPACE}}.accentColor" value="#0285FF"></splunk-color-picker>
+        </splunk-control-group>
+    </form>
+
     <!-- ── Data ── -->
     <form class="splunk-formatter-section" section-label="Data">
         <splunk-control-group label="Value Field" help="Column holding the metric (latest row = headline; full series = sparkline)">
@@ -12,9 +35,6 @@
 
     <!-- ── Value ── -->
     <form class="splunk-formatter-section" section-label="Value">
-        <splunk-control-group label="Title" help="Optional heading shown above the value. Leave blank to hide.">
-            <splunk-text-input name="{{VIZ_NAMESPACE}}.title" value=""></splunk-text-input>
-        </splunk-control-group>
         <splunk-control-group label="Alignment" help="Aligns the title, value and delta row">
             <splunk-radio-input name="{{VIZ_NAMESPACE}}.align" value="left">
                 <option value="left">Left</option>

@@ -92,6 +92,7 @@ index="gaming-gap-uki" deployment_tag=sbg product=BINGO sourcetype=custom_log4j 
 | Bar Start / End Colour | Bar gradient | blue → sky |
 | Fill Colour | Panel background | `transparent` |
 | Show Border / Border Colour / Corner Radius | Panel frame | on / `#2A3566` / `16` |
+| Show Accent / Position / Colour | Accent strip on an edge: left/top/right (brand colours) | off / `top` / `#0285FF` |
 
 ## Time Range
 

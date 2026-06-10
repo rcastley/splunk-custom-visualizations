@@ -63,6 +63,9 @@ index=prod_session action=login brand IN (paddypower, betfair)
 | Show Border | Draw a rounded border | `true` |
 | Border Colour | Border colour | `#2A3566` |
 | Corner Radius | Border corner radius (px) | `16` |
+| Show Accent | Coloured accent strip on an edge of the panel (brand colours) | `false` |
+| Accent Position | Edge for the accent: `left` / `top` / `right` | `top` |
+| Accent Colour | Colour of the accent strip | `#0285FF` |
 
 ## Time Range
 

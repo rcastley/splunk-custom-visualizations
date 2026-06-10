@@ -236,6 +236,9 @@ define([
             var borderColor  = config[ns + 'borderColor']  || '#2A3566';
             var cornerRadius = parseInt(config[ns + 'cornerRadius'], 10);
             if (isNaN(cornerRadius)) cornerRadius = 16;
+            var showAccent     = (config[ns + 'showAccent'] || 'false') === 'true';
+            var accentColor    = config[ns + 'accentColor'] || '#0285FF';
+            var accentPosition = config[ns + 'accentPosition'] || 'top';
 
             // ── Extract value, delta, series ──
             var rows = data.rows;
@@ -252,13 +255,16 @@ define([
                 }
             }
 
-            // RAG threshold colouring — applies to the value text only.
-            // The value takes the colour of the highest stop whose threshold it
-            // meets/exceeds; below all stops it keeps the fixed Value Colour.
+            // RAG threshold colouring. Only the headline NUMBER takes the band
+            // colour (highest stop whose threshold the value meets/exceeds; below
+            // all stops it keeps the base Value Colour). The title, delta text and
+            // value units stay on the base Value Colour. The band colour is also
+            // reused for the accent strip so it reflects status.
+            var ragColor = null;
             if (colorMode === 'thresholds' && !isNaN(valueNum)) {
-                var ragColor = pickThresholdColor(config, ns, valueNum);
-                if (ragColor) valueColor = ragColor;
+                ragColor = pickThresholdColor(config, ns, valueNum);
             }
+            var numberColor = ragColor || valueColor;
 
             var deltaStr = '';
             if (colIdx[deltaField] !== undefined && lastRow[colIdx[deltaField]] !== undefined && lastRow[colIdx[deltaField]] !== null) {
@@ -308,6 +314,33 @@ define([
                 ctx.strokeStyle = borderColor;
                 ctx.lineWidth = 1.5;
                 ctx.stroke();
+            }
+
+            // Accent strip (brand colour) on the chosen edge (left/top/right) +
+            // soft glow. When thresholds are set it inherits the RAG band colour
+            // so the accent reflects status. The element clip rounds the corners.
+            var aCol = ragColor || accentColor;
+            if (showAccent && aCol && aCol !== 'transparent') {
+                var aThick = Math.max(3, Math.min(w, h) * 0.012);
+                var aGlow = aThick * 7;
+                var ac0 = hexToRgba(aCol, 0.22), ac1 = hexToRgba(aCol, 0);
+                var ag;
+                if (accentPosition === 'left') {
+                    ag = ctx.createLinearGradient(0, 0, aGlow, 0);
+                    ag.addColorStop(0, ac0); ag.addColorStop(1, ac1);
+                    ctx.fillStyle = ag; ctx.fillRect(0, 0, aGlow, h);
+                    ctx.fillStyle = aCol; ctx.fillRect(0, 0, aThick, h);
+                } else if (accentPosition === 'right') {
+                    ag = ctx.createLinearGradient(w, 0, w - aGlow, 0);
+                    ag.addColorStop(0, ac0); ag.addColorStop(1, ac1);
+                    ctx.fillStyle = ag; ctx.fillRect(w - aGlow, 0, aGlow, h);
+                    ctx.fillStyle = aCol; ctx.fillRect(w - aThick, 0, aThick, h);
+                } else {
+                    ag = ctx.createLinearGradient(0, 0, 0, aGlow);
+                    ag.addColorStop(0, ac0); ag.addColorStop(1, ac1);
+                    ctx.fillStyle = ag; ctx.fillRect(0, 0, w, aGlow);
+                    ctx.fillStyle = aCol; ctx.fillRect(0, 0, w, aThick);
+                }
             }
 
             // ── Layout zones ──
@@ -364,7 +397,7 @@ define([
                 x += ctx.measureText(valuePrefix).width + vSize * 0.05;
             }
             ctx.font = '700 ' + vSize + 'px ' + FONT;
-            ctx.fillStyle = valueColor;
+            ctx.fillStyle = numberColor;
             ctx.fillText(valueStr, x, baseY);
             x += ctx.measureText(valueStr).width;
             if (valueSuffix) {
