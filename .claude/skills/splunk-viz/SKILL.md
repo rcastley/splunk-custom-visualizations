@@ -154,7 +154,7 @@ name = {app_name}
 version = 1.0.0
 
 [install]
-is_configured = true
+is_configured = false
 build = 1
 
 [package]
@@ -171,7 +171,7 @@ description = {description}
 version = 1.0.0
 ```
 
-The `[id]` stanza is required by Splunk Cloud vetting (`check_version_is_valid_semver`). Do NOT add a `[triggers]` stanza with `reload.visualizations = simple` — `visualizations.conf` is a Splunk-defined conf file and Splunk Cloud vetting (`check_for_trigger_stanza`) will reject it. The `[triggers]` stanza is only for custom (non-Splunk) config files. Keep the version in `[id]` and `[launcher]` in sync.
+The `[id]` stanza is required by Splunk Cloud vetting (`check_version_is_valid_semver`). Do NOT add a `[triggers]` stanza with `reload.visualizations = simple` — `visualizations.conf` is a Splunk-defined conf file and Splunk Cloud vetting (`check_for_trigger_stanza`) will reject it. The `[triggers]` stanza is only for custom (non-Splunk) config files. Keep the version in `[id]` and `[launcher]` in sync. `is_configured` MUST be `false` — Splunk Cloud vetting fails apps that ship `is_configured = true` (it claims a setup was already performed).
 
 #### default/visualizations.conf
 ```

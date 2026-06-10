@@ -69,7 +69,7 @@ name = {app_name}
 version = 1.0.0
 
 [install]
-is_configured = true
+is_configured = false
 build = 1
 
 [ui]
@@ -137,6 +137,21 @@ What it does for each viz in `APPS`:
 3. **Merge into parent** — copies built assets (`visualization.js`, `visualization.css`, `formatter.html`) into the parent app's `appserver/static/visualizations/{viz_name}/`, and appends config stanzas from the viz's `default/` and `README/` into the parent app's `visualizations.conf`, `savedsearches.conf`, `savedsearches.conf.spec`, and `default.meta`
 4. **Version bump** — increments the parent app's patch version
 5. **Package** — tarballs the parent app (excluding `vizs/`, `node_modules/`, dev files, `.git*`)
+6. **Vet** — runs Splunk AppInspect with `--included-tags cloud` against the final tarball and
+   **aborts the build** on any error/failure (report saved to `dist/appinspect-report.txt`).
+   Requires `pip install splunk-appinspect` in the repo `.venv` (plus `brew install libmagic`
+   on macOS); skips with a notice when not installed.
+
+> **macOS cruft fails Splunk Cloud vetting** (`check_for_prohibited_files`). macOS
+> scatters AppleDouble (`._*`) and `.DS_Store` files, and a `tar --exclude='._*'`
+> pattern is anchored at the path root — it misses nested ones like
+> `static/._appIconAlt.png`. The build template guards against this in four ways:
+> (1) `xattr -rc` clears extended attributes; (2) `find … \( -name '._*' -o -name
+> '.DS_Store' \) -delete` physically removes them before tarring (the reliable
+> fix); (3) `tar --disable-copyfile --no-xattrs --no-mac-metadata` plus nested
+> excludes (`*/._*`, `*/.DS_Store`, `__MACOSX`) stop tar re-creating them; and
+> (4) a post-build assertion (`tar -tzf … | grep -qE '(^|/)\._|__MACOSX'`) aborts
+> the build if any slip through. Keep all four when copying the template.
 
 ### vizs/test-harness.html (and its companion assets)
 
