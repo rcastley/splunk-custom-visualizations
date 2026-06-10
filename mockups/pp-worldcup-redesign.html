@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paddy Power · World Cup 2026 — Matchday Velocity</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070e; --bg2:#0a1020;
+    --ink:#ffffff; --dim:rgba(208,222,255,.62); --faint:rgba(208,222,255,.38);
+    --pp:#00d46a;      /* Paddy Power green */
+    --bf:#ffb80c;      /* Betfair gold */
+    --sky:#28b6ff;     /* Sky Bet blue */
+    --good:#00d46a; --bad:#ff4d6d;
+    --panel:rgba(255,255,255,.035); --bd:rgba(208,222,255,.10);
+    --font:"Clash Display",-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--font); color:var(--ink); min-height:100vh; letter-spacing:.2px;
+    background:
+      radial-gradient(1200px 520px at 50% -8%, rgba(0,212,106,.16), transparent 60%),
+      radial-gradient(900px 500px at 8% 10%, rgba(40,182,255,.08), transparent 55%),
+      radial-gradient(900px 500px at 92% 10%, rgba(255,184,12,.07), transparent 55%),
+      linear-gradient(180deg,var(--bg2),var(--bg) 45%);
+    -webkit-font-smoothing:antialiased;
+  }
+  /* faint pitch lines */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; opacity:.5;
+    background:
+      radial-gradient(circle at 50% 50%, transparent 118px, rgba(208,222,255,.05) 119px, transparent 121px),
+      linear-gradient(90deg, transparent 49.85%, rgba(208,222,255,.05) 50%, transparent 50.15%);
+  }
+  .wrap{max-width:1480px; margin:0 auto; padding:22px 26px 44px; position:relative}
+
+  /* ---------- Event bar ---------- */
+  .eventbar{
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding:14px 20px; border-radius:16px; margin-bottom:18px;
+    background:linear-gradient(100deg, rgba(0,212,106,.14), rgba(40,182,255,.10));
+    border:1px solid rgba(0,212,106,.30);
+  }
+  .eb-left{display:flex; align-items:center; gap:14px}
+  .trophy{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:21px;
+    background:linear-gradient(135deg,var(--pp),#00a050); box-shadow:0 6px 22px rgba(0,212,106,.35)}
+  .eb-title{font-size:16px;font-weight:700;letter-spacing:.4px}
+  .eb-sub{font-size:11px;color:var(--dim);margin-top:2px;text-transform:uppercase;letter-spacing:1.2px}
+  .match{display:flex;align-items:center;gap:14px}
+  .live{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.8px;
+    color:var(--bad);background:rgba(255,77,109,.14);border:1px solid rgba(255,77,109,.32);padding:4px 11px;border-radius:999px}
+  .livedot{width:7px;height:7px;border-radius:50%;background:var(--bad);animation:pulse 1.5s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,77,109,.5)}70%{box-shadow:0 0 0 7px rgba(255,77,109,0)}100%{box-shadow:0 0 0 0 rgba(255,77,109,0)}}
+  .score{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:700}
+  .score .sc{font-size:20px;letter-spacing:2px}
+  .min{font-size:12px;font-weight:700;color:var(--pp);background:rgba(0,212,106,.14);padding:2px 9px;border-radius:6px}
+  .eb-next{text-align:right}
+  .eb-next .l{font-size:9.5px;color:var(--faint);text-transform:uppercase;letter-spacing:1.2px}
+  .eb-next .fx{font-size:13px;font-weight:700;margin-top:2px}
+  .eb-next .ko{font-size:13px;font-weight:700;color:var(--sky);margin-top:1px;font-variant-numeric:tabular-nums}
+
+  /* ---------- Hero ---------- */
+  .hero{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-bottom:18px}
+  .heroCard{position:relative;overflow:hidden;border-radius:18px;padding:20px 24px;
+    background:var(--panel);border:1px solid var(--bd);backdrop-filter:blur(6px)}
+  .heroCard.lead{border-color:rgba(0,212,106,.4);box-shadow:0 0 0 1px rgba(0,212,106,.15), inset 0 0 60px rgba(0,212,106,.06)}
+  .kpiLabel{font-size:11.5px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;align-items:center}
+  .kpiBig{font-size:60px;font-weight:700;line-height:1;letter-spacing:.5px;margin-top:8px}
+  .kpiBig .u{font-size:22px;font-weight:600;color:var(--dim);margin-left:6px}
+  .kpiSub{margin-top:12px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--dim)}
+  .delta{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:13px;padding:3px 10px;border-radius:999px}
+  .delta.up{color:var(--good);background:rgba(0,212,106,.13)}
+  .delta.down{color:var(--bad);background:rgba(255,77,109,.13)}
+  .heroSpark{margin-top:14px}
+
+  /* ---------- Brand grid ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .brand{position:relative;border-radius:18px;padding:18px 20px 20px;background:var(--panel);border:1px solid var(--bd);overflow:hidden}
+  .brand::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--c)}
+  .brand[data-b=pp]{--c:var(--pp)}
+  .brand[data-b=bf]{--c:var(--bf)}
+  .brand[data-b=sky]{--c:var(--sky)}
+  .brand.own{box-shadow:0 0 0 1px rgba(0,212,106,.25), 0 14px 40px rgba(0,212,106,.10);border-color:rgba(0,212,106,.32)}
+  .bhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .bname{font-size:20px;font-weight:700;letter-spacing:.3px;color:var(--c);display:flex;align-items:center;gap:9px}
+  .bname .dot{width:11px;height:11px;border-radius:3px;background:var(--c);box-shadow:0 0 12px var(--c)}
+  .rank{font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 9px;border-radius:7px;color:var(--c);background:color-mix(in srgb,var(--c) 16%,transparent);text-transform:uppercase}
+  .own .rank{color:#06140c;background:var(--pp)}
+  .metricLbl{font-size:10.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint)}
+  .bigVal{font-size:44px;font-weight:700;line-height:1;letter-spacing:.5px;margin-top:4px}
+  .bigVal .u{font-size:15px;font-weight:600;color:var(--dim);margin-left:5px}
+  .brow{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--dim)}
+  .share{font-size:11px;color:var(--faint);margin-left:auto}
+  /* channel split */
+  .chan{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+  .chRow{display:flex;align-items:center;gap:10px}
+  .chName{width:54px;font-size:11px;color:var(--dim);font-weight:600}
+  .chBar{flex:1;height:8px;border-radius:5px;background:rgba(255,255,255,.06);overflow:hidden}
+  .chFill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--c),color-mix(in srgb,var(--c) 35%,#cfe))}
+  .chVal{width:36px;text-align:right;font-size:12px;font-weight:700}
+  .bspark{margin-top:14px}
+  .ko-tick{font-size:9px;color:var(--faint);text-transform:uppercase;letter-spacing:.8px;margin-top:5px}
+
+  .foot{margin-top:22px;text-align:center;font-size:11px;color:var(--faint);line-height:1.7}
+  .foot code{background:rgba(255,255,255,.05);padding:1px 6px;border-radius:5px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Event bar -->
+  <div class="eventbar">
+    <div class="eb-left">
+      <div class="trophy">🏆</div>
+      <div>
+        <div class="eb-title">Paddy Power · World Cup 2026</div>
+        <div class="eb-sub">Flutter UK&amp;I Soccer · Matchday velocity · Exec view</div>
+      </div>
+    </div>
+    <div class="match">
+      <span class="live"><span class="livedot"></span> LIVE</span>
+      <div class="score">
+        <span>🏴 ENG</span><span class="sc">1 – 0</span><span>BRA 🇧🇷</span>
+        <span class="min" id="matchMin">67'</span>
+      </div>
+    </div>
+    <div class="eb-next">
+      <div class="l">Next kickoff</div>
+      <div class="fx">🇦🇷 ARG v FRA 🇫🇷</div>
+      <div class="ko" id="ko">in 01:42:18</div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="heroCard lead">
+      <div class="kpiLabel"><span>Flutter Soccer Velocity</span><span class="delta up">▲ 2.4× vs pre-match</span></div>
+      <div class="kpiBig">311<span class="u">bets / min</span></div>
+      <div class="kpiSub">Combined Paddy Power · Betfair · Sky Bet — surging into the second half</div>
+      <div class="heroSpark">
+        <svg viewBox="0 0 720 70" width="100%" height="70" preserveAspectRatio="none">
+          <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#00d46a" stop-opacity=".34"/><stop offset="1" stop-color="#00d46a" stop-opacity="0"/></linearGradient></defs>
+          <path d="M0,58 40,55 80,52 120,49 160,44 200,46 240,38 280,40 320,30 360,33 400,24 440,42 480,20 520,26 560,16 600,22 640,14 680,18 720,10" fill="none" stroke="#00d46a" stroke-width="2.4"/>
+          <path d="M0,58 40,55 80,52 120,49 160,44 200,46 240,38 280,40 320,30 360,33 400,24 440,42 480,20 520,26 560,16 600,22 640,14 680,18 720,10 L720,70 L0,70 Z" fill="url(#hg)"/>
+          <line x1="440" y1="0" x2="440" y2="70" stroke="rgba(255,255,255,.25)" stroke-dasharray="3 3"/>
+        </svg>
+        <div class="ko-tick">▲ kickoff spike, 65'</div>
+      </div>
+    </div>
+    <div class="heroCard">
+      <div class="kpiLabel"><span>Matchday Handle</span><span class="delta up">▲ 31%</span></div>
+      <div class="kpiBig"><span class="u" style="margin:0 2px 0 0">£</span>4.7<span class="u">M</span></div>
+      <div class="kpiSub">Stakes since kickoff · vs. last World Cup matchday</div>
+      <div class="heroSpark">
+        <svg viewBox="0 0 480 60" width="100%" height="60" preserveAspectRatio="none">
+          <path d="M0,50 60,46 120,42 180,38 240,30 300,32 360,22 420,18 480,12" fill="none" stroke="#ffb80c" stroke-width="2.2"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Brand grid -->
+  <div class="grid">
+
+    <!-- Paddy Power (own brand) -->
+    <div class="brand own" data-b="pp">
+      <div class="bhead">
+        <div class="bname"><span class="dot"></span> Paddy Power</div>
+        <span class="rank">Your brand · #2</span>
+      </div>
+      <div class="metricLbl">Soccer · bets / min</div>
+      <div class="bigVal">99<span class="u">/min</span></div>
+      <div class="brow"><span class="delta up">▲ 6 vs kickoff</span><span class="share">32% of Flutter soccer</span></div>
+      <div class="chan">
+        <div class="chRow"><span class="chName">Mobile</span><span class="chBar"><span class="chFill" style="width:79%"></span></span><span class="chVal">78</span></div>
+        <div class="chRow"><span class="chName">Web</span><span class="chBar"><span class="chFill" style="width:21%"></span></span><span class="chVal">21</span></div>
+      </div>
+      <div class="bspark">
+        <svg viewBox="0 0 360 46" width="100%" height="46" preserveAspectRatio="none">
+          <defs><linearGradient id="ppg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00d46a" stop-opacity=".30"/><stop offset="1" stop-color="#00d46a" stop-opacity="0"/></linearGradient></defs>
+          <path d="M0,34 30,30 60,33 90,24 120,28 150,18 180,26 210,14 240,22 270,12 300,18 330,9 360,14" fill="none" stroke="#00d46a" stroke-width="2.2"/>
+          <path d="M0,34 30,30 60,33 90,24 120,28 150,18 180,26 210,14 240,22 270,12 300,18 330,9 360,14 L360,46 L0,46 Z" fill="url(#ppg)"/>
+          <line x1="180" y1="0" x2="180" y2="46" stroke="rgba(255,255,255,.22)" stroke-dasharray="3 3"/>
+        </svg>
+        <div class="ko-tick">│ kickoff</div>
+      </div>
+    </div>
+
+    <!-- Betfair -->
+    <div class="brand" data-b="bf">
+      <div class="bhead">
+        <div class="bname"><span class="dot"></span> Betfair</div>
+        <span class="rank">#3</span>
+      </div>
+      <div class="metricLbl">Soccer · bets / min</div>
+      <div class="bigVal">68<span class="u">/min</span></div>
+      <div class="brow"><span class="delta down">▼ 3 vs kickoff</span><span class="share">22% of Flutter soccer</span></div>
+      <div class="chan">
+        <div class="chRow"><span class="chName">Mobile</span><span class="chBar"><span class="chFill" style="width:74%"></span></span><span class="chVal">50</span></div>
+        <div class="chRow"><span class="chName">Web</span><span class="chBar"><span class="chFill" style="width:26%"></span></span><span class="chVal">18</span></div>
+      </div>
+      <div class="bspark">
+        <svg viewBox="0 0 360 46" width="100%" height="46" preserveAspectRatio="none">
+          <defs><linearGradient id="bfg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb80c" stop-opacity=".28"/><stop offset="1" stop-color="#ffb80c" stop-opacity="0"/></linearGradient></defs>
+          <path d="M0,20 30,16 60,22 90,18 120,26 150,22 180,20 210,28 240,24 270,30 300,26 330,32 360,30" fill="none" stroke="#ffb80c" stroke-width="2.2"/>
+          <path d="M0,20 30,16 60,22 90,18 120,26 150,22 180,20 210,28 240,24 270,30 300,26 330,32 360,30 L360,46 L0,46 Z" fill="url(#bfg)"/>
+          <line x1="180" y1="0" x2="180" y2="46" stroke="rgba(255,255,255,.22)" stroke-dasharray="3 3"/>
+        </svg>
+        <div class="ko-tick">│ kickoff</div>
+      </div>
+    </div>
+
+    <!-- Sky Bet (leader) -->
+    <div class="brand" data-b="sky">
+      <div class="bhead">
+        <div class="bname"><span class="dot"></span> Sky Bet</div>
+        <span class="rank">👑 Top velocity · #1</span>
+      </div>
+      <div class="metricLbl">Soccer · bets / min</div>
+      <div class="bigVal">144<span class="u">/min</span></div>
+      <div class="brow"><span class="delta up">▲ 22 vs kickoff</span><span class="share">46% of Flutter soccer</span></div>
+      <div class="chan">
+        <div class="chRow"><span class="chName">Mobile</span><span class="chBar"><span class="chFill" style="width:83%"></span></span><span class="chVal">120</span></div>
+        <div class="chRow"><span class="chName">Web</span><span class="chBar"><span class="chFill" style="width:17%"></span></span><span class="chVal">24</span></div>
+      </div>
+      <div class="bspark">
+        <svg viewBox="0 0 360 46" width="100%" height="46" preserveAspectRatio="none">
+          <defs><linearGradient id="skg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#28b6ff" stop-opacity=".30"/><stop offset="1" stop-color="#28b6ff" stop-opacity="0"/></linearGradient></defs>
+          <path d="M0,36 30,30 60,34 90,22 120,26 150,16 180,24 210,12 240,20 270,10 300,16 330,8 360,12" fill="none" stroke="#28b6ff" stroke-width="2.2"/>
+          <path d="M0,36 30,30 60,34 90,22 120,26 150,16 180,24 210,12 240,20 270,10 300,16 330,8 360,12 L360,46 L0,46 Z" fill="url(#skg)"/>
+          <line x1="180" y1="0" x2="180" y2="46" stroke="rgba(255,255,255,.22)" stroke-dasharray="3 3"/>
+        </svg>
+        <div class="ko-tick">│ kickoff</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    Redesign mockup · Paddy Power World Cup 2026 — broadcast-HUD direction. Maps onto the existing custom vizs
+    (<code>single_value_delta</code> + a channel-split + an event-bar markdown). Sample data.
+  </div>
+</div>
+
+<script>
+  // Ticking kickoff countdown
+  var secs = 1*3600 + 42*60 + 18;
+  function pad(n){return (n<10?'0':'')+n;}
+  setInterval(function(){
+    if(secs>0) secs--;
+    var h=Math.floor(secs/3600), m=Math.floor((secs%3600)/60), s=secs%60;
+    document.getElementById('ko').textContent = 'in '+pad(h)+':'+pad(m)+':'+pad(s);
+  },1000);
+</script>
+</body>
+</html>

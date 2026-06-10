@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Readiness — Can we trade?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080b11; --bg2:#0c111a; --panel:#10151f; --panel2:#131a26;
+    --bd:rgba(150,170,200,.12); --bd2:rgba(150,170,200,.07);
+    --ink:#eef3fb; --dim:rgba(200,214,236,.62); --faint:rgba(200,214,236,.36);
+    --green:#22e3a6; --amber:#ffb020; --red:#ff4d5e; --blue:#3fbaf3; --violet:#9a7bff;
+    --ui:"Archivo",sans-serif; --mono:"IBM Plex Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--ui);background:
+      radial-gradient(1100px 480px at 50% -12%, rgba(34,227,166,.06), transparent 60%),
+      linear-gradient(180deg,var(--bg2),var(--bg) 42%);
+    color:var(--ink);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1560px;margin:0 auto;padding:18px 22px 40px}
+
+  /* header */
+  header{display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:14px 18px;border:1px solid var(--bd);border-radius:14px;background:var(--panel);margin-bottom:16px}
+  .h-l{display:flex;align-items:center;gap:16px}
+  .h-title{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--faint);font-weight:600}
+  .verdict{display:flex;align-items:baseline;gap:12px;margin-top:3px}
+  .verdict .big{font-size:30px;font-weight:900;letter-spacing:.5px}
+  .verdict .tag{font-size:12px;color:var(--dim);font-family:var(--mono)}
+  .ok{color:var(--green)} .warn{color:var(--amber)} .crit{color:var(--red)}
+  .h-r{display:flex;align-items:center;gap:22px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .pulse{display:inline-flex;align-items:center;gap:7px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pp 2s infinite}
+  @keyframes pp{0%{box-shadow:0 0 0 0 rgba(34,227,166,.5)}70%{box-shadow:0 0 0 7px rgba(34,227,166,0)}100%{box-shadow:0 0 0 0 rgba(34,227,166,0)}}
+
+  /* section label */
+  .sec{display:flex;align-items:center;gap:12px;margin:18px 2px 10px}
+  .sec h2{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .sec .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--bd),transparent)}
+
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+  .panel{background:var(--panel);border:1px solid var(--bd);border-radius:13px;padding:14px 16px;position:relative;overflow:hidden}
+  .p-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .p-t{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .p-meta{font-size:10px;color:var(--faint);font-family:var(--mono)}
+
+  /* ---- Row 1: status tiles ---- */
+  .stat{grid-column:span 2;padding:15px 16px 14px}
+  .stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+  .stat[data-s=g]{--c:var(--green)} .stat[data-s=a]{--c:var(--amber)} .stat[data-s=r]{--c:var(--red)}
+  .stat .lbl{font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--dim);font-weight:600;min-height:26px}
+  .stat .val{font-size:38px;font-weight:800;line-height:1;letter-spacing:.3px;color:var(--c);font-family:var(--ui)}
+  .stat .val .u{font-size:17px;color:var(--dim);margin-left:1px}
+  .stat .thr{font-size:10px;color:var(--faint);margin-top:9px;font-family:var(--mono);display:flex;align-items:center;gap:6px}
+  .pill{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.4px;padding:2px 7px;border-radius:5px;color:var(--c);background:color-mix(in srgb,var(--c) 16%,transparent);text-transform:uppercase}
+  .mini{margin-top:8px}
+
+  /* ---- generic chart bits ---- */
+  .legend{display:flex;gap:12px;font-size:10px;color:var(--dim);font-family:var(--mono)}
+  .legend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+  .axis{display:flex;justify-content:space-between;font-size:9px;color:var(--faint);font-family:var(--mono);margin-top:4px}
+
+  /* gauge */
+  .gaugeWrap{display:grid;place-items:center;padding:4px 0}
+  .gNum{font-size:30px;font-weight:800}
+  .gSub{font-size:10px;color:var(--faint);font-family:var(--mono);text-align:center;margin-top:2px}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;font-size:11.5px}
+  th{text-align:left;font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--faint);font-weight:600;padding:0 8px 7px 0;border-bottom:1px solid var(--bd2)}
+  td{padding:8px 8px 8px 0;border-bottom:1px solid var(--bd2);font-family:var(--mono);color:var(--dim)}
+  td.j{font-family:var(--ui);color:var(--ink);font-weight:600}
+  td.num{text-align:right}
+  tr:hover td{background:rgba(63,186,243,.05)}
+  .er{font-weight:600} .er.bad{color:var(--red)} .er.warn{color:var(--amber)} .er.ok{color:var(--green)}
+  .reason{font-size:10px;padding:2px 6px;border-radius:5px;background:rgba(150,170,200,.10);color:var(--dim)}
+  .reason.inc{background:rgba(255,77,94,.14);color:var(--red)}
+  .reason.biz{background:rgba(255,176,32,.14);color:var(--amber)}
+  .arrow{color:var(--faint)}
+
+  /* provider list */
+  .plist{display:flex;flex-direction:column;gap:2px}
+  .prow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bd2);font-size:12px}
+  .prow .nm{font-weight:600}
+  .prow .sd{width:8px;height:8px;border-radius:50%}
+  .prow .rate{margin-left:auto;font-family:var(--mono)}
+  .prow .lat{width:62px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--faint)}
+
+  /* web vitals bullets */
+  .vit{display:flex;flex-direction:column;gap:13px;margin-top:2px}
+  .vrow .vt{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
+  .vt .vlab{color:var(--dim);font-weight:600} .vt .vval{font-family:var(--mono)}
+  .track{position:relative;height:8px;border-radius:5px;background:rgba(150,170,200,.10)}
+  .fill{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+  .thr-mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:rgba(255,255,255,.5)}
+
+  /* withdrawals */
+  .wd{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-top:6px}
+  .wd .big{font-size:34px;font-weight:800;color:var(--green);line-height:1}
+  .wd .big .u{font-size:15px;color:var(--dim)}
+  .wd .med{text-align:right}
+  .wd .med .n{font-size:20px;font-weight:700;font-family:var(--mono)}
+  .wd .med .l{font-size:9.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.5px}
+
+  /* incident feed */
+  .feed{display:flex;flex-direction:column;gap:1px;font-size:11.5px;max-height:178px;overflow:hidden}
+  .ev{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--bd2)}
+  .ev .sev{width:7px;height:7px;border-radius:50%;margin-top:5px;flex:0 0 auto}
+  .ev .body{flex:1}
+  .ev .nm{font-weight:600;font-size:11.5px}
+  .ev .meta{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:1px}
+  .ev .t{font-family:var(--mono);font-size:10px;color:var(--faint);white-space:nowrap}
+  .sev-r{background:var(--red)} .sev-a{background:var(--amber)} .sev-b{background:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header / verdict -->
+  <header>
+    <div class="h-l">
+      <div>
+        <div class="h-title">Trading Readiness · Sportsbook In-Play</div>
+        <div class="verdict"><span class="big ok">TRADING</span><span class="tag">// 1 watch · Cash Out degraded</span></div>
+      </div>
+    </div>
+    <div class="h-r">
+      <span class="pulse"><span class="dot"></span> 14 matches in-play</span>
+      <span>SLO burn: <b style="color:var(--amber)">1.8×</b></span>
+      <span>Fri 5 Jun · 20:14:32</span>
+    </div>
+  </header>
+
+  <!-- ROW 1 -->
+  <div class="sec"><h2>Can we trade?</h2><div class="ln"></div></div>
+  <div class="grid">
+    <div class="panel stat" data-s="g">
+      <div class="lbl">Place Bet success</div>
+      <div class="val">99.7<span class="u">%</span></div>
+      <div class="thr"><span class="pill">Healthy</span> tgt ≥ 99.5%</div>
+    </div>
+    <div class="panel stat" data-s="a">
+      <div class="lbl">Cash Out success</div>
+      <div class="val">99.2<span class="u">%</span></div>
+      <div class="thr"><span class="pill">Watch</span> tgt ≥ 99.5% · high-trust</div>
+    </div>
+    <div class="panel stat" data-s="g">
+      <div class="lbl">Deposit success</div>
+      <div class="val">97.8<span class="u">%</span></div>
+      <div class="thr"><span class="pill">Healthy</span> tgt ≥ 97% (excl. declines)</div>
+    </div>
+    <div class="panel stat" data-s="g">
+      <div class="lbl">Login / Auth success</div>
+      <div class="val">99.9<span class="u">%</span></div>
+      <div class="thr"><span class="pill">Healthy</span> tgt ≥ 99.5%</div>
+    </div>
+    <div class="panel stat" data-s="g">
+      <div class="lbl">Settlement freshness</div>
+      <div class="val">99.4<span class="u">%</span></div>
+      <div class="thr"><span class="pill">Healthy</span> within target lag · ≥ 99%</div>
+    </div>
+    <div class="panel stat" data-s="g">
+      <div class="lbl">Safer Gambling controls</div>
+      <div class="val" style="font-size:30px">HEALTHY</div>
+      <div class="thr"><span class="pill">All up</span> 6/6 RG services · any down → RED</div>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="sec"><h2>Demand &amp; headroom</h2><div class="ln"></div></div>
+  <div class="grid">
+    <!-- 7 bets/min with events + forecast -->
+    <div class="panel" style="grid-column:span 5">
+      <div class="p-h"><span class="p-t">Place Bet rate · bets/sec</span>
+        <span class="legend"><span><i style="background:var(--green)"></i>actual</span><span><i style="background:var(--faint)"></i>last MD ref</span></span></div>
+      <svg viewBox="0 0 560 150" width="100%" height="150" preserveAspectRatio="none">
+        <defs><linearGradient id="ba" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22e3a6" stop-opacity=".30"/><stop offset="1" stop-color="#22e3a6" stop-opacity="0"/></linearGradient></defs>
+        <line x1="0" y1="40" x2="560" y2="40" stroke="rgba(150,170,200,.06)"/><line x1="0" y1="90" x2="560" y2="90" stroke="rgba(150,170,200,.06)"/>
+        <!-- forecast ref (dashed) -->
+        <path d="M0,86 560,70" stroke="rgba(200,214,236,.4)" stroke-width="1.5" stroke-dasharray="5 4" fill="none"/>
+        <!-- actual -->
+        <path d="M0,100 40,96 80,90 120,98 160,60 200,72 240,66 280,30 320,52 360,44 400,40 440,22 480,46 520,34 560,28" fill="none" stroke="#22e3a6" stroke-width="2.2"/>
+        <path d="M0,100 40,96 80,90 120,98 160,60 200,72 240,66 280,30 320,52 360,44 400,40 440,22 480,46 520,34 560,28 L560,150 L0,150 Z" fill="url(#ba)"/>
+        <!-- event annotations -->
+        <line x1="160" y1="0" x2="160" y2="150" stroke="var(--blue)" stroke-dasharray="2 3" opacity=".7"/>
+        <line x1="280" y1="0" x2="280" y2="150" stroke="var(--green)" stroke-dasharray="2 3" opacity=".7"/>
+        <line x1="440" y1="0" x2="440" y2="150" stroke="var(--amber)" stroke-dasharray="2 3" opacity=".7"/>
+      </svg>
+      <div class="axis"><span>KO</span><span style="color:var(--blue)">▲ pen 23'</span><span style="color:var(--green)">▲ goal 41'</span><span style="color:var(--amber)">▲ red 67'</span><span>now</span></div>
+    </div>
+    <!-- 8 sessions by platform -->
+    <div class="panel" style="grid-column:span 4">
+      <div class="p-h"><span class="p-t">Active sessions · RUM by platform</span>
+        <span class="legend"><span><i style="background:var(--green)"></i>App</span><span><i style="background:var(--blue)"></i>Mobile web</span><span><i style="background:var(--violet)"></i>Desktop</span></span></div>
+      <svg viewBox="0 0 440 150" width="100%" height="150" preserveAspectRatio="none">
+        <path d="M0,70 55,64 110,66 165,50 220,54 275,40 330,46 385,36 440,30" fill="none" stroke="#22e3a6" stroke-width="2"/>
+        <path d="M0,100 55,96 110,98 165,90 220,92 275,84 330,88 385,82 440,78" fill="none" stroke="#3fbaf3" stroke-width="2"/>
+        <path d="M0,124 55,122 110,123 165,118 220,120 275,116 330,118 385,115 440,112" fill="none" stroke="#9a7bff" stroke-width="2"/>
+      </svg>
+      <div class="axis"><span>20:00</span><span>peak 412k</span><span>20:14</span></div>
+    </div>
+    <!-- 9 saturation headroom gauge -->
+    <div class="panel" style="grid-column:span 3">
+      <div class="p-h"><span class="p-t">Saturation · worst-case</span><span class="p-meta">to ceiling</span></div>
+      <div class="gaugeWrap">
+        <svg viewBox="0 0 180 104" width="180" height="104">
+          <path d="M16,96 A74,74 0 0,1 164,96" fill="none" stroke="rgba(150,170,200,.12)" stroke-width="13" stroke-linecap="round"/>
+          <path d="M16,96 A74,74 0 0,1 150,52" fill="none" stroke="var(--amber)" stroke-width="13" stroke-linecap="round"/>
+          <text x="90" y="80" text-anchor="middle" class="gNum" fill="#ffb020" font-family="Archivo" font-weight="800" font-size="30">72%</text>
+        </svg>
+      </div>
+      <div class="gSub">bet-settlement queue depth · 28% headroom left</div>
+    </div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div class="sec"><h2>Where it hurts</h2><div class="ln"></div></div>
+  <div class="grid">
+    <!-- 10 top failing journeys -->
+    <div class="panel" style="grid-column:span 5">
+      <div class="p-h"><span class="p-t">Top failing journeys · now</span><span class="p-meta">click → Tier 2/3</span></div>
+      <table>
+        <thead><tr><th>Journey</th><th class="num">Err</th><th class="num">Count</th><th>Top reason</th><th class="num">p99</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="j">Cash Out</td><td class="num er warn">1.2%</td><td class="num">412</td><td><span class="reason biz">odds_changed</span></td><td class="num">880ms</td><td class="arrow">›</td></tr>
+          <tr><td class="j">Deposit · Trustly</td><td class="num er bad">3.4%</td><td class="num">189</td><td><span class="reason inc">downstream_5xx</span></td><td class="num">2.1s</td><td class="arrow">›</td></tr>
+          <tr><td class="j">Place Bet · in-play</td><td class="num er ok">0.4%</td><td class="num">133</td><td><span class="reason biz">price_moved</span></td><td class="num">410ms</td><td class="arrow">›</td></tr>
+          <tr><td class="j">Withdrawal</td><td class="num er warn">1.0%</td><td class="num">57</td><td><span class="reason">kyc_pending</span></td><td class="num">1.4s</td><td class="arrow">›</td></tr>
+          <tr><td class="j">Login · OAuth</td><td class="num er ok">0.1%</td><td class="num">22</td><td><span class="reason inc">token_timeout</span></td><td class="num">650ms</td><td class="arrow">›</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- 11 top error reasons -->
+    <div class="panel" style="grid-column:span 4">
+      <div class="p-h"><span class="p-t">Top error reasons · 15 min</span>
+        <span class="legend"><span><i style="background:var(--amber)"></i>business</span><span><i style="background:var(--red)"></i>incident</span></span></div>
+      <svg viewBox="0 0 440 150" width="100%" height="150" preserveAspectRatio="none">
+        <g font-family="IBM Plex Mono" font-size="9" fill="rgba(200,214,236,.55)">
+          <rect x="20" y="20" width="56" height="110" rx="3" fill="#ffb020"/>
+          <rect x="104" y="58" width="56" height="72" rx="3" fill="#ff4d5e"/>
+          <rect x="188" y="84" width="56" height="46" rx="3" fill="#ffb020"/>
+          <rect x="272" y="98" width="56" height="32" rx="3" fill="#ff4d5e"/>
+          <rect x="356" y="112" width="56" height="18" rx="3" fill="rgba(150,170,200,.4)"/>
+        </g>
+      </svg>
+      <div class="axis"><span>odds_changed</span><span>5xx</span><span>price_moved</span><span>timeout</span><span>other</span></div>
+    </div>
+    <!-- 12 payment providers -->
+    <div class="panel" style="grid-column:span 3">
+      <div class="p-h"><span class="p-t">Payment providers</span><span class="p-meta">success · latency</span></div>
+      <div class="plist">
+        <div class="prow"><span class="sd" style="background:var(--green)"></span><span class="nm">Worldpay</span><span class="rate" style="color:var(--green)">99.6%</span><span class="lat">240ms</span></div>
+        <div class="prow"><span class="sd" style="background:var(--red)"></span><span class="nm">Trustly</span><span class="rate" style="color:var(--red)">96.1%</span><span class="lat">2.1s</span></div>
+        <div class="prow"><span class="sd" style="background:var(--green)"></span><span class="nm">PayPal</span><span class="rate" style="color:var(--green)">99.8%</span><span class="lat">310ms</span></div>
+        <div class="prow"><span class="sd" style="background:var(--amber)"></span><span class="nm">Visa Direct</span><span class="rate" style="color:var(--amber)">98.4%</span><span class="lat">680ms</span></div>
+        <div class="prow"><span class="sd" style="background:var(--green)"></span><span class="nm">Apple Pay</span><span class="rate" style="color:var(--green)">99.9%</span><span class="lat">180ms</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 4 -->
+  <div class="sec"><h2>Front door &amp; money out</h2><div class="ln"></div></div>
+  <div class="grid">
+    <!-- 13 web/app performance -->
+    <div class="panel" style="grid-column:span 4">
+      <div class="p-h"><span class="p-t">RUM performance · p75 vs Core Web Vitals</span></div>
+      <div class="vit">
+        <div class="vrow"><div class="vt"><span class="vlab">LCP · Web</span><span class="vval" style="color:var(--green)">1.9s <span style="color:var(--faint)">good</span></span></div>
+          <div class="track"><span class="fill" style="width:48%;background:var(--green)"></span><span class="thr-mark" style="left:62%"></span></div></div>
+        <div class="vrow"><div class="vt"><span class="vlab">LCP · Mobile</span><span class="vval" style="color:var(--amber)">2.8s <span style="color:var(--faint)">needs work</span></span></div>
+          <div class="track"><span class="fill" style="width:70%;background:var(--amber)"></span><span class="thr-mark" style="left:62%"></span></div></div>
+        <div class="vrow"><div class="vt"><span class="vlab">INP · Web</span><span class="vval" style="color:var(--green)">160ms <span style="color:var(--faint)">good</span></span></div>
+          <div class="track"><span class="fill" style="width:40%;background:var(--green)"></span><span class="thr-mark" style="left:50%"></span></div></div>
+        <div class="vrow"><div class="vt"><span class="vlab">INP · Mobile</span><span class="vval" style="color:var(--green)">190ms <span style="color:var(--faint)">good</span></span></div>
+          <div class="track"><span class="fill" style="width:47%;background:var(--green)"></span><span class="thr-mark" style="left:50%"></span></div></div>
+      </div>
+    </div>
+    <!-- 14 withdrawals -->
+    <div class="panel" style="grid-column:span 4">
+      <div class="p-h"><span class="p-t">Withdrawals processing</span><span class="p-meta">last 60 min</span></div>
+      <div class="wd">
+        <div><div class="big">98.6<span class="u">%</span></div><div style="font-size:10px;color:var(--faint);font-family:var(--mono);margin-top:6px">success rate · tgt ≥ 98%</div></div>
+        <div class="med"><div class="n" style="color:var(--amber)">2m 40s</div><div class="l">median time</div></div>
+      </div>
+      <svg viewBox="0 0 440 54" width="100%" height="54" preserveAspectRatio="none" style="margin-top:10px">
+        <path d="M0,40 55,36 110,38 165,30 220,34 275,26 330,30 385,22 440,24" fill="none" stroke="#22e3a6" stroke-width="2"/>
+      </svg>
+    </div>
+    <!-- 15 incident feed -->
+    <div class="panel" style="grid-column:span 4">
+      <div class="p-h"><span class="p-t">Live detectors &amp; SLO burn</span><span class="p-meta" style="color:var(--red)">● 2 firing</span></div>
+      <div class="feed">
+        <div class="ev"><span class="sev sev-r"></span><div class="body"><div class="nm">Trustly deposit 5xx &gt; 3%</div><div class="meta">detector · crit · burn 4.2× · payments-svc</div></div><span class="t">20:11</span></div>
+        <div class="ev"><span class="sev sev-a"></span><div class="body"><div class="nm">Cash Out SLO burn-rate</div><div class="meta">slo · warn · 1.8× of 1h budget</div></div><span class="t">20:08</span></div>
+        <div class="ev"><span class="sev sev-b"></span><div class="body"><div class="nm">Settlement queue depth rising</div><div class="meta">detector · info · 72% to ceiling</div></div><span class="t">20:05</span></div>
+        <div class="ev"><span class="sev sev-b"></span><div class="body"><div class="nm">Mobile LCP regression</div><div class="meta">detector · info · p75 2.8s ↑</div></div><span class="t">19:58</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:22px;text-align:center;font-size:11px;color:var(--faint);line-height:1.7">
+    Mockup · "Can we trade?" trading-readiness board — 15 panels across 4 rows. Sample data.
+    Maps onto Splunk custom vizs (<span style="font-family:var(--mono)">single_value_delta</span>, <span style="font-family:var(--mono)">top_markets</span>/<span style="font-family:var(--mono)">category_breakdown</span>) + native line/gauge/table/event panels.
+  </div>
+</div>
+</body>
+</html>
