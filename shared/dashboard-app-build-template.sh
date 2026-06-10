@@ -221,15 +221,22 @@ fi
 # Phase 3: Package
 echo ""
 echo "  Packaging..."
+# Strip macOS cruft that fails Splunk Cloud vetting (check_for_prohibited_files):
+# clear extended attributes, then PHYSICALLY delete any AppleDouble (._*) and
+# .DS_Store files. The tar --exclude='._*' pattern is anchored at the path root,
+# so it misses nested files like static/._appIconAlt.png — deleting them is the
+# reliable fix.
 xattr -rc "$TARGET_APP" 2>/dev/null || true
+find "$TARGET_APP" \( -name '._*' -o -name '.DS_Store' \) -delete 2>/dev/null || true
 
 mkdir -p "$PARENT_DIR/dist"
 
 run_with_spinner "dist/$APP_NAME.tar.gz" bash -c "
-    COPYFILE_DISABLE=1 tar --disable-copyfile \
+    COPYFILE_DISABLE=1 tar --disable-copyfile --no-xattrs --no-mac-metadata \
         --exclude='.git*' \
-        --exclude='.DS_Store' \
-        --exclude='._*' \
+        --exclude='.DS_Store' --exclude='*/.DS_Store' \
+        --exclude='._*' --exclude='*/._*' \
+        --exclude='__MACOSX' \
         --exclude='__pycache__' \
         --exclude='*.pyc' \
         --exclude='vizs' \
@@ -240,6 +247,76 @@ run_with_spinner "dist/$APP_NAME.tar.gz" bash -c "
         -C '$PARENT_DIR' \
         '$APP_NAME'
 "
+
+# Bulletproof clean-up: bsdtar can STILL emit AppleDouble (._*) members from the
+# protected com.apple.provenance xattr, which `xattr -c` cannot remove. Repack the
+# tarball through Python (which never writes AppleDouble) to drop any ._* /
+# .DS_Store / __MACOSX member regardless of how bsdtar behaved.
+if command -v python3 >/dev/null 2>&1; then
+    python3 - "$PARENT_DIR/dist/$APP_NAME.tar.gz" <<'PYCLEAN'
+import sys, os, tarfile, tempfile
+src = sys.argv[1]
+def keep(name):
+    parts = name.split('/'); base = parts[-1]
+    return not (base.startswith('._') or base == '.DS_Store' or '__MACOSX' in parts)
+fd, tmp = tempfile.mkstemp(suffix='.tgz', dir=os.path.dirname(src)); os.close(fd)
+# GNU format, NOT the Python default (PAX) — Splunk App Inspect cannot process
+# PAX-format archives ("Could not validate package / Unable to process package").
+with tarfile.open(src, 'r:gz') as tin, tarfile.open(tmp, 'w:gz', format=tarfile.GNU_FORMAT) as tout:
+    for m in tin.getmembers():
+        if keep(m.name):
+            m.pax_headers = {}
+            tout.addfile(m, tin.extractfile(m) if m.isfile() else None)
+os.replace(tmp, src)
+PYCLEAN
+fi
+
+# Vetting guard: abort if any prohibited macOS file slipped into the tarball.
+if tar -tzf "$PARENT_DIR/dist/$APP_NAME.tar.gz" | grep -qE '(^|/)\._|__MACOSX'; then
+    echo "  ✗ Prohibited macOS files in tarball — aborting:"
+    tar -tzf "$PARENT_DIR/dist/$APP_NAME.tar.gz" | grep -E '(^|/)\._|__MACOSX'
+    exit 1
+fi
+
+# Phase 4: Vet — run Splunk AppInspect (cloud checks) against the final tarball
+# so a failing package is never handed over for upload. Skips with a notice if
+# AppInspect isn't installed (pip install splunk-appinspect in the repo .venv).
+APPINSPECT="$PARENT_DIR/.venv/bin/splunk-appinspect"
+[ -x "$APPINSPECT" ] || APPINSPECT="$(command -v splunk-appinspect 2>/dev/null || true)"
+if [ -n "$APPINSPECT" ] && [ -x "$APPINSPECT" ]; then
+    echo ""
+    REPORT="$PARENT_DIR/dist/appinspect-report.txt"
+    run_with_spinner "AppInspect cloud vetting" bash -c "'$APPINSPECT' inspect '$PARENT_DIR/dist/$APP_NAME.tar.gz' --included-tags cloud > '$REPORT' 2>&1" || true
+    AI_FAIL=$(awk '/^[[:space:]]*failure:/ {gsub(/[^0-9]/,"",$2); print $2}' "$REPORT" | tail -1)
+    AI_ERR=$(awk '/^[[:space:]]*error:/ {gsub(/[^0-9]/,"",$2); print $2}' "$REPORT" | tail -1)
+    if [ -z "$AI_FAIL" ] || [ -z "$AI_ERR" ]; then
+        echo "  ⚠ AppInspect report could not be parsed — review $REPORT"
+    elif [ "$AI_FAIL" -gt 0 ] || [ "$AI_ERR" -gt 0 ]; then
+        echo "  ✗ AppInspect: $AI_ERR error(s), $AI_FAIL failure(s) — aborting. Details:"
+        grep -E "FAILURE:|ERROR:" "$REPORT" | sed 's/^/      /'
+        echo "      Full report: $REPORT"
+        exit 1
+    else
+        echo "  ✓ AppInspect: 0 errors, 0 failures (report: dist/appinspect-report.txt)"
+    fi
+else
+    echo "  ⚠ AppInspect not found — skipping vetting (pip install splunk-appinspect)"
+fi
+
+# Phase 5: Ship — Slack-safe transfer artifact + checksums. CLI zip (unlike
+# Finder "Compress") never adds a __MACOSX folder; -X strips extended attrs.
+# The zip wraps the .spl (NOT the .tar.gz): extractors auto-expand a nested
+# .tar.gz all the way to a bare folder, but nothing recognises .spl, so the
+# recipient reliably gets a single Splunk-uploadable file.
+cp "$PARENT_DIR/dist/$APP_NAME.tar.gz" "$PARENT_DIR/dist/$APP_NAME.spl"
+if command -v zip >/dev/null 2>&1; then
+    rm -f "$PARENT_DIR/dist/$APP_NAME.zip"
+    (cd "$PARENT_DIR/dist" && zip -X -q "$APP_NAME.zip" "$APP_NAME.spl")
+    echo "  ✓ Slack-safe zip (contains $APP_NAME.spl): dist/$APP_NAME.zip"
+fi
+if command -v shasum >/dev/null 2>&1; then SHACMD="shasum -a 256"; else SHACMD="sha256sum"; fi
+(cd "$PARENT_DIR/dist" && $SHACMD "$APP_NAME.tar.gz" "$APP_NAME.spl" "$APP_NAME.zip" 2>/dev/null > SHA256SUMS)
+echo "  ✓ Checksums: dist/SHA256SUMS"
 
 echo ""
 echo "  📦 $PARENT_DIR/dist/$APP_NAME.tar.gz"
