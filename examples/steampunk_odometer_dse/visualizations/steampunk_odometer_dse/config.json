@@ -1,0 +1,54 @@
+{
+    "showTitleAndDescription": true,
+    "includeInToolbar": true,
+    "includeInVizSwitcher": true,
+    "showDrilldown": false,
+    "canSetTokens": [],
+    "hasEventHandlers": false,
+    "config": {
+        "name": "Steampunk Odometer (10.4+)",
+        "description": "Brass steampunk odometer with rolling digit drums.",
+        "category": "Custom",
+        "icon": null,
+        "dataContract": {
+            "requiredDataSources": ["primary"],
+            "optionalDataSources": []
+        },
+        "size": {
+            "initialWidth": 420,
+            "initialHeight": 220
+        },
+        "optionsSchema": {
+            "valueField": { "type": "string", "default": "value" },
+            "labelField": { "type": "string", "default": "label" },
+            "digits": { "type": "number", "default": 6 },
+            "decimals": { "type": "number", "default": 0 },
+            "unit": { "type": "string", "default": "" },
+            "showRivets": { "type": "boolean", "default": true },
+            "showWear": { "type": "boolean", "default": true },
+            "digitSpacing": { "type": "number", "default": 50 },
+            "smoothness": { "type": "number", "default": 8 }
+        },
+        "editorConfig": [
+            {
+                "label": "Data",
+                "layout": [
+                    [{ "editor": "editor.text", "label": "Value Field", "option": "valueField" }],
+                    [{ "editor": "editor.text", "label": "Label Field", "option": "labelField" }],
+                    [{ "editor": "editor.number", "label": "Whole Digits", "option": "digits" }],
+                    [{ "editor": "editor.number", "label": "Decimals", "option": "decimals" }],
+                    [{ "editor": "editor.text", "label": "Unit", "option": "unit" }]
+                ]
+            },
+            {
+                "label": "Appearance",
+                "layout": [
+                    [{ "editor": "editor.toggle", "label": "Show Rivets", "option": "showRivets" }],
+                    [{ "editor": "editor.toggle", "label": "Show Wear", "option": "showWear" }],
+                    [{ "editor": "editor.number", "label": "Digit Spacing", "option": "digitSpacing" }],
+                    [{ "editor": "editor.number", "label": "Smoothness", "option": "smoothness" }]
+                ]
+            }
+        ]
+    }
+}

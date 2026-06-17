@@ -1,23 +1,55 @@
 ---
 name: splunk-viz
-description: Scaffold and build Splunk custom visualizations using Canvas 2D. Use this skill whenever the user wants to create, modify, debug, fix, or package a Splunk custom visualization app — including visualization_source.js, formatter.html, visualizations.conf, savedsearches.conf, webpack config, harness.json, or anything involving SplunkVisualizationBase. Also triggers for Splunk Cloud vetting errors (check_for_trigger_stanza, check_for_prohibited_files), blurry/HiDPI canvas issues, custom font embedding in Splunk vizs, Dashboard Studio custom viz integration, and scaffolding parent apps that bundle multiple vizs.
+description: Scaffold and build Splunk custom visualizations using Canvas 2D. Use this skill whenever the user wants to create, modify, debug, fix, or package a Splunk custom visualization app — including visualization_source.js, formatter.html, visualizations.conf, savedsearches.conf, webpack config, harness.json, or anything involving SplunkVisualizationBase or the Dashboard Studio Extension API (@splunk/dashboard-studio-extension, VisualizationAPI, addDataSourcesListener). Also triggers for Splunk Cloud vetting errors (check_for_trigger_stanza, check_for_prohibited_files, check_meta_default_write_access), blurry/HiDPI canvas issues, custom font embedding in Splunk vizs, Dashboard Studio custom viz integration on Splunk 10.4+, repaint-on-refresh bugs in Dashboard Studio, and scaffolding parent apps that bundle multiple vizs.
 ---
 
-You are an expert Splunk developer specializing in custom visualizations built with the Splunk Visualization Framework (Canvas 2D rendering, AMD modules, webpack). You generate production-ready code, not prototypes.
+You are an expert Splunk developer specializing in custom visualizations built with the Splunk Visualization Framework (Canvas 2D rendering, AMD modules, webpack — Splunk 10.2 legacy) and the newer Dashboard Studio Extension framework (iframe-based, ESM, esbuild — Splunk 10.4+). You generate production-ready code, not prototypes.
 
 ## Architecture Overview
 
-**Requires Splunk Enterprise 10.2+ or Splunk Cloud.** The `visualizations.conf` configuration and custom viz framework were significantly improved in 10.2. The target platform (Cloud, Enterprise, or both) is determined in Step 1 and affects which vetting constraints are applied — see the **Platform Differences** table.
+A Splunk custom visualization is a standalone Splunk app that renders search results using Canvas 2D. **Two different Splunk frameworks are available**, and the right one depends on which Splunk version the user is targeting:
 
-A Splunk custom visualization is a standalone Splunk app that renders search results using Canvas 2D. It consists of:
+| Track | Framework | Splunk version | Dashboard type | Notes |
+|-------|-----------|----------------|----------------|-------|
+| **A** | Legacy `SplunkVisualizationBase` (AMD + webpack) | 10.2+ (works on 10.4) | Simple XML **and** Dashboard Studio | Default and most widely supported. Visibly repaints during scheduled refreshes on Dashboard Studio in 10.4 — see Track B if that matters. |
+| **B** | Dashboard Studio Extension (`@splunk/dashboard-studio-extension`, ESM + esbuild, iframe-based) | 10.4+ **only** | Dashboard Studio only | Refresh-stable: subscribes to an explicit `loading` signal and holds the previous frame during refreshes. Will not load on 10.2 or in Simple XML dashboards. |
 
-1. **App scaffolding** — Splunk app config files (`app.conf`, `visualizations.conf`, `savedsearches.conf`)
-2. **Formatter UI** — HTML form that exposes user-configurable settings in the Splunk dashboard editor
-3. **Visualization source** — JavaScript AMD module that extends `SplunkVisualizationBase` with Canvas 2D rendering
-4. **Build tooling** — webpack bundles the source into a single `visualization.js` AMD module
-5. **Build/deploy scripts** — Shell scripts to build, package, and deploy the app
+**Always ask the user which target Splunk version to support before scaffolding.** See [Step 0: Choose Framework](#step-0-choose-framework).
 
-## Step 1: Gather Requirements
+A Splunk custom viz consists of:
+
+1. **App scaffolding** — Splunk app config files (`app.conf`, `visualizations.conf`, `savedsearches.conf` for Track A; `package/app/app.conf` for Track B). `visualizations.conf` declares `framework_type = legacy_visualization` (Track A) or `framework_type = studio_visualization` (Track B).
+2. **Settings UI** — Track A: HTML form (`formatter.html`) using `<splunk-control-group>` elements. Track B: JSON schema in `config.json` (`optionsSchema` + `editorConfig`).
+3. **Visualization source** — Track A: AMD module extending `SplunkVisualizationBase`. Track B: ESM module registering listeners on `VisualizationAPI`.
+4. **Build tooling** — Track A: webpack → single AMD `visualization.js`. Track B: esbuild → single ESM `visualization.js` plus auto-generated `default/visualizations.conf` and `metadata/default.meta`.
+5. **Build/deploy scripts** — Track A: shared `./build.sh` at repo root. Track B: per-app `npm run build && npm run package` producing a `.spl`.
+
+## Step 0: Choose Framework
+
+**Always run this step first.** Ask the user (or extract from context) which Splunk version they need to support, then pick the track:
+
+1. **What is the minimum Splunk version that must run this viz?** (`10.2` / `10.4`)
+2. **Which dashboard type(s)?** (Simple XML / Dashboard Studio / both)
+3. **(If 10.4 + Studio only)**: Does refresh-stability matter? (i.e. does the viz appear on dashboards with scheduled searches where a brief repaint would look like a bug?)
+
+Decision matrix:
+
+| Min version | Dashboard type | Refresh stability? | → Track |
+|-------------|----------------|--------------------|----|
+| 10.2 (or unsure) | any | — | **A** (legacy) |
+| 10.4+ | Simple XML or both | — | **A** (legacy — required for Simple XML) |
+| 10.4+ | Dashboard Studio only | no / don't care | **A** (legacy) — simpler tooling |
+| 10.4+ | Dashboard Studio only | yes — refreshes are visible | **B** (studio extension) |
+
+When in doubt, **default to Track A**. It supports the widest Splunk version range and the simpler tooling is easier to maintain. Only recommend Track B when the user explicitly targets 10.4-or-later and either asks about the refresh repaint issue or operates dashboards where scheduled refreshes are user-visible.
+
+Once selected, proceed with the rest of this skill for **Track A** in-line below, or read [`references/dse-framework.md`](references/dse-framework.md) for the complete **Track B** scaffolding, build pipeline, listener model, and Splunk Cloud appinspect notes.
+
+> **Track A is documented in the remainder of this file. Everything from Step 1 onward — directory structure, file templates, formatter.html, visualization_source.js, webpack, harness.json, all 32 Critical Rules — applies to Track A only.** Track B has its own structure, its own settings schema, its own runtime model, and its own appinspect quirks. Do not mix them.
+
+## Step 1: Gather Requirements (Track A — Legacy Framework)
+
+> Skip this step if Step 0 selected Track B. Use [`references/dse-framework.md`](references/dse-framework.md) instead.
 
 Before generating code, ask the user (or extract from context):
 
@@ -404,6 +436,8 @@ When creating a new viz, read `references/core-template.md` for the complete AMD
 
 ## Critical Rules
 
+> The rules below are written for **Track A** (legacy `SplunkVisualizationBase`). The Track B summary at the top of this file lists which of these rules also apply to the Studio Extension framework and which are superseded by listener-based equivalents.
+
 1. **Use `var`, not `const`/`let`**. Webpack targets AMD for Splunk's RequireJS environment. Some Splunk versions run older JS engines. Stick with ES5 (`var`, `function`, `for` loops). No arrow functions, no template literals, no destructuring.
 
 2. **Always handle HiDPI displays**. Set `canvas.width/height` to `rect.width * dpr` and call `ctx.scale(dpr, dpr)`. All drawing math uses the CSS pixel dimensions (`rect.width`, `rect.height`), NOT `canvas.width/height`.
@@ -784,7 +818,9 @@ Do not try to parallelize file generation itself — the config files, formatter
 
 ## Step 3: Generate Build Script
 
-The repo uses a single shared `build.sh` at the root. **Do not generate per-viz build scripts** — use the existing `build.sh` instead. Do not generate deploy scripts — apps should be installed via the Splunk UI (Manage Apps → Install app from file).
+The repo uses a single shared `build.sh` at the root. It auto-detects whether the app is Track A (legacy) or Track B (studio extension) by looking for `default/app.conf` versus `package/app/app.conf`, and dispatches to the right tooling. **Do not generate per-viz build scripts for Track A** — use the existing `build.sh` instead. Track B apps DO have a per-app `build.mjs` + `package.mjs` (vendored from `@splunk/create` with bug patches), but `./build.sh` still works as the unified entry point — it just delegates to `npm run build:prod && npm run package` inside the app.
+
+Do not generate deploy scripts — apps should be installed via the Splunk UI (Manage Apps → Install app from file).
 
 ### Usage
 
@@ -838,6 +874,8 @@ For any viz type, always include a "no data" state. Ask the user whether they wa
 
 **For new vizs**, verify all files are generated. **For modifications to existing vizs**, update all affected files — code changes that add/remove data fields, settings, or features MUST be reflected in `README.md`, `savedsearches.conf`, `savedsearches.conf.spec`, `harness.json`, and `formatter.html`. Never change the JS without updating the documentation and config files to match.
 
+> **Track B (Studio Extension):** use the checklist in [`references/dse-framework.md` → Verify Completeness](references/dse-framework.md#verify-completeness) instead. The list below is Track A specific.
+
 Before presenting the generated code, verify:
 
 - [ ] `README.md` exists with description, install, columns, search, configuration, drilldown (if applicable), time range, and build sections
@@ -867,6 +905,27 @@ Before presenting the generated code, verify:
 - [ ] **If modifying an existing viz**: `README.md` updated to reflect new/changed columns, settings, and features
 - [ ] **If modifying an existing viz**: `savedsearches.conf` search query includes any new data fields
 - [ ] **If modifying an existing viz**: `harness.json` updated with new field controls and data columns
+
+## Track B: Studio Extension Framework (Splunk 10.4+)
+
+If Step 0 selected Track B, **stop reading this file** for scaffolding instructions and read [`references/dse-framework.md`](references/dse-framework.md) end-to-end. That reference contains the full workflow:
+
+- Project layout (very different from Track A — no `appserver/`, no `default/visualizations.conf` to hand-write, no `formatter.html`, no `savedsearches.conf`)
+- `package.json` + `build.mjs` + `package.mjs` build pipeline (and the three upstream `@splunk/create` bugs that must be patched locally — see [`upstream-bugfix/`](../../../upstream-bugfix/))
+- `config.json` schema (replaces `formatter.html` + `savedsearches.conf` defaults)
+- `visualization.js` listener model (`addDataSourcesListener`, `addOptionsListener`, `addDimensionsListener`)
+- Column-major data shape (`{ fields, columns }` instead of `{ fields, rows }`)
+- `package/app/app.conf` stanza requirements for Splunk Cloud
+- `metadata/default.meta` global write-access stanza requirement
+- The refresh-stability pattern (silently skip render during `loading: true`)
+
+A complete worked example lives at `examples/steampunk_gauge_dse/`. Refer to it for any detail not covered by the reference doc.
+
+**Critical Rules that still apply to Track B** (numbered in the Track A section below): 2 (HiDPI), 3 (zero-size canvas guard), 4 (null ctx), 5–6 (canvas state cleanup), 10 (font conventions), 12 (no `this` in helpers), 14 (XSS prevention if touching DOM), 24 (label alignment), 27 ("no data" via `_status` field — adapted for column-major shape), 29 (text readability), 30 (README markdown linting), 31 (Python venv for preview generation), 32 (real-time smoothing).
+
+**Critical Rules that do NOT apply to Track B**: 1 (Track B is ESM, not AMD — modern syntax encouraged), 7–8 (no `formatData`/`VisualizationError` — use `setError`/`clearError` from VisualizationAPI), 9 (settings come typed, not always strings, when `optionsSchema` declares `type: number` or `type: boolean`), 11 (no AMD JSON loader — use ESM `import`), 13 (no `this`-bound timer — use module-scope state), 16–17 (no `invalidate*`/`reflow` methods — listeners drive re-render), 18–21 (no `getPropertyNamespaceInfo`, no namespaced config keys, no `formatData` caching needed — the listener model + cached state already prevents re-render during loading), 22 (no `savedsearches.conf.spec` — defaults live in `optionsSchema`), 23 (`/_bump` still works but you typically re-install the `.spl` via the UI), 28 (Dashboard Studio JSON `options` block — Track B writes well-typed values directly, no stale-key issue).
+
+**Track B vizs work in the test harness** (as of harness v2). The harness mounts each studio viz in an `<iframe>` with a shim that exposes `window.DashboardExtensionAPI` before the production ESM bundle loads — no rebuild needed. You still create a `harness.json` (same schema as Track A) in `visualizations/{name}/` alongside `config.json`, and you add the viz name to the `studio.vizs` array in `harness-manifest.json` (NOT the top-level `vizs` array). See the [Studio Extension Harness](references/dse-framework.md#testing) section of the reference doc for the exact steps.
 
 ## Step 5: Generate Test Harness Config (MANDATORY)
 

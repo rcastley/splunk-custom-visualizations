@@ -1,0 +1,21 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+}
+
+#root,
+.steampunk-gauge-viz {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.steampunk-gauge-viz canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}

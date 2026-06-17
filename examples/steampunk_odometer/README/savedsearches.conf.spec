@@ -1,0 +1,9 @@
+display.visualizations.custom.steampunk_odometer.steampunk_odometer.valueField = <string>
+display.visualizations.custom.steampunk_odometer.steampunk_odometer.labelField = <string>
+display.visualizations.custom.steampunk_odometer.steampunk_odometer.digits = <string>
+display.visualizations.custom.steampunk_odometer.steampunk_odometer.decimals = <string>
+display.visualizations.custom.steampunk_odometer.steampunk_odometer.unit = <string>
+display.visualizations.custom.steampunk_odometer.steampunk_odometer.showRivets = <boolean>
+display.visualizations.custom.steampunk_odometer.steampunk_odometer.showWear = <boolean>
+display.visualizations.custom.steampunk_odometer.steampunk_odometer.digitSpacing = <string>
+display.visualizations.custom.steampunk_odometer.steampunk_odometer.smoothness = <string>
