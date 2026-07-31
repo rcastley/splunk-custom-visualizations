@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build:css": "tailwindcss -c tailwind.config.js -i src/harness.tailwind.css -o shared/harness.css --minify",
-    "watch:css": "tailwindcss -c tailwind.config.js -i src/harness.tailwind.css -o shared/harness.css --watch"
+    "watch:css": "tailwindcss -c tailwind.config.js -i src/harness.tailwind.css -o shared/harness.css --watch",
+    "validate:skill": "node scripts/validate-agent-skill.mjs"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.13"

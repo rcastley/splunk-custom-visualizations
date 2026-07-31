@@ -1,0 +1,25 @@
+{
+  "dataSources": {
+    "primary": {
+      "data": {
+        "fields": [
+          { "name": "index" },
+          { "name": "current_size_mb" },
+          { "name": "max_size_mb" },
+          { "name": "event_rate" },
+          { "name": "latest_event_age_seconds" }
+        ],
+        "columns": [
+          ["main", "security", "web", "metrics", "summary", "archive"],
+          ["61200", "92800", "43800", "25200", "81400", "97400"],
+          ["100000", "100000", "100000", "50000", "100000", "100000"],
+          ["18450", "7620", "12380", "48900", "930", "12"],
+          ["18", "42", "1230", "11", "210", "2400"]
+        ]
+      }
+    }
+  },
+  "tokens": {
+    "environment": "production"
+  }
+}

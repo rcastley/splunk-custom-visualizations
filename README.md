@@ -1,13 +1,16 @@
 # Splunk Custom Visualizations
 
-Build custom Splunk visualizations using Canvas 2D — with an AI-powered [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that handles scaffolding, rendering logic, and best practices for you.
+Build Canvas 2D custom visualizations for both the legacy Splunk visualization framework and the native Dashboard Studio extension framework—with a portable Agent Skill for Claude Code, Cursor, and Codex that handles scaffolding, rendering logic, testing, and packaging.
 
 Splunk's built-in charts cover the basics, but sometimes your data deserves something more. Custom visualizations let you render search results exactly the way you want — gauges, heatmaps, status boards, network graphs, or anything you can draw on a canvas. This repo gives you everything you need to get started.
 
 ## What's Inside
 
 ```text
-.claude/skills/splunk-viz/     Claude Code skill for generating custom vizs
+.agents/skills/splunk-viz/     Canonical cross-agent skill for generating custom vizs
+.claude/skills/splunk-viz/     Thin Claude Code discovery adapter
+AGENTS.md                       Shared repository instructions
+CLAUDE.md                       Thin Claude Code repository adapter
 examples/
   arcade_leaderboard/          Retro arcade-style scrolling leaderboard
   bet_flow_map/                Betting flow Sankey-style map
@@ -43,6 +46,8 @@ splunk_health/                 Bundled app: all 8 health vizzes + Dashboard Stud
 build.sh                       Build and package any standalone viz
 test-harness.html              Browser-based testing without Splunk deployment
 harness-manifest.json          Registry of vizs for the test harness
+studio-test-harness.html       Native Dashboard Studio iframe/API harness
+studio-harness-manifest.json   Registry of native Studio extension bundles
 INSTRUCTIONS.md                Step-by-step setup and usage guide
 TEST-HARNESS.md                Test harness documentation
 ```
@@ -50,11 +55,11 @@ TEST-HARNESS.md                Test harness documentation
 ## Quick Start
 
 1. **Clone this repo** and open it in your editor
-2. **Install [Claude Code](https://docs.anthropic.com/en/docs/claude-code)** if you haven't already
-3. **Ask Claude to build a viz** e.g.:
+2. **Open the repository in Claude Code, Cursor, or Codex.** All three discover the `splunk-viz` skill from the checked-in adapters.
+3. **Ask your agent to build a viz**, for example:
 
    ```text
-   Using /splunk-viz, create a custom visualization that shows a donut chart
+   Using splunk-viz, create a custom visualization that shows a donut chart
    with a center label. It should accept "label" and "value" columns.
    ```
 
@@ -69,18 +74,30 @@ See [INSTRUCTIONS.md](INSTRUCTIONS.md) for the full setup guide.
 
 **Try the test harness live:** [GitHub Pages Demo](https://rcastley.github.io/splunk-custom-visualizations/)
 
-## The Splunk Viz Skill
+## Supported Agents
 
-The `.claude/skills/splunk-viz/` directory contains a Claude Code skill that knows how to:
+| Agent | Discovery path | Explicit invocation |
+| --- | --- | --- |
+| [Claude Code](https://code.claude.com/docs/en/skills) | Thin `.claude/skills/splunk-viz` adapter | `/splunk-viz` |
+| [Cursor](https://cursor.com/docs/skills) | Canonical `.agents/skills/splunk-viz` package | `/splunk-viz` |
+| [Codex](https://learn.chatgpt.com/docs/build-skills) | Canonical `.agents/skills/splunk-viz` package | `$splunk-viz` |
 
-- Scaffold a complete Splunk viz app (config files, formatter UI, webpack, build script)
-- Scaffold a Dashboard Studio app with a `vizs/` build pipeline for bundling multiple custom vizs
+The canonical skill uses only the common Agent Skills `name` and `description` frontmatter. Host-specific permissions and settings stay outside the skill. Run `npm run validate:skill` after changing its metadata, references, or adapter.
+
+## The Portable Splunk Viz Skill
+
+The canonical skill in `.agents/skills/splunk-viz/` follows the open Agent Skills format and knows how to:
+
+- Select and scaffold either the legacy `SplunkVisualizationBase` framework or the native Dashboard Studio extension framework
+- Build legacy formatter/AMD/webpack apps and native Studio `config.json`/ES module/esbuild projects
+- Scaffold a parent Dashboard Studio app with a `vizs/` pipeline for bundling legacy custom vizs
 - Generate Canvas 2D rendering code following Splunk's AMD module pattern
+- Generate native Studio adapters using `@splunk/dashboard-studio-extension` listeners or React hooks
 - Handle HiDPI displays, real-time data, responsive sizing, and font embedding
 - Smooth real-time numeric values with a client-side tween so gauges, bars, and motion elements don't snap between SPL samples
-- Apply 32 battle-tested rules learned from building production visualizations
+- Test each framework in its matching local harness and package it with the correct toolchain
 
-The skill is automatically available when you use Claude Code in this repo. Just describe what you want to visualize and it will generate the full app. You can also ask it to scaffold a full Dashboard Studio app — it generates the app skeleton, build script, test harness, and the `vizs/` directory structure for managing multiple visualizations.
+The skill is automatically available in supported agents when you open this repository. Invoke it explicitly as `/splunk-viz` in Claude Code or Cursor, or `$splunk-viz` in Codex; all three can also select it automatically from the request. You can ask it to generate either a legacy custom visualization, a native Dashboard Studio extension, or both framework outputs.
 
 ## Example: Splunk Health Dashboard
 
@@ -191,13 +208,15 @@ python3 -m http.server 8080
 
 Open [http://localhost:8080/test-harness.html](http://localhost:8080/test-harness.html) — select a viz, adjust sliders and settings, see the canvas update in real-time. Test the no-data state, resize the panel, and tweak formatter options — all without a Splunk instance.
 
-Each viz includes a `harness.json` that defines interactive controls and sample data. The harness HTML is fully generic — no viz-specific code. See [TEST-HARNESS.md](TEST-HARNESS.md) for full documentation.
+For native extensions, open [http://localhost:8080/studio-test-harness.html](http://localhost:8080/studio-test-harness.html). It derives interactive option controls from `config.json`, provides an editable columnar data grid, and exposes loading, no-data, size, theme, mode, reset, and reload controls. Raw JSON is available under **Advanced state** for malformed and multi-source test cases.
+
+Each viz includes a `harness.json` that supplies sample data. Both harnesses are generic and contain no visualization-specific code. See [TEST-HARNESS.md](TEST-HARNESS.md) for full documentation.
 
 ## Requirements
 
 - **Splunk Enterprise 10.2+** or **Splunk Cloud**
-- **Node.js 18+** (for building the webpack bundle)
-- **Claude Code** (for using the AI skill)
+- **Node.js 22+** (for the legacy webpack build and native Studio CLI/esbuild toolchain)
+- **Claude Code, Cursor, or Codex** (for using the portable Agent Skill)
 
 ## How It Works
 

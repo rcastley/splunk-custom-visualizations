@@ -1,0 +1,5 @@
+[]
+access = read : [ * ], write : [ admin, power ]
+
+[visualizations/_vizName_]
+export = system

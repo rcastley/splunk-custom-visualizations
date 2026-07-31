@@ -2,6 +2,55 @@
 
 Test and iterate on Splunk custom visualizations in your browser without deploying to Splunk. The test harness is a single HTML file that mocks the Splunk Visualization API and renders any viz with interactive controls.
 
+> This document primarily describes the legacy `SplunkVisualizationBase` harness in `test-harness.html`. Native Dashboard Studio extension bundles use `studio-test-harness.html`; see [Native Dashboard Studio harness](#native-dashboard-studio-harness).
+
+## Native Dashboard Studio Harness
+
+The native framework requires a separate iframe harness because its bundles use ES modules, columnar data, typed options, and the injected `DashboardExtensionAPI` instead of RequireJS and `SplunkVisualizationBase`.
+
+1. Build the native Studio project so `dist/<viz-name>/visualization.js` exists.
+2. Add its bundle, `config.json`, and fixture paths to `studio-harness-manifest.json`.
+3. Add `harness.json` beside the visualization's `config.json`; include `dataSources` and optional `tokens`.
+4. Open [http://localhost:8080/studio-test-harness.html](http://localhost:8080/studio-test-harness.html).
+
+The Studio harness builds its option controls from `config.json` `editorConfig` and `optionsSchema`, so text, number, checkbox, and color settings behave like ordinary controls and redraw immediately. Its primary data source is an editable grid with row/field controls and CSV/TSV paste. Loading, no-data, dimensions, fit, theme, view/edit mode, reset, and iframe reload are available without editing JSON.
+
+Use **Advanced state** when you specifically need raw payload control—for example multiple data sources, row-oriented results, malformed values, or tokens. Drilldowns, `setOptions`, and extension errors remain visible in the event log.
+
+Example manifest entry:
+
+```json
+{
+  "visualizations": [
+    {
+      "id": "resource_gauge",
+      "label": "Resource Gauge",
+      "bundle": "studio-examples/resource_gauge/dist/resource_gauge/visualization.js",
+      "config": "studio-examples/resource_gauge/visualizations/resource_gauge/config.json",
+      "harness": "studio-examples/resource_gauge/visualizations/resource_gauge/harness.json"
+    }
+  ]
+}
+```
+
+Example fixture:
+
+```json
+{
+  "dataSources": {
+    "primary": {
+      "data": {
+        "fields": [{ "name": "host" }, { "name": "count" }],
+        "columns": [["web-01", "web-02"], ["42", "17"]]
+      }
+    }
+  },
+  "tokens": {}
+}
+```
+
+The Studio harness loads the real built bundle in a fresh iframe and injects the public API surface for data, options, dimensions, mode, theme, tokens, errors, and drilldowns. The interactive controls live outside that iframe, preserving the native framework's isolation model. It is a development aid, not a substitute for installing and smoke-testing the packaged `.spl` in Splunk 10.4.
+
 ## Quick Start
 
 ```bash

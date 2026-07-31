@@ -1,0 +1,11 @@
+{
+  "visualizations": [
+    {
+      "id": "index_health",
+      "label": "Index Health",
+      "bundle": "studio-examples/index-health/dist/index_health/visualization.js",
+      "config": "studio-examples/index-health/visualizations/index_health/config.json",
+      "harness": "studio-examples/index-health/visualizations/index_health/harness.json"
+    }
+  ]
+}

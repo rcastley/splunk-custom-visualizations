@@ -1,0 +1,83 @@
+{
+  "showTitleAndDescription": true,
+  "includeInToolbar": true,
+  "includeInVizSwitcher": true,
+  "showDrilldown": false,
+  "canSetTokens": [],
+  "hasEventHandlers": false,
+  "config": {
+    "name": "Index Health",
+    "description": "Monitor indexing activity, storage, and health status across Splunk indexes",
+    "category": "Custom",
+    "icon": null,
+    "dataContract": {
+      "requiredDataSources": ["primary"],
+      "optionalDataSources": []
+    },
+    "size": {
+      "initialWidth": 720,
+      "initialHeight": 420
+    },
+    "optionsSchema": {
+      "indexField": { "type": "string", "default": "index" },
+      "sizeField": { "type": "string", "default": "current_size_mb" },
+      "maxSizeField": { "type": "string", "default": "max_size_mb" },
+      "eventRateField": { "type": "string", "default": "event_rate" },
+      "ageField": { "type": "string", "default": "latest_event_age_seconds" },
+      "warningThreshold": { "type": "number", "default": 75 },
+      "criticalThreshold": { "type": "number", "default": 90 },
+      "staleAfterSeconds": { "type": "number", "default": 900 },
+      "maxIndexes": { "type": "number", "default": 8 },
+      "showEventRate": { "type": "boolean", "default": true },
+      "showOverflowCount": { "type": "boolean", "default": true },
+      "healthyColor": { "type": "string", "default": "#53A051" },
+      "warningColor": { "type": "string", "default": "#F8BE34" },
+      "criticalColor": { "type": "string", "default": "#DC4E41" }
+    },
+    "editorConfig": [
+      {
+        "label": "Data fields",
+        "layout": [
+          [
+            { "editor": "editor.text", "label": "Index field", "option": "indexField" },
+            { "editor": "editor.text", "label": "Current size field", "option": "sizeField" }
+          ],
+          [
+            { "editor": "editor.text", "label": "Maximum size field", "option": "maxSizeField" },
+            { "editor": "editor.text", "label": "Event rate field", "option": "eventRateField" }
+          ],
+          [
+            { "editor": "editor.text", "label": "Latest event age field", "option": "ageField" }
+          ]
+        ]
+      },
+      {
+        "label": "Health rules",
+        "layout": [
+          [
+            { "editor": "editor.number", "label": "Capacity warning (%)", "option": "warningThreshold" },
+            { "editor": "editor.number", "label": "Capacity critical (%)", "option": "criticalThreshold" }
+          ],
+          [
+            { "editor": "editor.number", "label": "Stale after (seconds)", "option": "staleAfterSeconds" },
+            { "editor": "editor.number", "label": "Maximum indexes", "option": "maxIndexes" }
+          ]
+        ]
+      },
+      {
+        "label": "Appearance",
+        "layout": [
+          [
+            { "editor": "editor.checkbox", "label": "Show event rate", "option": "showEventRate" },
+            { "editor": "editor.checkbox", "label": "Show overflow count", "option": "showOverflowCount" }
+          ],
+          [
+            { "editor": "editor.color", "label": "Healthy", "option": "healthyColor" },
+            { "editor": "editor.color", "label": "Warning", "option": "warningColor" },
+            { "editor": "editor.color", "label": "Critical", "option": "criticalColor" }
+          ]
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Splunk Dashboard Studio extension harness</title>
+<style>
+    :root {
+        color-scheme: dark;
+        font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, sans-serif;
+        background: #11151a;
+        color: #f2f4f5;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; }
+    header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 58px;
+        padding: 10px 18px;
+        border-bottom: 1px solid #303841;
+        background: #171c22;
+    }
+    header h1 { margin: 0; font-size: 16px; }
+    header p { margin: 0 0 0 auto; color: #9da8b2; font-size: 12px; }
+    main {
+        display: grid;
+        grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
+        min-height: calc(100vh - 58px);
+    }
+    aside {
+        padding: 16px;
+        overflow: auto;
+        border-right: 1px solid #303841;
+        background: #171c22;
+    }
+    main > section { padding: 18px; overflow: auto; }
+    fieldset {
+        margin: 0 0 14px;
+        padding: 12px;
+        border: 1px solid #3a444e;
+        border-radius: 6px;
+    }
+    legend { padding: 0 6px; color: #f1813f; font-size: 12px; font-weight: 700; }
+    label { display: block; margin: 0 0 10px; color: #c8d0d7; font-size: 12px; }
+    label:last-child { margin-bottom: 0; }
+    input, select, textarea, button {
+        width: 100%;
+        margin-top: 5px;
+        border: 1px solid #4b5762;
+        border-radius: 4px;
+        background: #0f1317;
+        color: #f2f4f5;
+        font: inherit;
+    }
+    input, select, button { height: 34px; padding: 0 9px; }
+    input[type="checkbox"] { width: auto; height: auto; margin: 0 6px 0 0; }
+    textarea { min-height: 130px; padding: 8px; resize: vertical; font: 12px/1.45 monospace; }
+    button { cursor: pointer; border-color: #e66b2e; background: #d85d22; font-weight: 700; }
+    button.secondary { border-color: #4b5762; background: #29323a; }
+    button.compact { width: auto; padding: 0 10px; }
+    button.active { border-color: #ff9000; background: #6b3519; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 7px; }
+    .actions button { flex: 1 1 90px; }
+    .option-group { margin-top: 12px; }
+    .option-group:first-child { margin-top: 0; }
+    .option-group h3 { margin: 0 0 9px; color: #f1813f; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+    .option-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .option-grid label { margin: 0; }
+    .option-grid input[type="checkbox"] { margin-top: 8px; }
+    .color-control { display: grid; grid-template-columns: 40px 1fr; gap: 6px; }
+    .color-control input[type="color"] { width: 40px; padding: 2px; }
+    .data-table-wrap { max-height: 310px; overflow: auto; border: 1px solid #3a444e; border-radius: 4px; }
+    .data-table { width: 100%; border-collapse: collapse; font: 11px/1.3 monospace; }
+    .data-table th, .data-table td { min-width: 92px; padding: 0; border-right: 1px solid #303841; border-bottom: 1px solid #303841; }
+    .data-table th { position: sticky; top: 0; z-index: 1; padding: 7px; background: #20262c; color: #f8be34; text-align: left; }
+    .data-table input { height: 30px; margin: 0; border: 0; border-radius: 0; background: transparent; font: inherit; }
+    .data-table .row-number { min-width: 34px; width: 34px; padding: 7px; color: #77838e; text-align: right; }
+    .advanced summary { cursor: pointer; color: #9da8b2; font-size: 12px; }
+    .advanced[open] summary { margin-bottom: 10px; }
+    .hint { margin: 7px 0 0; color: #788590; font-size: 11px; }
+    .stage-wrap { min-width: 0; }
+    .stage-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .stage-toolbar .actions { margin-left: auto; }
+    .status { color: #9da8b2; font-size: 12px; }
+    .status.error { color: #ff6a69; }
+    .stage {
+        display: grid;
+        place-items: center;
+        min-height: 420px;
+        padding: 28px;
+        overflow: auto;
+        border: 1px solid #303841;
+        border-radius: 6px;
+        background: repeating-conic-gradient(#262d34 0 25%, #20262c 0 50%) 50% / 20px 20px;
+    }
+    iframe {
+        display: block;
+        border: 1px solid #4b5762;
+        background: transparent;
+        box-shadow: 0 12px 34px rgba(0, 0, 0, 0.35);
+    }
+    pre {
+        min-height: 110px;
+        max-height: 240px;
+        margin: 14px 0 0;
+        padding: 10px;
+        overflow: auto;
+        border: 1px solid #303841;
+        border-radius: 6px;
+        background: #0f1317;
+        color: #b8c1c9;
+        font: 11px/1.5 monospace;
+        white-space: pre-wrap;
+    }
+    code { color: #f8be34; }
+    @media (max-width: 850px) {
+        main { grid-template-columns: 1fr; }
+        aside { border-right: 0; border-bottom: 1px solid #303841; }
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>Dashboard Studio extension harness</h1>
+    <p>Native iframe API · <code>framework_type = studio_visualization</code></p>
+</header>
+<main>
+    <aside>
+        <fieldset>
+            <legend>Visualization</legend>
+            <label>Bundle
+                <select id="vizSelect"></select>
+            </label>
+            <div class="actions">
+                <button id="reloadButton" type="button">Reload iframe</button>
+                <button id="resetButton" class="secondary" type="button">Reset</button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Dashboard state</legend>
+            <div class="row">
+                <label>Width
+                    <input id="widthInput" type="number" min="50" value="600">
+                </label>
+                <label>Height
+                    <input id="heightInput" type="number" min="50" value="360">
+                </label>
+            </div>
+            <div class="row">
+                <label>Theme
+                    <select id="themeInput">
+                        <option value="light">Light</option>
+                        <option value="dark" selected>Dark</option>
+                    </select>
+                </label>
+                <label>Mode
+                    <select id="modeInput">
+                        <option value="view">View</option>
+                        <option value="edit">Edit</option>
+                    </select>
+                </label>
+            </div>
+            <label><input id="loadingInput" type="checkbox">Data source loading</label>
+            <div class="actions">
+                <button id="noDataButton" class="secondary" type="button">No data</button>
+                <button id="fitButton" class="secondary" type="button">Fit panel</button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Visualization options</legend>
+            <div id="optionControls"></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Primary data</legend>
+            <div id="dataGrid" class="data-table-wrap"></div>
+            <div class="actions" style="margin-top:9px">
+                <button id="addRowButton" class="secondary" type="button">+ Row</button>
+                <button id="removeRowButton" class="secondary" type="button">− Row</button>
+                <button id="addFieldButton" class="secondary" type="button">+ Field</button>
+                <button id="removeFieldButton" class="secondary" type="button">− Field</button>
+                <button id="pasteCsvButton" class="secondary" type="button">Paste CSV</button>
+            </div>
+            <p id="dataSummary" class="hint"></p>
+        </fieldset>
+
+        <fieldset class="advanced">
+            <legend>Advanced state</legend>
+            <details>
+                <summary>Raw JSON editors</summary>
+                <label>Typed options JSON
+                    <textarea id="optionsInput" spellcheck="false">{}</textarea>
+                </label>
+                <label>Columnar dataSources JSON
+                    <textarea id="dataInput" spellcheck="false">{}</textarea>
+                </label>
+                <label>Submitted tokens JSON
+                    <textarea id="tokensInput" spellcheck="false">{}</textarea>
+                </label>
+                <button id="applyButton" class="secondary" type="button">Apply raw state</button>
+            </details>
+        </fieldset>
+    </aside>
+
+    <section class="stage-wrap">
+        <div class="stage-toolbar">
+            <strong id="vizLabel">No visualization selected</strong>
+            <span id="status" class="status">Loading manifest…</span>
+            <div class="actions">
+                <button id="themeButton" class="secondary compact" type="button">Toggle theme</button>
+                <button id="modeButton" class="secondary compact" type="button">Edit mode</button>
+            </div>
+        </div>
+        <div class="stage">
+            <iframe id="vizFrame" title="Dashboard Studio visualization preview" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+        <pre id="eventLog" aria-label="Extension event log"></pre>
+    </section>
+</main>
+
+<script type="module">
+const elements = {
+    select: document.getElementById('vizSelect'),
+    reload: document.getElementById('reloadButton'),
+    reset: document.getElementById('resetButton'),
+    apply: document.getElementById('applyButton'),
+    noData: document.getElementById('noDataButton'),
+    fit: document.getElementById('fitButton'),
+    themeButton: document.getElementById('themeButton'),
+    modeButton: document.getElementById('modeButton'),
+    width: document.getElementById('widthInput'),
+    height: document.getElementById('heightInput'),
+    theme: document.getElementById('themeInput'),
+    mode: document.getElementById('modeInput'),
+    loading: document.getElementById('loadingInput'),
+    options: document.getElementById('optionsInput'),
+    data: document.getElementById('dataInput'),
+    tokens: document.getElementById('tokensInput'),
+    optionControls: document.getElementById('optionControls'),
+    dataGrid: document.getElementById('dataGrid'),
+    dataSummary: document.getElementById('dataSummary'),
+    addRow: document.getElementById('addRowButton'),
+    removeRow: document.getElementById('removeRowButton'),
+    addField: document.getElementById('addFieldButton'),
+    removeField: document.getElementById('removeFieldButton'),
+    pasteCsv: document.getElementById('pasteCsvButton'),
+    frame: document.getElementById('vizFrame'),
+    stage: document.querySelector('.stage'),
+    label: document.getElementById('vizLabel'),
+    status: document.getElementById('status'),
+    log: document.getElementById('eventLog'),
+};
+
+let definitions = [];
+let current = null;
+let config = null;
+let fixture = null;
+let frameReady = false;
+let savedDataSources = null;
+
+function log(type, detail) {
+    const time = new Date().toLocaleTimeString();
+    const value = detail === undefined ? '' : ` ${JSON.stringify(detail)}`;
+    elements.log.textContent = `[${time}] ${type}${value}\n${elements.log.textContent}`.slice(0, 16000);
+}
+
+function setStatus(message, isError = false) {
+    elements.status.textContent = message;
+    elements.status.classList.toggle('error', isError);
+}
+
+function parseJson(element, label) {
+    try {
+        return JSON.parse(element.value || '{}');
+    } catch (error) {
+        throw new Error(`${label}: ${error.message}`);
+    }
+}
+
+function optionDefaults(vizConfig) {
+    const schema = vizConfig?.config?.optionsSchema || {};
+    return Object.fromEntries(
+        Object.entries(schema)
+            .filter(([, definition]) => Object.hasOwn(definition, 'default'))
+            .map(([name, definition]) => [name, definition.default])
+    );
+}
+
+function writeJson(element, value) {
+    element.value = JSON.stringify(value, null, 2);
+}
+
+function editorItems(vizConfig) {
+    const sections = vizConfig?.config?.editorConfig || [];
+    return sections.map((section) => ({
+        label: section.label || 'Options',
+        items: (section.layout || []).flat().filter((item) => item?.option),
+    }));
+}
+
+function optionValueFromInput(input, type) {
+    if (type === 'boolean') return input.checked;
+    if (type === 'number') return input.value === '' ? null : Number(input.value);
+    return input.value;
+}
+
+function renderOptionControls() {
+    elements.optionControls.replaceChildren();
+    const options = parseJson(elements.options, 'Options JSON');
+    const schema = config?.config?.optionsSchema || {};
+    const sections = editorItems(config);
+    const represented = new Set(sections.flatMap((section) => section.items.map((item) => item.option)));
+    const extras = Object.keys(schema).filter((name) => !represented.has(name));
+    if (extras.length) sections.push({ label: 'Other', items: extras.map((option) => ({ option, label: option })) });
+
+    sections.forEach((sectionDefinition) => {
+        const section = document.createElement('section');
+        section.className = 'option-group';
+        const title = document.createElement('h3');
+        title.textContent = sectionDefinition.label;
+        const grid = document.createElement('div');
+        grid.className = 'option-grid';
+        sectionDefinition.items.forEach((item) => {
+            const definition = schema[item.option] || {};
+            const editor = item.editor || '';
+            const type = definition.type || (editor.includes('number') ? 'number' : editor.includes('checkbox') ? 'boolean' : 'string');
+            const label = document.createElement('label');
+            label.append(document.createTextNode(item.label || item.option));
+            const input = document.createElement('input');
+            input.dataset.option = item.option;
+            if (type === 'boolean') {
+                input.type = 'checkbox';
+                input.checked = Boolean(options[item.option]);
+            } else if (editor.includes('color')) {
+                input.type = 'color';
+                input.value = /^#[0-9a-f]{6}$/i.test(options[item.option]) ? options[item.option] : '#000000';
+            } else {
+                input.type = type === 'number' ? 'number' : 'text';
+                input.value = options[item.option] ?? '';
+            }
+            input.addEventListener(type === 'boolean' ? 'change' : 'input', () => {
+                const next = parseJson(elements.options, 'Options JSON');
+                next[item.option] = optionValueFromInput(input, type);
+                writeJson(elements.options, next);
+                applyState(false);
+            });
+            label.append(input);
+            grid.append(label);
+        });
+        section.append(title, grid);
+        elements.optionControls.append(section);
+    });
+}
+
+function primaryTable() {
+    const dataSources = parseJson(elements.data, 'Data sources JSON');
+    const data = dataSources?.primary?.data || { fields: [], columns: [] };
+    const fields = (data.fields || []).map((field) => typeof field === 'string' ? field : field.name);
+    let columns = data.columns;
+    if (!Array.isArray(columns) && Array.isArray(data.rows)) {
+        columns = fields.map((_, columnIndex) => data.rows.map((row) => row[columnIndex] ?? ''));
+    }
+    columns = fields.map((_, index) => Array.isArray(columns?.[index]) ? [...columns[index]] : []);
+    return { dataSources, data, fields, columns };
+}
+
+function savePrimaryTable(table) {
+    table.data.fields = table.fields.map((name) => ({ name }));
+    table.data.columns = table.columns;
+    delete table.data.rows;
+    table.dataSources.primary ||= {};
+    table.dataSources.primary.data = table.data;
+    writeJson(elements.data, table.dataSources);
+}
+
+function renderDataGrid() {
+    elements.dataGrid.replaceChildren();
+    const tableState = primaryTable();
+    const table = document.createElement('table');
+    table.className = 'data-table';
+    const head = table.createTHead().insertRow();
+    const numberHead = document.createElement('th');
+    numberHead.className = 'row-number';
+    numberHead.textContent = '#';
+    head.append(numberHead);
+    tableState.fields.forEach((field) => {
+        const th = document.createElement('th');
+        th.textContent = field;
+        head.append(th);
+    });
+    const body = table.createTBody();
+    const rowCount = Math.max(0, ...tableState.columns.map((column) => column.length));
+    for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
+        const row = body.insertRow();
+        const number = row.insertCell();
+        number.className = 'row-number';
+        number.textContent = String(rowIndex + 1);
+        tableState.fields.forEach((_, columnIndex) => {
+            const cell = row.insertCell();
+            const input = document.createElement('input');
+            input.value = tableState.columns[columnIndex][rowIndex] ?? '';
+            input.addEventListener('input', () => {
+                const latest = primaryTable();
+                latest.columns[columnIndex][rowIndex] = input.value;
+                savePrimaryTable(latest);
+                applyState(false);
+            });
+            cell.append(input);
+        });
+    }
+    elements.dataGrid.append(table);
+    elements.dataSummary.textContent = `${rowCount} rows · ${tableState.fields.length} fields`;
+}
+
+function currentState() {
+    return {
+        dataSources: parseJson(elements.data, 'Data sources JSON'),
+        loading: elements.loading.checked,
+        options: parseJson(elements.options, 'Options JSON'),
+        width: Math.max(50, Number(elements.width.value) || 600),
+        height: Math.max(50, Number(elements.height.value) || 360),
+        theme: elements.theme.value,
+        mode: elements.mode.value,
+        tokens: parseJson(elements.tokens, 'Tokens JSON'),
+    };
+}
+
+function applyState(logEvent = true) {
+    if (!current) return;
+    try {
+        const state = currentState();
+        elements.frame.style.width = `${state.width}px`;
+        elements.frame.style.height = `${state.height}px`;
+        if (frameReady) {
+            elements.frame.contentWindow.postMessage({ type: 'studio-harness:set-state', state }, '*');
+        }
+        setStatus(frameReady ? 'State applied' : 'Waiting for iframe…');
+        if (logEvent) log('state', state);
+    } catch (error) {
+        setStatus(error.message, true);
+    }
+}
+
+function frameDocument(bundleUrl) {
+    const escapedBundle = bundleUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    const closeScript = '</scr' + 'ipt>';
+    return `<!doctype html>
+<html><head><meta charset="utf-8"><style>
+html,body,#root{width:100%;height:100%;margin:0;overflow:hidden;background:transparent}
+*{box-sizing:border-box}
+#studio-harness-error{position:absolute;inset:0;display:none;place-items:center;padding:24px;background:rgba(20,24,28,.94);color:#ff6a69;font:14px sans-serif;text-align:center;z-index:9999}
+</style></head><body><div id="root"></div><div id="studio-harness-error"></div><script>
+(() => {
+    const state = { dataSources: {}, loading: false, options: {}, width: 0, height: 0, mode: 'view', theme: 'light', tokens: {}, error: '' };
+    const listeners = Object.fromEntries(['dataSources','options','dimensions','mode','theme','tokens','error'].map((key) => [key, new Set()]));
+    const snapshots = {
+        dataSources: () => ({ dataSources: state.dataSources, loading: state.loading }),
+        options: () => ({ options: state.options }),
+        dimensions: () => ({ width: state.width, height: state.height }),
+        mode: () => ({ mode: state.mode }),
+        theme: () => ({ theme: state.theme }),
+        tokens: () => ({ tokens: state.tokens }),
+        error: () => ({ error: state.error }),
+    };
+    function notify(key) { listeners[key].forEach((callback) => callback(snapshots[key]())); }
+    function subscribe(key, callback, options = {}) {
+        listeners[key].add(callback);
+        const cleanup = () => listeners[key].delete(callback);
+        if (options.signal) {
+            if (options.signal.aborted) cleanup();
+            else options.signal.addEventListener('abort', cleanup, { once: true });
+        }
+        if (options.invokeImmediately) callback(snapshots[key]());
+        return cleanup;
+    }
+    function report(type, detail) { parent.postMessage({ type: 'studio-harness:event', eventType: type, detail }, '*'); }
+    function showError() {
+        const overlay = document.getElementById('studio-harness-error');
+        overlay.textContent = state.error;
+        overlay.style.display = state.error ? 'grid' : 'none';
+    }
+    globalThis.DashboardExtensionAPI = {
+        addDataSourcesListener: (callback, options) => subscribe('dataSources', callback, options),
+        getDataSources: snapshots.dataSources,
+        addOptionsListener: (callback, options) => subscribe('options', callback, options),
+        getOptions: snapshots.options,
+        setOptions: (options) => { state.options = options || {}; notify('options'); report('setOptions', state.options); },
+        addDimensionsListener: (callback, options) => subscribe('dimensions', callback, options),
+        getDimensions: snapshots.dimensions,
+        addModeListener: (callback, options) => subscribe('mode', callback, options),
+        getMode: snapshots.mode,
+        addThemeListener: (callback, options) => subscribe('theme', callback, options),
+        getTheme: snapshots.theme,
+        addTokensListener: (callback, options) => subscribe('tokens', callback, options),
+        getTokens: snapshots.tokens,
+        addErrorListener: (callback, options) => subscribe('error', callback, options),
+        getError: snapshots.error,
+        setError: (error) => { state.error = String(error || ''); showError(); notify('error'); report('setError', state.error); },
+        clearError: () => { state.error = ''; showError(); notify('error'); report('clearError'); },
+        addDrilldownListener: ({ node, action, payloadCallback }) => {
+            node.addEventListener('click', (originalEvent) => report('drilldown', { action, payload: payloadCallback(), originalEvent: originalEvent.type }));
+        },
+        triggerDrilldown: ({ action, payload, originalEvent }) => report('drilldown', { action, payload, originalEvent: originalEvent?.type }),
+    };
+    addEventListener('message', (event) => {
+        if (event.data?.type !== 'studio-harness:set-state') return;
+        const next = event.data.state || {};
+        Object.assign(state, next);
+        notify('dataSources');
+        ['options','dimensions','mode','theme','tokens'].forEach(notify);
+    });
+    parent.postMessage({ type: 'studio-harness:ready' }, '*');
+})();
+${closeScript}<script type="module" src="${escapedBundle}">${closeScript}</body></html>`;
+}
+
+function reloadFrame() {
+    if (!current) return;
+    frameReady = false;
+    const bundleUrl = new URL(current.bundle, location.href).href;
+    elements.frame.srcdoc = frameDocument(bundleUrl);
+    setStatus('Loading iframe…');
+    log('reload', { bundle: current.bundle });
+}
+
+async function selectVisualization(id) {
+    current = definitions.find((definition) => definition.id === id) || null;
+    if (!current) return;
+    try {
+        const [configResponse, fixtureResponse] = await Promise.all([
+            fetch(current.config, { cache: 'no-store' }),
+            fetch(current.harness, { cache: 'no-store' }),
+        ]);
+        if (!configResponse.ok) throw new Error(`Config request failed: ${configResponse.status}`);
+        if (!fixtureResponse.ok) throw new Error(`Harness fixture request failed: ${fixtureResponse.status}`);
+        config = await configResponse.json();
+        fixture = await fixtureResponse.json();
+        elements.label.textContent = current.label || config?.config?.name || current.id;
+        writeJson(elements.options, optionDefaults(config));
+        writeJson(elements.data, fixture.dataSources || {});
+        writeJson(elements.tokens, fixture.tokens || {});
+        savedDataSources = null;
+        elements.noData.classList.remove('active');
+        elements.loading.checked = false;
+        renderOptionControls();
+        renderDataGrid();
+        const initialSize = config?.config?.size || {};
+        elements.width.value = initialSize.initialWidth || 600;
+        elements.height.value = initialSize.initialHeight || 360;
+        reloadFrame();
+    } catch (error) {
+        setStatus(error.message, true);
+        log('error', error.message);
+    }
+}
+
+window.addEventListener('message', (event) => {
+    if (event.source !== elements.frame.contentWindow) return;
+    if (event.data?.type === 'studio-harness:ready') {
+        frameReady = true;
+        applyState();
+    } else if (event.data?.type === 'studio-harness:event') {
+        log(event.data.eventType, event.data.detail);
+        if (event.data.eventType === 'setOptions') {
+            writeJson(elements.options, event.data.detail);
+            renderOptionControls();
+        }
+    }
+});
+
+elements.select.addEventListener('change', () => selectVisualization(elements.select.value));
+elements.reload.addEventListener('click', reloadFrame);
+elements.reset.addEventListener('click', () => selectVisualization(current?.id));
+elements.apply.addEventListener('click', () => {
+    renderOptionControls();
+    renderDataGrid();
+    applyState();
+});
+elements.noData.addEventListener('click', () => {
+    if (savedDataSources) {
+        writeJson(elements.data, savedDataSources);
+        savedDataSources = null;
+        elements.noData.classList.remove('active');
+    } else {
+        savedDataSources = parseJson(elements.data, 'Data sources JSON');
+        const empty = structuredClone(savedDataSources || {});
+        const data = empty?.primary?.data;
+        if (data) {
+            if (Array.isArray(data.columns)) data.columns = data.columns.map(() => []);
+            if (Array.isArray(data.rows)) data.rows = [];
+        } else {
+            empty.primary = { data: { fields: [], columns: [] } };
+        }
+        writeJson(elements.data, empty);
+        elements.noData.classList.add('active');
+    }
+    renderDataGrid();
+    applyState();
+});
+elements.fit.addEventListener('click', () => {
+    elements.width.value = Math.max(100, elements.stage.clientWidth - 58);
+    elements.height.value = Math.max(100, elements.stage.clientHeight - 58);
+    applyState();
+});
+elements.themeButton.addEventListener('click', () => {
+    elements.theme.value = elements.theme.value === 'dark' ? 'light' : 'dark';
+    applyState();
+});
+elements.modeButton.addEventListener('click', () => {
+    elements.mode.value = elements.mode.value === 'edit' ? 'view' : 'edit';
+    elements.modeButton.textContent = elements.mode.value === 'edit' ? 'View mode' : 'Edit mode';
+    applyState();
+});
+elements.addRow.addEventListener('click', () => {
+    const table = primaryTable();
+    table.columns.forEach((column) => column.push(''));
+    savePrimaryTable(table);
+    renderDataGrid();
+    applyState();
+});
+elements.removeRow.addEventListener('click', () => {
+    const table = primaryTable();
+    table.columns.forEach((column) => column.pop());
+    savePrimaryTable(table);
+    renderDataGrid();
+    applyState();
+});
+elements.addField.addEventListener('click', () => {
+    const name = prompt('Field name');
+    if (!name?.trim()) return;
+    const table = primaryTable();
+    const rowCount = Math.max(0, ...table.columns.map((column) => column.length));
+    table.fields.push(name.trim());
+    table.columns.push(Array(rowCount).fill(''));
+    savePrimaryTable(table);
+    renderDataGrid();
+    applyState();
+});
+elements.removeField.addEventListener('click', () => {
+    const table = primaryTable();
+    table.fields.pop();
+    table.columns.pop();
+    savePrimaryTable(table);
+    renderDataGrid();
+    applyState();
+});
+elements.pasteCsv.addEventListener('click', () => {
+    const csv = prompt('Paste CSV or tab-separated data. The first row must contain field names.');
+    if (!csv) return;
+    const lines = csv.trim().split(/\r?\n/).map((line) => line.split(line.includes('\t') ? '\t' : ','));
+    if (lines.length < 1) return;
+    const table = primaryTable();
+    table.fields = lines[0].map((field) => field.trim());
+    table.columns = table.fields.map((_, columnIndex) => lines.slice(1).map((row) => row[columnIndex] ?? ''));
+    savePrimaryTable(table);
+    savedDataSources = null;
+    elements.noData.classList.remove('active');
+    renderDataGrid();
+    applyState();
+});
+[elements.width, elements.height, elements.theme, elements.mode, elements.loading].forEach((element) =>
+    element.addEventListener('change', () => applyState())
+);
+
+try {
+    const response = await fetch('studio-harness-manifest.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Manifest request failed: ${response.status}`);
+    const manifest = await response.json();
+    definitions = manifest.visualizations || [];
+    elements.select.replaceChildren();
+    if (definitions.length === 0) {
+        const option = new Option('No Studio visualizations configured', '');
+        elements.select.add(option);
+        elements.select.disabled = true;
+        setStatus('Add an entry to studio-harness-manifest.json');
+    } else {
+        definitions.forEach((definition) => elements.select.add(new Option(definition.label || definition.id, definition.id)));
+        await selectVisualization(definitions[0].id);
+    }
+} catch (error) {
+    setStatus(error.message, true);
+    log('error', error.message);
+}
+</script>
+</body>
+</html>

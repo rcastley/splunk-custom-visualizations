@@ -1,0 +1,8 @@
+node_modules/
+dist/
+stage/
+*.spl
+.DS_Store
+.env
+.env.local
+

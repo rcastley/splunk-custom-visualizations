@@ -1,14 +1,14 @@
 # Getting Started
 
-This guide walks you through setting up your environment, building the example visualization, and creating your own custom vizs using the Claude Code skill.
+This guide walks you through setting up your environment, building the example visualization, and creating your own custom vizs using the portable Agent Skill.
 
 ## Prerequisites
 
 | Tool | Version | Purpose |
 | ------ | --------- | --------- |
 | [Splunk Enterprise](https://www.splunk.com/en_us/download.html) | 10.2+ | Hosts the custom visualizations |
-| [Node.js](https://nodejs.org/) | 18+ | Runs webpack to bundle the visualization JS |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Latest | AI assistant with the splunk-viz skill |
+| [Node.js](https://nodejs.org/) | 22+ | Runs the legacy webpack build and native Studio CLI/esbuild toolchain |
+| [Claude Code](https://code.claude.com/docs/en/skills), [Cursor](https://cursor.com/docs/skills), or [Codex](https://learn.chatgpt.com/docs/build-skills) | Latest | Agent with portable `splunk-viz` skill support |
 
 ## 1. Clone the Repo
 
@@ -82,15 +82,15 @@ $SPLUNK_HOME/bin/splunk restart
 
 ## 6. Create Your Own Visualization
 
-This is where the Claude Code skill shines. Open the repo in your editor with Claude Code enabled and describe what you want:
+Open the repository in Claude Code, Cursor, or Codex and describe what you want. Invoke `/splunk-viz` in Claude Code or Cursor, `$splunk-viz` in Codex, or let the agent select the skill automatically:
 
 ```text
-Using /splunk-viz, create a custom visualization called "status_board" that
+Using splunk-viz, create a custom visualization called "status_board" that
 shows a grid of coloured tiles. Each row should have a name, status (ok/warning/critical),
 and a detail string. Colour the tile based on status.
 ```
 
-Claude will generate the complete app in `examples/status_board/` with all the scaffolding, rendering code, and configuration files.
+The agent will generate the complete app in `examples/status_board/` with all the scaffolding, rendering code, and configuration files.
 
 ### What the Skill Generates
 
@@ -217,7 +217,7 @@ The skill applies a client-side ease-out tween that decouples the render rate fr
 - ❌ **Discrete / categorical / boolean values** — enum status, on/off toggles, integer counts where each increment matters.
 - ❌ **Tables or ranked lists where rows reorder between samples** — tweening reorderings reads as glitchy, not smooth.
 
-Ask Claude to "add smoothing" when generating a continuous-numeric viz, or see the **Smoothing Between SPL Samples** recipe in [`.claude/skills/splunk-viz/SKILL.md`](.claude/skills/splunk-viz/SKILL.md) for the full implementation (covering both single-value tweens and multi-entity tweens keyed by identifier).
+Ask the agent to "add smoothing" when generating a continuous-numeric viz, or see the [shared smoothing reference](.agents/skills/splunk-viz/references/smoothing.md) for the full implementation covering both single-value tweens and multi-entity tweens keyed by identifier.
 
 ## 11. Development Tips
 
@@ -238,10 +238,17 @@ Ask Claude to "add smoothing" when generating a continuous-numeric viz, or see t
 
 ```text
 splunk-custom-visualizations/
+  .agents/
+    skills/
+      splunk-viz/
+        SKILL.md              Canonical portable Agent Skill
+        references/          Framework-specific and shared guidance
   .claude/
     skills/
       splunk-viz/
-        SKILL.md              The Claude Code skill definition
+        SKILL.md              Thin Claude Code discovery adapter
+  AGENTS.md                   Shared repository instructions
+  CLAUDE.md                   Thin Claude Code repository adapter
   examples/
     custom_single_value/             Example viz (ready to install)
       README.md
