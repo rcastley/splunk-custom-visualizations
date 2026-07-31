@@ -37,7 +37,18 @@ The master reference for this pattern is [`splunk-custom-visualizations`](https:
     build.sh                      (build + merge + package script)
     harness-manifest.json
     test-harness.html             (copy from splunk-custom-visualizations repo)
+    splunk-logo.png               (copy — referenced by test-harness.html chrome)
+    shared/
+      harness.css                 (copy — test-harness.html stylesheet)
+      fonts.css                   (copy if vizs use the shared bundled fonts)
 ```
+
+> **The test harness is not a single file.** `test-harness.html` references
+> `shared/harness.css` (its stylesheet) and `splunk-logo.png` (header logo) by
+> relative path. Copy **all three** from the master repo into `vizs/` — copying
+> only `test-harness.html` leaves the local preview chrome unstyled (broken logo,
+> collapsed layout). These are dev-only assets: `vizs/` is excluded from the
+> packaged tarball, so they never ship to Splunk.
 
 ## File templates
 
@@ -127,22 +138,35 @@ What it does for each viz in `APPS`:
 4. **Version bump** — increments the parent app's patch version
 5. **Package** — tarballs the parent app (excluding `vizs/`, `node_modules/`, dev files, `.git*`)
 
-### vizs/test-harness.html
+### vizs/test-harness.html (and its companion assets)
 
-**Do not generate this file.** Copy it from the master repository:
+**Do not generate these files.** Copy them from the master repository. The
+harness HTML alone is not enough — it loads `shared/harness.css` and
+`splunk-logo.png` by relative path, so copy all three (plus `shared/fonts.css`
+if the vizs use the bundled fonts).
 
-```bash
-curl -sL https://raw.githubusercontent.com/rcastley/splunk-custom-visualizations/main/test-harness.html \
-  -o vizs/test-harness.html
-```
-
-Or if the repo is cloned locally:
+If the repo is cloned locally:
 
 ```bash
-cp /path/to/splunk-custom-visualizations/test-harness.html vizs/test-harness.html
+mkdir -p vizs/shared
+cp /path/to/splunk-custom-visualizations/test-harness.html  vizs/test-harness.html
+cp /path/to/splunk-custom-visualizations/splunk-logo.png    vizs/splunk-logo.png
+cp /path/to/splunk-custom-visualizations/shared/harness.css vizs/shared/harness.css
+cp /path/to/splunk-custom-visualizations/shared/fonts.css   vizs/shared/fonts.css   # if using bundled fonts
 ```
 
-The test harness is fully generic — it reads `harness-manifest.json` to discover vizs and `harness.json` in each viz directory for controls and sample data. No modifications are needed.
+Or fetch over the network:
+
+```bash
+mkdir -p vizs/shared
+BASE=https://raw.githubusercontent.com/rcastley/splunk-custom-visualizations/main
+curl -sL "$BASE/test-harness.html"  -o vizs/test-harness.html
+curl -sL "$BASE/splunk-logo.png"    -o vizs/splunk-logo.png
+curl -sL "$BASE/shared/harness.css" -o vizs/shared/harness.css
+curl -sL "$BASE/shared/fonts.css"   -o vizs/shared/fonts.css   # if using bundled fonts
+```
+
+The test harness is fully generic — it reads `harness-manifest.json` to discover vizs and `harness.json` in each viz directory for controls and sample data. No modifications are needed. If the local preview loads but looks unstyled (broken logo, no two-column layout), the cause is almost always a missing `shared/harness.css` or `splunk-logo.png`.
 
 ## Workflow after scaffolding
 

@@ -228,3 +228,25 @@ define([
     });
 });
 ```
+
+## Responsive text sizing — scale secondary text with the panel, never cap it
+
+When a viz has a headline value that scales with panel size (e.g. `maxValSize = Math.min(valueZoneH * 0.98, h * 0.52)`), every **secondary** text element — title, units/suffix, delta badge, trailing label, legend — must scale off the **same panel height** so proportions hold as the user resizes. The common bug is giving secondary text a fixed **upper** cap: it looks fine on a small tile, then stays frozen while the headline balloons on a large panel, leaving the delta/title tiny and disproportionate.
+
+```javascript
+// WRONG — fixed upper cap freezes the delta/title on large panels
+var titleSize = Math.max(9, Math.min(13, h * 0.10));      // never exceeds 13px
+var dFont     = Math.max(10, Math.min(14, deltaH * 0.58)); // never exceeds 14px
+
+// CORRECT — floor for legibility, but scale with panel height (no upper cap)
+var titleSize = Math.max(9, h * 0.095);   // grows with the panel
+var dFont     = Math.max(10, deltaH * 0.55); // deltaH is itself h * 0.14, so it scales
+```
+
+Guidelines:
+
+- **Use `Math.max(floor, h * ratio)`** for secondary text — a floor keeps it legible on tiny panels, but do **not** wrap it in `Math.min(cap, …)`. An upper cap is what desyncs it from the headline.
+- **Reserve the element's row/zone proportionally too**, then derive the font from the zone so it always fits: `var deltaH = Math.max(17, h * 0.14); var dFont = Math.max(10, deltaH * 0.55);` (a pill of `dFont * 1.75` stays inside `deltaH`).
+- **Pick ratios from a reference layout.** Measure the mockup at its design size (e.g. title ≈ `h * 0.10`, headline ≈ `h * 0.27`, delta ≈ `h * 0.09`) and apply those ratios at every size.
+- **The headline itself is the exception** — it is width-fitted (`fitValueSize`/`fitText`) so it may shrink below its height-based size on narrow panels. Secondary text keys off `h`, not off the fitted headline size, so it stays stable.
+- **Verify at two sizes.** Render the viz small (a dashboard tile) and large (a full-width panel) in the harness — the proportions between headline and secondary text should look identical.
