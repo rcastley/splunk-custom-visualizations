@@ -19,6 +19,35 @@
       }
     }
   },
+  "dataControls": [
+    {
+      "field": "current_size_mb",
+      "row": 0,
+      "label": "Main size (MB)",
+      "type": "slider",
+      "min": 0,
+      "max": 100000,
+      "step": 1000
+    },
+    {
+      "field": "event_rate",
+      "row": 0,
+      "label": "Main event rate",
+      "type": "slider",
+      "min": 0,
+      "max": 50000,
+      "step": 100
+    },
+    {
+      "field": "latest_event_age_seconds",
+      "row": 1,
+      "label": "Security event age (seconds)",
+      "type": "slider",
+      "min": 0,
+      "max": 3600,
+      "step": 30
+    }
+  ],
   "tokens": {
     "environment": "production"
   }
