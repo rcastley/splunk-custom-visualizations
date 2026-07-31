@@ -1,6 +1,14 @@
 # visualization_source.js — The Core Pattern
 
-This is the most important file in a Splunk custom viz. Every new viz starts from this exact AMD module structure. Follow it precisely — the lifecycle methods, guard checks, and caching patterns are all load-bearing.
+Use this AMD module as a lifecycle baseline. Preserve base initialization, data normalization, Canvas guards, reflow, and teardown. Adapt renderer-specific data, configuration, caching, and custom status behavior to the visualization requirements; those policies are optional.
+
+## Contents
+
+- [Baseline module](#baseline-module)
+- [Required invariants](#required-invariants)
+- [Optional policies](#optional-policies)
+
+## Baseline module
 
 ```javascript
 /*
@@ -42,12 +50,12 @@ define([
         getInitialDataParams: function() {
             return {
                 outputMode: SplunkVisualizationBase.ROW_MAJOR_OUTPUT_MODE,
-                count: 10000  // see rule 20 for real-time sizing guidance
+                count: 10000  // tune to the expected result size
             };
         },
 
         formatData: function(data, config) {
-            // Keep formatData lightweight — see rule 21.
+            // Keep formatData lightweight.
             // Build column index and pass through row data.
             // Do NOT read config here — field selection belongs
             // in updateView to avoid Splunk caching issues.
@@ -65,7 +73,7 @@ define([
                 colIdx[fields[i].name] = i;
             }
 
-            // Check for status message from appendpipe fallback (see rule 27)
+            // Optional custom-status policy from legacy-runtime.md
             if (colIdx._status !== undefined) {
                 var statusRow = data.rows[data.rows.length - 1];
                 var statusVal = statusRow[colIdx._status];
@@ -110,7 +118,7 @@ define([
             //   3. Reading user settings from config
             //   4. Full canvas redraw (clear + draw)
 
-            // Custom no-data message from appendpipe fallback (see rule 27)
+            // Optional custom-status policy from legacy-runtime.md
             if (data && data._status) {
                 this._ensureCanvas();
                 this._drawStatusMessage(data._status);
@@ -126,7 +134,7 @@ define([
             // IMPORTANT: The || fallback values below MUST match the
             // default values in formatter.html. Splunk does not send
             // formatter defaults to JS until the user interacts with
-            // the Format panel. See rule 19.
+            // the Format panel. Keep every default surface synchronized.
             var ns = this.getPropertyNamespaceInfo().propertyNamespace;
             var setting1 = config[ns + '{setting1}'] || '{default1}';
             // parseFloat/parseInt for numeric settings
@@ -157,7 +165,7 @@ define([
             // unless the user explicitly requests it. Transparent is the default.
         },
 
-        // ── Custom no-data message support (see rule 27) ──
+        // ── Optional custom no-data message support ──
 
         _ensureCanvas: function() {
             if (!this.canvas) {
@@ -228,3 +236,16 @@ define([
     });
 });
 ```
+
+## Required invariants
+
+- Return a new normalized model from `formatData`.
+- Resolve formatter configuration in `updateView`, not `formatData`.
+- Guard zero-size containers and null contexts in every drawing path.
+- Draw in CSS pixels after applying device-pixel-ratio backing-store scaling.
+- Invalidate rendering from `reflow`.
+- Cancel owned asynchronous work and call the base destroy method.
+
+## Optional policies
+
+Remove `_lastGoodData`, `_status`, `_drawStatusMessage`, or their branches when the visualization does not require those behaviors. When zero is a valid option, replace `||` fallbacks with explicit validation. Read `legacy-runtime.md` for policy selection and lifecycle rules.

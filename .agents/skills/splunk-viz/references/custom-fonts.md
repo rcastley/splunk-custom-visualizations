@@ -1,108 +1,82 @@
-# Custom Font Embedding in Splunk Visualizations
+# Custom Fonts
 
-Splunk custom vizs cannot reliably load custom fonts via the JavaScript FontFace API, external CSS `@font-face` URL references, or relative `url()` paths to font files. Only base64-encoding the font directly into the CSS works reliably — Splunk loads `visualization.css` when the viz renders, registering the `@font-face` for both DOM and Canvas 2D contexts. This approach is practical for fonts under ~50KB per weight (woff2 format).
+Use this reference when embedding or debugging fonts. Keep each packaged visualization self-contained and verify licensing permits redistribution.
 
-## Centralised font management
+## Contents
 
-To avoid duplicating the base64 font data across every viz, store a shared CSS file (e.g., `shared/fonts.css`) containing the `@font-face` declarations and have the build script prepend it to each viz's `visualization.css` during packaging. The source CSS stays clean; the packaged output is self-contained.
+- [Shared requirements](#shared-requirements)
+- [Legacy packaging](#legacy-packaging)
+- [Native Studio packaging](#native-studio-packaging)
+- [Wait before measuring](#wait-before-measuring)
+- [Canvas font syntax](#canvas-font-syntax)
+- [Harness isolation](#harness-isolation)
 
-**In `shared/fonts.css`** — the single source of truth:
+## Shared requirements
+
+- Prefer WOFF2 and include only the weights and glyphs the visualization needs.
+- Declare a system fallback so missing fonts do not make the visualization unreadable.
+- Wait for required fonts before measuring or drawing text.
+- Test the production bundle in its real iframe/document boundary; a development page can mask asset and inheritance problems.
+- Do not load fonts from an arbitrary external origin. Cloud policy, CSP, authentication, and offline environments can block them.
+
+## Legacy packaging
+
+The most portable legacy approach is an inline WOFF2 data URL in `visualization.css`, because the packaged CSS has no runtime path dependency:
+
 ```css
 @font-face {
-    font-family: 'CustomFont';
-    src: url(data:font/woff2;base64,{BASE64_ENCODED_FONT_DATA}) format('woff2');
-    font-weight: bold;
+    font-family: "CustomFont";
+    src: url(data:font/woff2;base64,{BASE64_DATA}) format("woff2");
+    font-weight: 700;
     font-style: normal;
     font-display: swap;
 }
 ```
 
-**In each viz's `visualization.css`** (source) — just the viz styles, no font:
-```css
-.{app-name}-viz {
-    background: transparent;
+A repository may keep declarations in a shared source file and prepend them during packaging, but the resulting app must remain self-contained. Do not state that the JavaScript `FontFace` API or packaged relative URLs can never work; choose inline data when reliability across legacy deployments matters more than bundle size.
+
+## Native Studio packaging
+
+Use the generated extension build pipeline for imported assets. Fonts referenced from source or CSS are normally inlined by the scaffold's build plugin for iframe isolation. Preserve that plugin unless a tested requirement calls for a different asset strategy.
+
+Do not apply a legacy CSS-prepend step to native Studio output. Verify the built bundle and `.spl`, because development-server success does not prove the font was packaged.
+
+## Wait before measuring
+
+Use `document.fonts.load` for the exact face where supported, then redraw:
+
+```javascript
+function waitForFont(fontSpec) {
+    if (!document.fonts || !document.fonts.load) return Promise.resolve();
+    return document.fonts.load(fontSpec).then(function() {});
 }
 ```
 
-**In `build.sh`** — prepend font CSS before packaging, restore source after:
-```bash
-if [ -f "$FONT_CSS" ] && [ -f "$VIZ_CSS" ] && ! grep -q "@font-face" "$VIZ_CSS"; then
-    ORIGINAL_CSS=$(cat "$VIZ_CSS")
-    cat "$FONT_CSS" "$VIZ_CSS" > "$VIZ_CSS.tmp" && mv "$VIZ_CSS.tmp" "$VIZ_CSS"
-    CSS_MODIFIED=true
-fi
-# ... tar packaging ...
-if [ "$CSS_MODIFIED" = true ]; then echo "$ORIGINAL_CSS" > "$VIZ_CSS"; fi
-```
+Legacy adapters can call `invalidateUpdateView()` after the promise settles. Native adapters should schedule their normal render path or update component state. Guard against redraw after teardown.
 
-To generate the base64 string: `base64 -i FontFile.woff2 | tr -d '\n'`
+## Canvas font syntax
 
-## Waiting for font load in visualization_source.js
-
-Wait for the font to load before first draw using `document.fonts.ready`:
+Quote family names containing spaces and keep a fallback:
 
 ```javascript
-initialize: function() {
-    // ... canvas setup ...
-    this._fontReady = false;
-    this._fontCheckDone = false;
-},
-
-updateView: function(data, config) {
-    if (!this._fontReady && !this._fontCheckDone) {
-        this._fontCheckDone = true;
-        var self = this;
-        if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(function() {
-                self._fontReady = true;
-                self.invalidateUpdateView();
-            });
-        } else {
-            setTimeout(function() {
-                self._fontReady = true;
-                self.invalidateUpdateView();
-            }, 200);
-        }
-        return;
-    }
-    // ... rest of drawing code using 'CustomFont', sans-serif ...
-}
-```
-
-Then use the font in Canvas drawing: `ctx.font = "bold 24px \"CustomFont\", sans-serif"`
-
-## Quoting in `ctx.font` strings
-
-The font family name must be quoted inside the `ctx.font` value, but JavaScript string quoting conflicts with this. Use escaped double quotes inside single-quoted JS strings:
-
-```javascript
-// WRONG — nested single quotes break the JS string
-ctx.font = '700 ' + size + 'px \'CustomFont\', sans-serif';
-
-// WRONG — replace-all of 'sans-serif' → '\'CustomFont\', sans-serif' produces broken syntax
-ctx.font = '700 ' + size + 'px 'CustomFont', sans-serif';
-
-// CORRECT — escaped double quotes inside single-quoted string
-ctx.font = '700 ' + size + 'px "CustomFont", sans-serif';
-
-// CORRECT — store font family in a variable (avoids quoting issues entirely)
-var fontFamily = "'CustomFont', sans-serif";
+var fontFamily = '"CustomFont", sans-serif';
 ctx.font = '700 ' + size + 'px ' + fontFamily;
 ```
 
-The variable approach is safest — define `var fontFamily = "'CustomFont', sans-serif"` once and concatenate it everywhere. This avoids quoting errors when doing bulk find-and-replace across vizs.
+Keep the same family spelling, weight, and style in `@font-face`, `document.fonts.load`, DOM CSS, and `ctx.font`.
 
-Always include a system font fallback (e.g., `sans-serif`) so the viz renders legibly if the embedded font fails to load.
+## Harness isolation
 
-## Harness-vs-Splunk gotcha: OpenType feature leakage
+The legacy harness may render the visualization in its own document, while the Studio harness must render the extension in an iframe. Match the target framework rather than assuming one inheritance model.
 
-In Splunk the viz renders inside an iframe, so parent-document CSS does not reach it. In the test harness the viz renders into `#vizRoot` in the main document and inherits the harness chrome's styles — including `font-feature-settings`. Canvas 2D text rendering respects inherited `font-feature-settings`, and OpenType feature tags are not namespaced: `ss01` on the harness's UI font (e.g. Host Grotesk) and `ss01` on a viz font (e.g. Formula1) are unrelated features that happen to share a 4-letter tag. When the harness enables stylistic sets for its own UI font, those flags silently activate same-tagged alternates in the viz font, producing letterforms (broken-edge S, A, E, etc.) that do not appear in Splunk. Symptom: identical `@font-face` data, identical `ctx.font` string, different glyphs between harness and Splunk. Fix lives in the harness, not the viz — reset the features on the viz container so nothing leaks in:
+For a same-document legacy harness, prevent the harness chrome from leaking OpenType feature settings into the visualization:
 
 ```css
-#vizRoot, #vizRoot * {
+#vizRoot,
+#vizRoot * {
     font-feature-settings: normal;
     font-variant-ligatures: normal;
 }
 ```
 
-When diagnosing a harness-vs-Splunk font mismatch, first confirm it's not this by inspecting the viz font's GSUB feature list (`fontTools.ttLib.TTFont(...)['GSUB'].table.FeatureList`) for `ssNN`/`cvNN` tags that overlap with whatever `font-feature-settings` the harness applies to `html, body`. If they overlap, this is the cause. Do not change `shared/fonts.css` or `visualization.css` to "fix" it — they are correct; the harness was leaking.
+For native Studio, put font declarations inside the extension bundle and inspect the iframe document. Parent styles and CSS variables do not cross the iframe boundary.

@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
@@ -13,6 +13,7 @@ const claudeAdapterPath = join(
     'splunk-viz',
     'SKILL.md'
 );
+const openaiMetadataPath = join(canonicalDirectory, 'agents', 'openai.yaml');
 const failures = [];
 
 function fail(message) {
@@ -56,6 +57,78 @@ function parseFrontmatter(markdown, label) {
         name: nameLine.slice('name:'.length).trim().replace(/^['"]|['"]$/g, ''),
         description: descriptionLines.join(' ').replace(/\s+/g, ' ').trim(),
     };
+}
+
+function githubAnchor(heading) {
+    return heading
+        .toLowerCase()
+        .replace(/<[^>]*>/g, '')
+        .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+        .replace(/[`*_~]/g, '')
+        .replace(/[^\p{L}\p{N}\s-]/gu, '')
+        .trim()
+        .replace(/\s/g, '-');
+}
+
+function markdownAnchors(markdown) {
+    const anchors = new Set();
+    const counts = new Map();
+
+    for (const match of markdown.matchAll(/^#{1,6}\s+(.+?)\s*#*$/gm)) {
+        const base = githubAnchor(match[1]);
+        const count = counts.get(base) || 0;
+        anchors.add(count === 0 ? base : `${base}-${count}`);
+        counts.set(base, count + 1);
+    }
+
+    return anchors;
+}
+
+function validateMarkdownLinks(path, markdown) {
+    for (const match of markdown.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
+        const destination = match[1].trim().replace(/^<|>$/g, '');
+        if (/^(?:[a-z]+:|\/\/)/i.test(destination)) continue;
+
+        const hashIndex = destination.indexOf('#');
+        const filePart = hashIndex >= 0 ? destination.slice(0, hashIndex) : destination;
+        const anchorPart = hashIndex >= 0 ? destination.slice(hashIndex + 1) : '';
+        const targetPath = filePart ? resolve(dirname(path), filePart) : path;
+
+        if (!existsSync(targetPath)) {
+            fail(`Broken local Markdown link in ${path}: ${destination}`);
+            continue;
+        }
+
+        if (anchorPart && extname(targetPath).toLowerCase() === '.md') {
+            const target = readFileSync(targetPath, 'utf8');
+            if (!markdownAnchors(target).has(decodeURIComponent(anchorPart).toLowerCase())) {
+                fail(`Broken Markdown anchor in ${path}: ${destination}`);
+            }
+        }
+    }
+}
+
+function validateConfigBlocks(path, markdown) {
+    for (const match of markdown.matchAll(/```(?:ini|conf)\s*\n([\s\S]*?)```/gi)) {
+        let stanza = '<root>';
+        const keys = new Set();
+
+        for (const rawLine of match[1].split(/\r?\n/)) {
+            const line = rawLine.trim();
+            if (!line || line.startsWith('#')) continue;
+            if (/^\[[^\]]+\]$/.test(line)) {
+                stanza = line;
+                keys.clear();
+                continue;
+            }
+
+            const keyMatch = line.match(/^([^=]+?)\s*=/);
+            if (!keyMatch) continue;
+            const key = keyMatch[1].trim();
+            if (keys.has(key)) fail(`Duplicate ${key} key in ${stanza} config block in ${path}`);
+            keys.add(key);
+        }
+    }
 }
 
 const canonical = readRequired(canonicalPath, 'Canonical skill');
@@ -122,6 +195,35 @@ for (const match of referenceMatches) {
 }
 
 if (canonicalReferenceNames.size === 0) fail('Canonical skill has no reference files');
+
+for (const name of canonicalReferenceNames) {
+    const path = join(canonicalDirectory, 'references', name);
+    const markdown = readFileSync(path, 'utf8');
+    const lineCount = markdown.split(/\r?\n/).length;
+
+    validateMarkdownLinks(path, markdown);
+    validateConfigBlocks(path, markdown);
+
+    if (lineCount > 100 && !/^## (?:Contents|Table of contents)$/im.test(markdown)) {
+        fail(`${name} has ${lineCount} lines but no Contents section`);
+    }
+
+    if (/\brule \d+\b/i.test(markdown)) {
+        fail(`${name} contains a fragile numeric rule reference`);
+    }
+}
+
+validateMarkdownLinks(canonicalPath, canonical);
+
+for (const match of portableContent.matchAll(/`(assets\/[a-zA-Z0-9._/-]+)`/g)) {
+    if (!existsSync(join(canonicalDirectory, match[1]))) {
+        fail(`Missing referenced skill asset: ${match[1]}`);
+    }
+}
+
+if (!existsSync(openaiMetadataPath)) {
+    fail('Missing recommended Codex UI metadata: agents/openai.yaml');
+}
 
 const adapterTarget = resolve(dirname(claudeAdapterPath), '../../../.agents/skills/splunk-viz/SKILL.md');
 if (adapterTarget !== canonicalPath || !existsSync(adapterTarget)) {

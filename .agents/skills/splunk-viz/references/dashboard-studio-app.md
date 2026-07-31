@@ -1,8 +1,14 @@
-# Scaffold a Dashboard Studio App (Step 6)
+# Parent Dashboard Studio App for Legacy Visualizations
 
-When the user asks to scaffold a Splunk Dashboard Studio app with custom visualization support, generate the full app skeleton with the `vizs/` build pipeline. This creates a parent app that can bundle one or more custom vizs alongside Dashboard Studio dashboards.
+When the user asks to scaffold a parent Splunk app containing Dashboard Studio dashboards and legacy custom visualizations, generate the app skeleton with the `vizs/` build pipeline. Each visualization remains independently buildable before its runtime files and configuration are merged into the parent app.
 
-The master reference for this pattern is [`splunk-custom-visualizations`](https://github.com/rcastley/splunk-custom-visualizations). The `test-harness.html` file should be copied from that repo — it is generic (zero viz-specific code) and works with any viz that has a valid `harness.json`.
+## Contents
+
+- [What to ask the user](#what-to-ask-the-user)
+- [Directory structure to generate](#directory-structure-to-generate)
+- [File templates](#file-templates)
+- [Workflow after scaffolding](#workflow-after-scaffolding)
+- [Namespace reminder](#namespace-reminder)
 
 ## What to ask the user
 
@@ -36,7 +42,7 @@ The master reference for this pattern is [`splunk-custom-visualizations`](https:
   vizs/
     build.sh                      (build + merge + package script)
     harness-manifest.json
-    test-harness.html             (copy from splunk-custom-visualizations repo)
+    test-harness.html             (schema-driven legacy harness host)
     splunk-logo.png               (copy — referenced by test-harness.html chrome)
     shared/
       harness.css                 (copy — test-harness.html stylesheet)
@@ -122,13 +128,13 @@ Start with empty arrays. Each viz is added here as it is scaffolded.
 }
 ```
 
-If the app uses shared fonts, add `"fontCSS": "shared/fonts.css"` and create `vizs/shared/fonts.css`. See the `harness-manifest.json` schema in Step 5 for the full `categories` format.
+If the app uses shared fonts, add `"fontCSS": "shared/fonts.css"` and create `vizs/shared/fonts.css`. See `legacy-harness.md` for the full manifest and categories contract.
 
 ### vizs/build.sh
 
 This is the key script that makes the Dashboard Studio app pattern work. Each viz is developed as a standalone app under `vizs/{viz_name}/` with its own `default/`, `metadata/`, and `appserver/`. The build script compiles them and **merges** their configs and assets into the parent Splunk app so everything ships as a single installable package.
 
-Read the template from `shared/dashboard-app-build-template.sh` and copy it to `vizs/build.sh`. Replace `{app_name}` in the echo statement with the actual app name. Add viz names to the `APPS` array as they are scaffolded. Mark as executable (`chmod +x vizs/build.sh`).
+Copy `assets/dashboard-app-build.sh` from this skill to `vizs/build.sh`. Replace `{app_name}` in the status text with the actual app name, add visualization names to `APPS`, and mark the copied file executable.
 
 What it does for each viz in `APPS`:
 
@@ -155,33 +161,9 @@ What it does for each viz in `APPS`:
 
 ### vizs/test-harness.html (and its companion assets)
 
-**Do not generate these files.** Copy them from the master repository. The
-harness HTML alone is not enough — it loads `shared/harness.css` and
-`splunk-logo.png` by relative path, so copy all three (plus `shared/fonts.css`
-if the vizs use the bundled fonts).
+Reuse the target repository's schema-driven legacy harness when it has one. Otherwise create a generic host following `legacy-harness.md`: load `harness-manifest.json`, discover each visualization's `harness.json`, and generate interactive data and formatter controls without visualization-specific branches.
 
-If the repo is cloned locally:
-
-```bash
-mkdir -p vizs/shared
-cp /path/to/splunk-custom-visualizations/test-harness.html  vizs/test-harness.html
-cp /path/to/splunk-custom-visualizations/splunk-logo.png    vizs/splunk-logo.png
-cp /path/to/splunk-custom-visualizations/shared/harness.css vizs/shared/harness.css
-cp /path/to/splunk-custom-visualizations/shared/fonts.css   vizs/shared/fonts.css   # if using bundled fonts
-```
-
-Or fetch over the network:
-
-```bash
-mkdir -p vizs/shared
-BASE=https://raw.githubusercontent.com/rcastley/splunk-custom-visualizations/main
-curl -sL "$BASE/test-harness.html"  -o vizs/test-harness.html
-curl -sL "$BASE/splunk-logo.png"    -o vizs/splunk-logo.png
-curl -sL "$BASE/shared/harness.css" -o vizs/shared/harness.css
-curl -sL "$BASE/shared/fonts.css"   -o vizs/shared/fonts.css   # if using bundled fonts
-```
-
-The test harness is fully generic — it reads `harness-manifest.json` to discover vizs and `harness.json` in each viz directory for controls and sample data. No modifications are needed. If the local preview loads but looks unstyled (broken logo, no two-column layout), the cause is almost always a missing `shared/harness.css` or `splunk-logo.png`.
+Keep all companion CSS, images, and optional shared font declarations beside the harness using paths that work from a local HTTP server. Do not fetch mutable harness files from an external repository during scaffolding. Validate the complete host rather than copying HTML without its assets.
 
 ## Workflow after scaffolding
 

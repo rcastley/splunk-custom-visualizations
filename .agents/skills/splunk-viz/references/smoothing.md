@@ -1,166 +1,136 @@
-# Smoothing Between SPL Samples (Client-Side Tween)
+# Smoothing Between SPL Samples
 
-See rule 32 in SKILL.md for when and why to apply smoothing. This file contains the full implementation.
+Use client-side tweening only for continuous numeric motion. Keep categorical, boolean, discrete-count, and rank-reordering changes unsmoothed.
 
-Two variants:
+## Contents
 
-- **Variant A — single numeric value** (gauges, single-value displays, rotations).
-- **Variant B — per-entity positions** (anything that moves multiple items on the canvas, keyed by an identifier from the data).
+- [Shared model](#shared-model)
+- [Single-value update](#single-value-update)
+- [Per-entity update](#per-entity-update)
+- [Animation step](#animation-step)
+- [Legacy integration](#legacy-integration)
+- [Native Studio integration](#native-studio-integration)
+- [Tuning and verification](#tuning-and-verification)
 
-Both use the same frame-rate-independent ease-out formula and the same timer/cleanup structure — only the state shape and the sync step differ.
+## Shared model
 
-## Variant A — single numeric value
+Keep the math framework-neutral. The adapter owns subscription, scheduling, redraw, and cleanup.
+
+Use frame-rate-independent exponential easing:
 
 ```javascript
-// ── In initialize ──
-this._currentValue = 0;
-this._targetValue = 0;
-this._animTimer = null;
-this._lastFrameTime = 0;
-this._hasFirstSample = false;
-this._idleFrames = 0;
-this._smoothness = 8;
-this._lastData = null;
-this._lastConfig = null;
-
-// ── In updateView, after guards and extracting rawVal from data ──
-var ns = this.getPropertyNamespaceInfo().propertyNamespace;
-var sm = parseFloat(config[ns + 'smoothness']);
-if (isNaN(sm) || sm < 0) sm = 8;
-this._smoothness = sm;
-
-this._targetValue = rawVal;
-if (!this._hasFirstSample || sm === 0) {
-    this._currentValue = rawVal;
-    this._hasFirstSample = true;
+function smoothingAlpha(speed, deltaSeconds) {
+    if (speed <= 0) return 1;
+    return Math.min(1, 1 - Math.exp(-speed * deltaSeconds));
 }
-
-this._idleFrames = 0;
-this._lastData = data;
-this._lastConfig = config;
-this._draw();                        // draws using this._currentValue
-if (sm > 0) this._startAnimLoop();
 ```
 
-## Variant B — per-entity positions
+Snap the first sample to its target so a newly loaded visualization does not sweep from zero. Store later samples as targets and animate the displayed state toward them.
+
+## Single-value update
 
 ```javascript
-// ── In initialize ──
-this._entityState = {};              // keyed by identifier
-this._entityScopeId = null;          // optional: reset state when scope changes
-this._animTimer = null;
-this._lastFrameTime = 0;
-this._idleFrames = 0;
-this._smoothness = 8;
-this._lastData = null;
-this._lastConfig = null;
+function updateScalar(state, nextValue, speed) {
+    state.speed = speed;
+    state.target = nextValue;
 
-// ── In updateView, after guards and building the entity list from data ──
-var ns = this.getPropertyNamespaceInfo().propertyNamespace;
-var sm = parseFloat(config[ns + 'smoothness']);
-if (isNaN(sm) || sm < 0) sm = 8;
-this._smoothness = sm;
-
-// Optional: reset state when the coordinate scope changes
-if (data.scopeId != null && data.scopeId !== this._entityScopeId) {
-    this._entityState = {};
-    this._entityScopeId = data.scopeId;
-}
-
-for (var i = 0; i < data.entities.length; i++) {
-    var e = data.entities[i];
-    if (e.x == null || e.y == null) continue;
-    var s = this._entityState[e.id];
-    if (!s) {
-        // First sample for this entity — snap to avoid sweeping from (0,0)
-        this._entityState[e.id] = {
-            currentX: e.x, currentY: e.y,
-            targetX:  e.x, targetY:  e.y
-        };
-    } else {
-        s.targetX = e.x;
-        s.targetY = e.y;
-        if (sm === 0) { s.currentX = e.x; s.currentY = e.y; }
+    if (!state.hasSample || speed === 0) {
+        state.current = nextValue;
+        state.hasSample = true;
     }
-}
 
-this._idleFrames = 0;
-this._lastData = data;
-this._lastConfig = config;
-this._draw();                        // draws each entity using _entityState[id].currentX/Y
-if (sm > 0) this._startAnimLoop();
+    state.idleFrames = 0;
+}
 ```
 
-## Shared timer, cleanup, and redraw path
+Initialize `current`, `target`, `speed`, `hasSample`, and `idleFrames` in adapter-owned state.
 
-Add to the viz's method object:
+## Per-entity update
+
+Key motion state by a stable entity identifier. Reset it when the coordinate scope changes.
 
 ```javascript
-_startAnimLoop: function() {
-    if (this._animTimer) return;
-    var self = this;
-    this._lastFrameTime = Date.now();
-    this._animTimer = setInterval(function() {
-        var now = Date.now();
-        var dt = (now - self._lastFrameTime) / 1000;
-        self._lastFrameTime = now;
+function updateEntities(stateById, entities, speed) {
+    entities.forEach(function(entity) {
+        if (!Number.isFinite(entity.x) || !Number.isFinite(entity.y)) return;
 
-        // Frame-rate-independent exponential ease-out
-        var alpha = 1 - Math.exp(-self._smoothness * dt);
-        if (alpha > 1) alpha = 1;
-
-        // Variant A:
-        self._currentValue += (self._targetValue - self._currentValue) * alpha;
-        var maxDelta = Math.abs(self._targetValue - self._currentValue);
-
-        // Variant B (replace the Variant A lines above with this block):
-        // var maxDelta = 0;
-        // var ids = Object.keys(self._entityState);
-        // for (var i = 0; i < ids.length; i++) {
-        //     var s = self._entityState[ids[i]];
-        //     var dx = s.targetX - s.currentX;
-        //     var dy = s.targetY - s.currentY;
-        //     s.currentX += dx * alpha;
-        //     s.currentY += dy * alpha;
-        //     var d = Math.abs(dx) + Math.abs(dy);
-        //     if (d > maxDelta) maxDelta = d;
-        // }
-
-        self._draw();
-
-        // Idle-stop when settled. Threshold depends on value range:
-        //   - Single value: 0.05 works for 0–100 percentages; scale for larger ranges.
-        //   - 2D coordinates: ~0.5 world-units; tune to your coordinate space.
-        if (maxDelta < 0.05) {
-            self._idleFrames += 1;
-            if (self._idleFrames >= 3) {
-                // Snap final frame exactly on target, then stop
-                // (Variant A: self._currentValue = self._targetValue)
-                // (Variant B: loop ids, set currentX=targetX, currentY=targetY)
-                self._draw();
-                self._stopAnimLoop();
-            }
-        } else {
-            self._idleFrames = 0;
+        var state = stateById.get(entity.id);
+        if (!state) {
+            stateById.set(entity.id, {
+                currentX: entity.x,
+                currentY: entity.y,
+                targetX: entity.x,
+                targetY: entity.y
+            });
+            return;
         }
-    }, 16);
-},
 
-_stopAnimLoop: function() {
-    if (this._animTimer) {
-        clearInterval(this._animTimer);
-        this._animTimer = null;
-    }
-},
-
-destroy: function() {
-    this._stopAnimLoop();
-    SplunkVisualizationBase.prototype.destroy.apply(this, arguments);
+        state.targetX = entity.x;
+        state.targetY = entity.y;
+        if (speed === 0) {
+            state.currentX = entity.x;
+            state.currentY = entity.y;
+        }
+    });
 }
 ```
 
-## Notes
+For an ES5 legacy source, use an object plus `for` loops instead of `Map`, `forEach`, and `Number.isFinite`; the state model remains the same.
 
-- `_draw()` is the viz's render helper. It reads from `this._lastData` / `this._lastConfig` and uses `this._currentValue` (Variant A) or `this._entityState[id].currentX/Y` (Variant B) for drawn values. The same helper is called from both `updateView` (fresh data) and the timer (cached data, tweened values).
-- The timer also needs to run when the viz receives a `_status` sentinel from the SPL `appendpipe` fallback (rule 27) — stop it in the status-message branch of `updateView` so the loop doesn't fire behind the placeholder.
-- For vizs where the full `_draw()` is too expensive to run at 60 FPS, layer a static-scene snapshot via `getImageData` / `putImageData` so the timer only redraws the moving parts. Use `requestAnimationFrame` for that variant to avoid `setInterval` backlogs when a frame runs long.
+## Animation step
+
+Use `requestAnimationFrame` unless the existing visualization has a tested scheduler abstraction:
+
+```javascript
+function stepScalar(state, now) {
+    var deltaSeconds = Math.min(0.25, (now - state.lastFrame) / 1000);
+    state.lastFrame = now;
+    var alpha = smoothingAlpha(state.speed, deltaSeconds);
+    state.current += (state.target - state.current) * alpha;
+    return Math.abs(state.target - state.current);
+}
+```
+
+Cap large time deltas after background-tab suspension. When the remaining delta is below a scale-appropriate threshold for several frames, snap exactly to target, draw once, and stop scheduling.
+
+## Legacy integration
+
+- Store tween state and the animation-frame ID on the visualization instance.
+- In `updateView`, parse the formatter setting, update targets, cache only the normalized render model/options needed for redraw, and start the loop when unsettled.
+- Draw loading, invalid, or custom status states only after cancelling the active loop.
+- In `destroy`, cancel the frame before calling `SplunkVisualizationBase.prototype.destroy`.
+- Use ES5 syntax in source when required by the app's legacy target.
+
+```javascript
+_stopAnimation: function() {
+    if (this._animationFrame) {
+        cancelAnimationFrame(this._animationFrame);
+        this._animationFrame = 0;
+    }
+}
+```
+
+## Native Studio integration
+
+- Keep tween state inside the iframe module or React component; do not store it in Dashboard Studio option state.
+- Update targets from `addDataSourceResultsListener` and relevant option listeners.
+- Redraw with the latest dimension, theme, and option snapshots.
+- Export an idempotent teardown that cancels the frame and invokes every API cleanup callback.
+- In React, keep mutable animation values and the frame ID in refs; cancel the frame in the effect cleanup.
+
+```javascript
+export function destroyVisualization() {
+    cleanups.splice(0).forEach((cleanup) => cleanup());
+    cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
+}
+```
+
+## Tuning and verification
+
+Time to close approximately 95% of the gap is `3 / speed` seconds. A speed near 8 settles in roughly 375 ms; lower values trade responsiveness for continuous broadcast-style motion.
+
+- Use one default across related panels to avoid visible desynchronization.
+- Expose speed only when users benefit from controlling it; `0` should snap.
+- Test first sample, rapid target changes, background-tab recovery, no-data transitions, resize during motion, and teardown.
+- If a full redraw is expensive, separate static and moving layers rather than allowing queued timer callbacks.

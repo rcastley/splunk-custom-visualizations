@@ -1,0 +1,4 @@
+interface:
+  display_name: "Splunk Custom Visualizations"
+  short_description: "Build and test Splunk Canvas visualizations"
+  default_prompt: "Use $splunk-viz to build or update a Splunk custom visualization for the appropriate framework."

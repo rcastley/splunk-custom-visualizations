@@ -1,5 +1,15 @@
 # Canvas 2D Recipes
 
+## Contents
+
+- [Color scales](#color-scales)
+- [Rounded rectangles](#rounded-rectangles)
+- [Arcs and gauges](#arcs--gauges)
+- [Legends](#legends)
+- [Grid and table layouts](#grid--table-layouts)
+- [Responsive text](#responsive-text)
+- [Drilldown hit testing](#drilldown-hit-testing)
+
 Use these as starting points for drawing code in `updateView`. All functions use ES5 syntax and follow the helper-function pattern (pure functions, no `this`).
 
 ## Color Scales

@@ -46,24 +46,28 @@ Read before editing:
 - `references/studio-react-template.md` — required only for React or React + TypeScript
 - `references/studio-harness.md` — required whenever creating or changing native Studio test coverage
 
-Use the official `@splunk/create --mode=dashboard-studio-extension` scaffold as the source of truth. Preserve its generated `build.mjs`, `package.mjs`, and build plugins unless a concrete requirement demands a change.
+Prefer the official `@splunk/create --mode=dashboard-studio-extension` scaffold for new projects. Preserve its generated `build.mjs`, `package.mjs`, and build plugins unless a concrete requirement demands a change. For an existing non-CLI project, preserve its development layout when it produces the required packaged app structure and implements the Dashboard Extension API correctly.
 
 ### Legacy framework
 
-Read `references/legacy-framework.md` before editing. It contains the app structure, AMD lifecycle, formatter, configuration, Cloud vetting, build, harness schema, and verification rules.
+Read `references/legacy-framework.md` before editing. It contains framework selection, requirements, platform differences, and routes to the task-specific legacy references.
 
-Also read only the references required by the feature:
+Then read only the references required by the task:
 
-- `references/core-template.md` — required when creating or materially changing `visualization_source.js`
+- `references/legacy-scaffold.md` — create or change app metadata, formatter controls, preview assets, or source layout
+- `references/legacy-runtime.md` — create, debug, or materially change runtime behavior
+- `references/core-template.md` — use as a lifecycle baseline when creating or materially changing `visualization_source.js`; adapt optional policies to the visualization
+- `references/legacy-harness.md` — create or change legacy harness fixtures and interactive controls
+- `references/legacy-packaging.md` — build, package, vet, or verify a legacy app
 - `references/drilldown.md` — legacy Canvas drilldowns
-- `references/dashboard-studio-app.md` — parent Dashboard Studio apps that bundle legacy visualizations; not the native extension framework
+- `references/dashboard-studio-app.md` — create a parent Dashboard Studio app that bundles legacy visualizations; not the native extension framework
 
 ### Shared rendering references
 
 - `references/canvas-recipes.md` — drawing helpers, thresholds, layout, and hit testing
 - `references/design-guidelines.md` — chart typography, palettes, axes, legends, gridlines, and descriptions
-- `references/custom-fonts.md` — use when embedding or debugging fonts; account for iframe isolation on native Studio
-- `references/smoothing.md` — adapt its tween math and state model; use framework-specific subscription and cleanup code
+- `references/custom-fonts.md` — embed or debug fonts; select the native Studio or legacy section
+- `references/smoothing.md` — apply shared tween math through the native Studio or legacy integration section
 
 ## Both-output architecture
 

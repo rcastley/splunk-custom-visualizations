@@ -1,5 +1,16 @@
 # Splunk Design Guidelines Reference
 
+## Contents
+
+- [Description best practices](#description-best-practices)
+- [Font standards](#font-standards)
+- [Color palettes](#color-palettes)
+- [Spacing constants](#spacing-constants)
+- [Gridlines and axes](#gridlines-and-axes)
+- [Legend swatches](#legend-swatches)
+- [Tooltips](#tooltips)
+- [Responsive design](#responsive-design)
+
 These constants come from the [official Splunk design guidelines](https://help.splunk.com/en/splunk-cloud-platform/developing-views-and-apps-for-splunk-web/10.3.2512/custom-visualizations/design-guidelines). Apply them when the viz includes standard chart elements (axes, legends, gridlines, tooltips). Canvas-only vizs that draw custom UI (gauges, status boards, etc.) may deviate where it makes sense, but should still use the official palettes and font stacks.
 
 ## Description Best Practices
@@ -24,7 +35,7 @@ var SPLUNK_FONT = "'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica, san
 | Tick mark labels | 11px | 12px | `#3C444D` |
 | Legend text | 11px | 12px | `#3C444D` |
 
-For Canvas vizs that don't have traditional chart axes (gauges, status boards, etc.), continue using `sans-serif` and `monospace` as described in rule 10 — the Splunk font stack is only relevant for chart-style visualizations.
+For Canvas visualizations without traditional chart axes, such as gauges and status boards, use an appropriate `sans-serif` or `monospace` fallback. Apply the Splunk chart font stack when the visualization uses conventional chart typography.
 
 ## Color Palettes
 

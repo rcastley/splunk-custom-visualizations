@@ -255,7 +255,7 @@ The build uses ES modules, esbuild, and an ES2017 browser target. Modern syntax 
 
 For every native Studio visualization:
 
-- [ ] Official CLI project structure is intact
+- [ ] New CLI projects preserve generated build/package files; existing non-CLI projects produce the required packaged app structure
 - [ ] Node.js is 22+
 - [ ] `config.json` parses and has a `primary` data contract when required
 - [ ] Every editor entry refers to an option declared in `optionsSchema`
