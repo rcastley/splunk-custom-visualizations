@@ -208,7 +208,7 @@ python3 -m http.server 8080
 
 Open [http://localhost:8080/test-harness.html](http://localhost:8080/test-harness.html) — select a viz, adjust sliders and settings, see the canvas update in real-time. Test the no-data state, resize the panel, and tweak formatter options — all without a Splunk instance.
 
-For native extensions, open [http://localhost:8080/studio-test-harness.html](http://localhost:8080/studio-test-harness.html). It derives interactive option controls from `config.json`, provides an editable columnar data grid, and exposes loading, no-data, size, theme, mode, reset, and reload controls. Raw JSON is available under **Advanced state** for malformed and multi-source test cases.
+For native extensions, open [http://localhost:8080/studio-test-harness.html](http://localhost:8080/studio-test-harness.html). It derives interactive option controls from `config.json`, supports fixture-defined data sliders and selects, provides an editable columnar data grid, and exposes loading, no-data, size, theme, mode, reset, and reload controls. Raw JSON is available under **Advanced state** for malformed and multi-source test cases.
 
 Each viz includes a `harness.json` that supplies sample data. Both harnesses are generic and contain no visualization-specific code. See [TEST-HARNESS.md](TEST-HARNESS.md) for full documentation.
 

@@ -6,6 +6,13 @@
       "bundle": "studio-examples/index-health/dist/index_health/visualization.js",
       "config": "studio-examples/index-health/visualizations/index_health/config.json",
       "harness": "studio-examples/index-health/visualizations/index_health/harness.json"
+    },
+    {
+      "id": "custom_single_value",
+      "label": "Custom Single Value",
+      "bundle": "studio-examples/custom-single-value/dist/custom_single_value/visualization.js",
+      "config": "studio-examples/custom-single-value/visualizations/custom_single_value/config.json",
+      "harness": "studio-examples/custom-single-value/visualizations/custom_single_value/harness.json"
     }
   ]
 }

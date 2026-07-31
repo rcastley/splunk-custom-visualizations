@@ -13,7 +13,7 @@ The native framework requires a separate iframe harness because its bundles use 
 3. Add `harness.json` beside the visualization's `config.json`; include `dataSources` and optional `tokens`.
 4. Open [http://localhost:8080/studio-test-harness.html](http://localhost:8080/studio-test-harness.html).
 
-The Studio harness builds its option controls from `config.json` `editorConfig` and `optionsSchema`, so text, number, checkbox, and color settings behave like ordinary controls and redraw immediately. Its primary data source is an editable grid with row/field controls and CSV/TSV paste. Loading, no-data, dimensions, fit, theme, view/edit mode, reset, and iframe reload are available without editing JSON.
+The Studio harness builds its option controls from `config.json` `editorConfig` and `optionsSchema`, so text, number, checkbox, select, and color settings behave like ordinary controls and redraw immediately. Its primary data source has optional slider/select/text controls plus an editable grid with row/field controls and CSV/TSV paste. Loading, no-data, dimensions, fit, theme, view/edit mode, reset, and iframe reload are available without editing JSON.
 
 Use **Advanced state** when you specifically need raw payload control—for example multiple data sources, row-oriented results, malformed values, or tokens. Drilldowns, `setOptions`, and extension errors remain visible in the event log.
 
@@ -45,9 +45,22 @@ Example fixture:
       }
     }
   },
+  "dataControls": [
+    {
+      "field": "count",
+      "row": 0,
+      "label": "web-01 count",
+      "type": "slider",
+      "min": 0,
+      "max": 100,
+      "step": 1
+    }
+  ],
   "tokens": {}
 }
 ```
+
+`dataControls` target the existing fixture rather than carrying separate defaults. A control accepts `field`, optional `source`, `row` (`first`, `last`, `all`, or an index), `type`, and the applicable `min`, `max`, `step`, or `options`. The `divide100` transform supports percentage-style sliders that must emit a `0..1` value. See the skill's `references/studio-harness.md` for the complete schema.
 
 The Studio harness loads the real built bundle in a fresh iframe and injects the public API surface for data, options, dimensions, mode, theme, tokens, errors, and drilldowns. The interactive controls live outside that iframe, preserving the native framework's isolation model. It is a development aid, not a substitute for installing and smoke-testing the packaged `.spl` in Splunk 10.4.
 

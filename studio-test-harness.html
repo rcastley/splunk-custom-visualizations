@@ -70,6 +70,12 @@
     .option-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
     .option-grid label { margin: 0; }
     .option-grid input[type="checkbox"] { margin-top: 8px; }
+    .data-control { margin-bottom: 10px; }
+    .data-control:last-child { margin-bottom: 0; }
+    .data-control-label { display: flex; justify-content: space-between; gap: 10px; }
+    .data-control-value { color: #f8be34; font-family: monospace; font-variant-numeric: tabular-nums; }
+    .data-control input[type="range"] { padding: 0; accent-color: #d85d22; }
+    .data-control input:disabled, .data-control select:disabled { cursor: not-allowed; opacity: .45; }
     .color-control { display: grid; grid-template-columns: 40px 1fr; gap: 6px; }
     .color-control input[type="color"] { width: 40px; padding: 2px; }
     .data-table-wrap { max-height: 310px; overflow: auto; border: 1px solid #3a444e; border-radius: 4px; }
@@ -178,6 +184,7 @@
 
         <fieldset>
             <legend>Primary data</legend>
+            <div id="dataControls" hidden></div>
             <div id="dataGrid" class="data-table-wrap"></div>
             <div class="actions" style="margin-top:9px">
                 <button id="addRowButton" class="secondary" type="button">+ Row</button>
@@ -242,6 +249,7 @@ const elements = {
     data: document.getElementById('dataInput'),
     tokens: document.getElementById('tokensInput'),
     optionControls: document.getElementById('optionControls'),
+    dataControls: document.getElementById('dataControls'),
     dataGrid: document.getElementById('dataGrid'),
     dataSummary: document.getElementById('dataSummary'),
     addRow: document.getElementById('addRowButton'),
@@ -329,11 +337,19 @@ function renderOptionControls() {
             const definition = schema[item.option] || {};
             const editor = item.editor || '';
             const type = definition.type || (editor.includes('number') ? 'number' : editor.includes('checkbox') ? 'boolean' : 'string');
+            const isSelect = editor.includes('select');
             const label = document.createElement('label');
             label.append(document.createTextNode(item.label || item.option));
-            const input = document.createElement('input');
+            const input = document.createElement(isSelect ? 'select' : 'input');
             input.dataset.option = item.option;
-            if (type === 'boolean') {
+            if (isSelect) {
+                (item.editorProps?.values || []).forEach((entry) => {
+                    const value = typeof entry === 'object' ? entry.value : entry;
+                    const optionLabel = typeof entry === 'object' ? entry.label ?? value : entry;
+                    input.add(new Option(String(optionLabel), String(value)));
+                });
+                input.value = String(options[item.option] ?? '');
+            } else if (type === 'boolean') {
                 input.type = 'checkbox';
                 input.checked = Boolean(options[item.option]);
             } else if (editor.includes('color')) {
@@ -343,7 +359,7 @@ function renderOptionControls() {
                 input.type = type === 'number' ? 'number' : 'text';
                 input.value = options[item.option] ?? '';
             }
-            input.addEventListener(type === 'boolean' ? 'change' : 'input', () => {
+            input.addEventListener(type === 'boolean' || isSelect ? 'change' : 'input', () => {
                 const next = parseJson(elements.options, 'Options JSON');
                 next[item.option] = optionValueFromInput(input, type);
                 writeJson(elements.options, next);
@@ -354,6 +370,145 @@ function renderOptionControls() {
         });
         section.append(title, grid);
         elements.optionControls.append(section);
+    });
+}
+
+function dataControlDefinitions() {
+    return fixture?.dataControls || fixture?.controls?.data || [];
+}
+
+function dataControlTable(definition) {
+    const dataSources = parseJson(elements.data, 'Data sources JSON');
+    if (!dataSources || typeof dataSources !== 'object' || Array.isArray(dataSources)) {
+        throw new Error('Data sources JSON must be an object');
+    }
+    const sourceName = definition.source || 'primary';
+    const source = dataSources[sourceName] ||= {};
+    const data = source.data ||= { fields: [], columns: [] };
+    const fields = (data.fields || []).map((field) => typeof field === 'string' ? field : field.name);
+    let columns = data.columns;
+    if (!Array.isArray(columns) && Array.isArray(data.rows)) {
+        columns = fields.map((_, columnIndex) => data.rows.map((row) => row[columnIndex] ?? ''));
+    }
+    columns = fields.map((_, index) => Array.isArray(columns?.[index]) ? [...columns[index]] : []);
+    return { dataSources, sourceName, source, data, fields, columns };
+}
+
+function controlField(definition) {
+    return definition.field || definition.name;
+}
+
+function controlRowIndexes(definition, rowCount) {
+    if (definition.row === 'all') {
+        return Array.from({ length: Math.max(1, rowCount) }, (_, index) => index);
+    }
+    if (definition.row === 'first') return [0];
+    if (Number.isInteger(definition.row) && definition.row >= 0) return [definition.row];
+    return [Math.max(0, rowCount - 1)];
+}
+
+function inputValueFromData(definition) {
+    const table = dataControlTable(definition);
+    const fieldIndex = table.fields.indexOf(controlField(definition));
+    if (fieldIndex < 0) return definition.default ?? '';
+    const column = table.columns[fieldIndex] || [];
+    const rowIndex = controlRowIndexes(definition, column.length)[0];
+    const stored = column[rowIndex] ?? definition.default ?? '';
+    if (definition.transform === 'divide100') {
+        const numeric = Number(stored);
+        return Number.isFinite(numeric) ? numeric * 100 : stored;
+    }
+    return stored;
+}
+
+function outputValueFromControl(definition, rawValue) {
+    if (definition.transform === 'divide100') {
+        const numeric = Number(rawValue);
+        return Number.isFinite(numeric) ? String(numeric / 100) : String(rawValue);
+    }
+    return String(rawValue);
+}
+
+function updateDataControl(definition, rawValue) {
+    const table = dataControlTable(definition);
+    const fieldName = controlField(definition);
+    if (!fieldName) return;
+    let fieldIndex = table.fields.indexOf(fieldName);
+    const rowCount = Math.max(0, ...table.columns.map((column) => column.length));
+    if (fieldIndex < 0) {
+        fieldIndex = table.fields.length;
+        table.fields.push(fieldName);
+        table.columns.push(Array(rowCount).fill(''));
+    }
+    const targets = controlRowIndexes(definition, rowCount);
+    const column = table.columns[fieldIndex];
+    const output = outputValueFromControl(definition, rawValue);
+    const requiredLength = Math.max(...targets) + 1;
+    table.columns.forEach((currentColumn) => {
+        while (currentColumn.length < requiredLength) currentColumn.push('');
+    });
+    targets.forEach((rowIndex) => {
+        column[rowIndex] = output;
+    });
+    table.data.fields = table.fields.map((name, index) => table.data.fields?.[index] || { name });
+    table.data.columns = table.columns;
+    delete table.data.rows;
+    table.source.data = table.data;
+    writeJson(elements.data, table.dataSources);
+}
+
+function dataControlOptions(definition) {
+    return definition.options || definition.values || [];
+}
+
+function renderDataControls() {
+    elements.dataControls.replaceChildren();
+    const definitionsForData = dataControlDefinitions();
+    elements.dataControls.hidden = definitionsForData.length === 0;
+    if (!definitionsForData.length) return;
+
+    definitionsForData.forEach((definition) => {
+        const fieldName = controlField(definition);
+        if (!fieldName) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'data-control';
+        const label = document.createElement('label');
+        label.className = 'data-control-label';
+        const labelText = document.createElement('span');
+        labelText.textContent = definition.label || fieldName;
+        const valueText = document.createElement('span');
+        valueText.className = 'data-control-value';
+        const input = document.createElement(definition.type === 'select' ? 'select' : 'input');
+        const initialValue = inputValueFromData(definition);
+
+        if (definition.type === 'select') {
+            dataControlOptions(definition).forEach((item) => {
+                const value = typeof item === 'object' ? item.value ?? item.v : item;
+                const optionLabel = typeof item === 'object' ? item.label ?? item.l ?? value : item;
+                input.add(new Option(String(optionLabel), String(value)));
+            });
+            input.value = String(initialValue);
+        } else {
+            input.type = definition.type === 'slider' || definition.type === 'range'
+                ? 'range'
+                : definition.type === 'number' ? 'number' : 'text';
+            if (definition.min !== undefined) input.min = definition.min;
+            if (definition.max !== undefined) input.max = definition.max;
+            if (definition.step !== undefined) input.step = definition.step;
+            input.value = initialValue;
+        }
+        input.disabled = Boolean(savedDataSources);
+        valueText.textContent = input.value;
+        label.append(labelText, valueText);
+        const eventName = definition.type === 'select' ? 'change' : 'input';
+        input.addEventListener(eventName, () => {
+            valueText.textContent = input.value;
+            updateDataControl(definition, input.value);
+            renderDataGrid();
+            applyState(false);
+        });
+        wrap.append(label, input);
+        elements.dataControls.append(wrap);
     });
 }
 
@@ -408,6 +563,7 @@ function renderDataGrid() {
                 const latest = primaryTable();
                 latest.columns[columnIndex][rowIndex] = input.value;
                 savePrimaryTable(latest);
+                renderDataControls();
                 applyState(false);
             });
             cell.append(input);
@@ -548,6 +704,7 @@ async function selectVisualization(id) {
         elements.noData.classList.remove('active');
         elements.loading.checked = false;
         renderOptionControls();
+        renderDataControls();
         renderDataGrid();
         const initialSize = config?.config?.size || {};
         elements.width.value = initialSize.initialWidth || 600;
@@ -578,6 +735,7 @@ elements.reload.addEventListener('click', reloadFrame);
 elements.reset.addEventListener('click', () => selectVisualization(current?.id));
 elements.apply.addEventListener('click', () => {
     renderOptionControls();
+    renderDataControls();
     renderDataGrid();
     applyState();
 });
@@ -599,6 +757,7 @@ elements.noData.addEventListener('click', () => {
         writeJson(elements.data, empty);
         elements.noData.classList.add('active');
     }
+    renderDataControls();
     renderDataGrid();
     applyState();
 });
@@ -620,6 +779,7 @@ elements.addRow.addEventListener('click', () => {
     const table = primaryTable();
     table.columns.forEach((column) => column.push(''));
     savePrimaryTable(table);
+    renderDataControls();
     renderDataGrid();
     applyState();
 });
@@ -627,6 +787,7 @@ elements.removeRow.addEventListener('click', () => {
     const table = primaryTable();
     table.columns.forEach((column) => column.pop());
     savePrimaryTable(table);
+    renderDataControls();
     renderDataGrid();
     applyState();
 });
@@ -638,6 +799,7 @@ elements.addField.addEventListener('click', () => {
     table.fields.push(name.trim());
     table.columns.push(Array(rowCount).fill(''));
     savePrimaryTable(table);
+    renderDataControls();
     renderDataGrid();
     applyState();
 });
@@ -646,6 +808,7 @@ elements.removeField.addEventListener('click', () => {
     table.fields.pop();
     table.columns.pop();
     savePrimaryTable(table);
+    renderDataControls();
     renderDataGrid();
     applyState();
 });
@@ -660,6 +823,7 @@ elements.pasteCsv.addEventListener('click', () => {
     savePrimaryTable(table);
     savedDataSources = null;
     elements.noData.classList.remove('active');
+    renderDataControls();
     renderDataGrid();
     applyState();
 });

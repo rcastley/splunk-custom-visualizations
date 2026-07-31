@@ -2,6 +2,16 @@
 
 Use `studio-test-harness.html` for native Dashboard Studio extension bundles. Keep the existing `test-harness.html` for legacy AMD bundles.
 
+## Contents
+
+- [Why the harnesses are separate](#why-the-harnesses-are-separate)
+- [Repository files](#repository-files)
+- [Manifest](#manifest)
+- [Per-visualization fixture](#per-visualization-fixture)
+- [Interactive data controls](#interactive-data-controls)
+- [Host behavior](#host-behavior)
+- [Required checks](#required-checks)
+
 ## Why the harnesses are separate
 
 The legacy harness mocks RequireJS modules, `SplunkVisualizationBase`, row-major data, formatter namespaces, and legacy lifecycle calls. A native Studio extension is an ES module that runs inside a sandboxed iframe and imports `@splunk/dashboard-studio-extension`, which delegates to an injected `globalThis.DashboardExtensionAPI`.
@@ -67,9 +77,52 @@ Paths are relative to `studio-test-harness.html`. The harness loads the built bu
 
 Keep result values as strings to match Splunk search results. Prefer columnar fixtures. Include `rows` only when explicitly testing normalization compatibility.
 
-Option defaults and interactive controls come from `config.json` `optionsSchema` and `editorConfig`. The harness renders text, number, checkbox, and color controls that update the extension immediately. It also keeps an advanced JSON editor for source-editor edge cases. Do not duplicate option definitions or defaults in `harness.json`.
+Option defaults and interactive controls come from `config.json` `optionsSchema` and `editorConfig`. The harness renders text, number, checkbox, select, and color controls that update the extension immediately. It also keeps an advanced JSON editor for source-editor edge cases. Do not duplicate option definitions or defaults in `harness.json`.
 
 The primary data source is presented as an editable table, with row add/remove and CSV/TSV paste controls. The advanced JSON editor remains available for multiple data sources, malformed payloads, row-oriented data, and other cases that cannot be represented by the table.
+
+## Interactive data controls
+
+Add optional `dataControls` to `harness.json` for frequently changed search values. Values come from `dataSources`; do not duplicate them as control defaults.
+
+```json
+{
+  "dataControls": [
+    {
+      "field": "speed",
+      "row": "last",
+      "label": "Speed",
+      "type": "slider",
+      "min": 0,
+      "max": 380,
+      "step": 1
+    },
+    {
+      "field": "weather",
+      "row": 0,
+      "label": "Weather",
+      "type": "select",
+      "options": [
+        { "value": "0", "label": "Clear" },
+        { "value": "3", "label": "Rain" }
+      ]
+    }
+  ]
+}
+```
+
+Each control supports:
+
+- `field` — required result field; `name` is accepted as an alias
+- `source` — data-source name, default `primary`
+- `row` — zero-based index, `first`, `last`, or `all`; default `last`
+- `type` — `slider`, `range`, `select`, `number`, or `text`
+- `min`, `max`, and `step` — numeric input attributes
+- `options` — primitive values or `{ "value", "label" }` objects for selects
+- `transform: "divide100"` — expose `-100..100` while sending `-1..1`
+- `default` — fallback only when the fixture lacks the field or row
+
+Controls write string values into the columnar fixture, matching Splunk search results, and redraw immediately. Use `row: "all"` only when intentionally overriding a field across every result row. Keep visualization options out of `harness.json`; generate those controls from `config.json`.
 
 ## Host behavior
 

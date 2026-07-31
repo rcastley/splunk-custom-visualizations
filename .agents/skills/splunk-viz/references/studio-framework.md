@@ -190,7 +190,7 @@ Define visualization metadata, option defaults, validation, and editor layout in
 }
 ```
 
-Keep every option synchronized across `optionsSchema`, `editorConfig`, code fallbacks, documentation, and `harness.json`. Unlike legacy formatter values, Studio options retain JSON types; still validate user-supplied and source-editor values before use.
+Keep every option synchronized across `optionsSchema`, `editorConfig`, code fallbacks, and documentation. Do not duplicate option definitions or defaults in `harness.json`; the Studio harness generates option controls from `config.json`. Use `harness.json` `dataControls` only for interactive search-result values. Unlike legacy formatter values, Studio options retain JSON types; still validate user-supplied and source-editor values before use.
 
 Set `showDrilldown` and `hasEventHandlers` consistently with implemented interactions. List only authorized token names in `canSetTokens`.
 
