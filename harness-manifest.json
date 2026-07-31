@@ -37,8 +37,7 @@
       "line_trend_chart",
       "live_ticker",
       "network_topology",
-      "arcade_leaderboard",
-      "calendar_heatmap"
+      "arcade_leaderboard"
     ]
   },
   "vizs": [
@@ -70,7 +69,6 @@
     "resource_gauge",
     "scheduler_health",
     "search_activity",
-    "index_storage",
-    "calendar_heatmap"
+    "index_storage"
   ]
 }
