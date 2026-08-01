@@ -13,9 +13,11 @@ The native framework requires a separate iframe harness because its bundles use 
 3. Add `harness.json` beside the visualization's `config.json`; include `dataSources` and optional `tokens`.
 4. Open [http://localhost:8080/studio-test-harness.html](http://localhost:8080/studio-test-harness.html).
 
-The Studio harness builds its option controls from `config.json` `editorConfig` and `optionsSchema`, so text, number, checkbox, select, and color settings behave like ordinary controls and redraw immediately. Its primary data source has optional slider/select/text controls plus an editable grid with row/field controls and CSV/TSV paste. Loading, no-data, dimensions, fit, theme, view/edit mode, reset, and iframe reload are available without editing JSON.
+The Studio harness uses the same Splunk-branded layout and interaction hierarchy as the legacy harness: a fixed task-oriented sidebar, instrumented preview stage, scope readout, drag resize handle, and bottom telemetry strip. It builds option controls from `config.json` `editorConfig` and `optionsSchema`, so text, number, checkbox, select, and color settings redraw immediately. Its primary data source has optional slider/select/text controls plus an editable grid with row/field controls and CSV/TSV paste.
 
-Use **Advanced state** when you specifically need raw payload control—for example multiple data sources, row-oriented results, malformed values, or tokens. Drilldowns, `setOptions`, and extension errors remain visible in the event log.
+Use the sun/moon icon at the top right as the single theme control; it changes both the harness chrome and the theme reported to the extension. In light mode, the adjacent contrast icon changes only the preview-stage backdrop. Mode and loading remain Dashboard-state controls in the sidebar. Open **Events** in the telemetry strip for drilldowns, `setOptions`, errors, and state diagnostics, or use the help icon for the in-harness workflow guide.
+
+Use **Advanced state** when you specifically need raw payload control—for example multiple data sources, row-oriented results, malformed values, or tokens.
 
 Example manifest entry:
 

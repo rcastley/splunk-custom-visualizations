@@ -22,7 +22,9 @@ Loading one framework in the other harness can produce false successes because t
 
 ```text
 studio-test-harness.html
+studio-harness.css
 studio-harness-manifest.json
+splunk-logo.png
 studio-examples/
   <project>/
     dist/<viz-name>/visualization.js
@@ -139,12 +141,15 @@ It sends state changes into the iframe through `postMessage`, reflecting the asy
 
 The outer developer UI should provide the same high-value interactions as the legacy harness where the framework allows them:
 
+- Splunk branding, color strata, task-oriented sidebar sections, preview scope chrome, and status telemetry
 - schema-driven option controls with immediate redraws
 - an editable data grid and CSV/TSV paste
 - loading and no-data toggles
 - exact dimensions, fit-to-stage, theme, and view/edit mode controls
 - reset and iframe reload actions
 - raw state editors and an event/drilldown log for advanced debugging
+
+Use one visible control for each state. In particular, keep the global light/dark theme as a single sun/moon icon in the top-right toolbar; do not duplicate it with a sidebar select. A light-mode-only contrast icon may change the stage backdrop without changing the theme reported to the extension. Keep advanced JSON and event diagnostics collapsed until requested so routine slider, option, and data work remains prominent.
 
 Keep these controls as an outer host around the sandboxed iframe. Do not move the extension into the parent document to simplify the UI.
 

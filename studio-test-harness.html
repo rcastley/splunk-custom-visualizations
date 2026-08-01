@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Splunk Dashboard Studio extension harness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
     :root {
         color-scheme: dark;
@@ -127,108 +130,116 @@
         aside { border-right: 0; border-bottom: 1px solid #303841; }
     }
 </style>
+<link rel="stylesheet" href="studio-harness.css">
 </head>
-<body>
-<header>
-    <h1>Dashboard Studio extension harness</h1>
-    <p>Native iframe API · <code>framework_type = studio_visualization</code></p>
-</header>
-<main>
+<body class="theme-dark">
+<div class="app-shell">
     <aside>
-        <fieldset>
-            <legend>Visualization</legend>
-            <label>Bundle
-                <select id="vizSelect"></select>
-            </label>
-            <div class="actions">
-                <button id="reloadButton" type="button">Reload iframe</button>
-                <button id="resetButton" class="secondary" type="button">Reset</button>
+        <div class="brand-strata" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <div class="sidebar-brand">
+            <img class="splunk-logo" src="splunk-logo.png" alt="Splunk">
+            <span class="brand-divider"></span>
+            <div>
+                <p class="brand-title">studio<span>&gt;</span> harness</p>
+                <p class="brand-subtitle">$ native extension mode</p>
             </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Dashboard state</legend>
-            <div class="row">
-                <label>Width
-                    <input id="widthInput" type="number" min="50" value="600">
-                </label>
-                <label>Height
-                    <input id="heightInput" type="number" min="50" value="360">
-                </label>
-            </div>
-            <div class="row">
-                <label>Theme
-                    <select id="themeInput">
-                        <option value="light">Light</option>
-                        <option value="dark" selected>Dark</option>
-                    </select>
-                </label>
-                <label>Mode
-                    <select id="modeInput">
-                        <option value="view">View</option>
-                        <option value="edit">Edit</option>
-                    </select>
-                </label>
-            </div>
-            <label><input id="loadingInput" type="checkbox">Data source loading</label>
-            <div class="actions">
-                <button id="noDataButton" class="secondary" type="button">No data</button>
-                <button id="fitButton" class="secondary" type="button">Fit panel</button>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Visualization options</legend>
-            <div id="optionControls"></div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Primary data</legend>
-            <div id="dataControls" hidden></div>
-            <div id="dataGrid" class="data-table-wrap"></div>
-            <div class="actions" style="margin-top:9px">
-                <button id="addRowButton" class="secondary" type="button">+ Row</button>
-                <button id="removeRowButton" class="secondary" type="button">− Row</button>
-                <button id="addFieldButton" class="secondary" type="button">+ Field</button>
-                <button id="removeFieldButton" class="secondary" type="button">− Field</button>
-                <button id="pasteCsvButton" class="secondary" type="button">Paste CSV</button>
-            </div>
-            <p id="dataSummary" class="hint"></p>
-        </fieldset>
-
-        <fieldset class="advanced">
-            <legend>Advanced state</legend>
-            <details>
-                <summary>Raw JSON editors</summary>
-                <label>Typed options JSON
-                    <textarea id="optionsInput" spellcheck="false">{}</textarea>
-                </label>
-                <label>Columnar dataSources JSON
-                    <textarea id="dataInput" spellcheck="false">{}</textarea>
-                </label>
-                <label>Submitted tokens JSON
-                    <textarea id="tokensInput" spellcheck="false">{}</textarea>
-                </label>
-                <button id="applyButton" class="secondary" type="button">Apply raw state</button>
-            </details>
-        </fieldset>
+        </div>
+        <div class="sidebar-scroll">
+            <section class="sidebar-section" data-section="size">
+                <h2 class="section-label">Panel Size</h2>
+                <div class="size-row">
+                    <label>Width<input id="widthInput" type="number" min="50" value="600"></label>
+                    <span class="multiply">×</span>
+                    <label>Height<input id="heightInput" type="number" min="50" value="360"></label>
+                    <button id="fitButton" class="secondary primary" type="button">Fit</button>
+                </div>
+            </section>
+            <section class="sidebar-section" data-section="viz">
+                <h2 class="section-label">Visualization</h2>
+                <label>Bundle<select id="vizSelect"></select></label>
+                <div class="viz-actions">
+                    <button id="noDataButton" class="secondary" type="button">No-data</button>
+                    <button id="resetButton" class="secondary" type="button">Reset</button>
+                    <button id="reloadButton" class="secondary" type="button">Reload</button>
+                </div>
+            </section>
+            <section class="sidebar-section" data-section="state">
+                <h2 class="section-label">Dashboard State</h2>
+                <input id="themeInput" type="hidden" value="dark">
+                <div class="row">
+                    <label>Mode<select id="modeInput"><option value="view">View</option><option value="edit">Edit</option></select></label>
+                    <label>Data status<span class="loading-control"><input id="loadingInput" type="checkbox"> Loading</span></label>
+                </div>
+            </section>
+            <section class="sidebar-section" data-section="options">
+                <h2 class="section-label">Visualization Options</h2>
+                <div id="optionControls"></div>
+            </section>
+            <section class="sidebar-section" data-section="data">
+                <h2 class="section-label">Primary Data</h2>
+                <div id="dataControls" hidden></div>
+                <div id="dataGrid" class="data-table-wrap"></div>
+                <div class="actions data-actions">
+                    <button id="addRowButton" class="secondary" type="button">+ Row</button>
+                    <button id="removeRowButton" class="secondary" type="button">− Row</button>
+                    <button id="addFieldButton" class="secondary" type="button">+ Field</button>
+                    <button id="removeFieldButton" class="secondary" type="button">− Field</button>
+                    <button id="pasteCsvButton" class="secondary" type="button">Paste CSV</button>
+                </div>
+                <p id="dataSummary" class="hint"></p>
+            </section>
+            <section class="sidebar-section advanced" data-section="advanced">
+                <h2 class="section-label">Advanced State</h2>
+                <details>
+                    <summary>Raw JSON editors</summary>
+                    <label>Typed options JSON<textarea id="optionsInput" spellcheck="false">{}</textarea></label>
+                    <label>Columnar dataSources JSON<textarea id="dataInput" spellcheck="false">{}</textarea></label>
+                    <label>Submitted tokens JSON<textarea id="tokensInput" spellcheck="false">{}</textarea></label>
+                    <button id="applyButton" class="secondary" type="button">Apply raw state</button>
+                </details>
+            </section>
+        </div>
     </aside>
-
-    <section class="stage-wrap">
+    <main class="stage-wrap">
         <div class="stage-toolbar">
-            <strong id="vizLabel">No visualization selected</strong>
-            <span id="status" class="status">Loading manifest…</span>
             <div class="actions">
-                <button id="themeButton" class="secondary compact" type="button">Toggle theme</button>
-                <button id="modeButton" class="secondary compact" type="button">Edit mode</button>
+                <button id="stageBackdropButton" class="secondary icon-button" type="button" title="Preview on a dark stage" aria-label="Toggle dark stage" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg></button>
+                <button id="themeButton" class="secondary icon-button" type="button" title="Switch to light mode" aria-label="Switch theme">
+                    <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+                    <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" hidden><path d="M20.4 15.4A9 9 0 0 1 8.6 3.6 9 9 0 1 0 20.4 15.4z"/></svg>
+                </button>
+                <a class="secondary icon-button" href="https://github.com/rcastley/splunk-custom-visualizations" target="_blank" rel="noopener" title="View on GitHub" aria-label="View on GitHub"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+                <button id="helpButton" class="secondary icon-button" type="button" title="Harness help" aria-label="Open harness help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.5 2.5 0 0 1 4.8 1c0 1.7-2.5 2-2.5 3.5M12 17h.01"/></svg></button>
             </div>
         </div>
-        <div class="stage">
-            <iframe id="vizFrame" title="Dashboard Studio visualization preview" sandbox="allow-scripts allow-same-origin"></iframe>
+        <div class="stage" id="stage">
+            <div class="scope" id="scope">
+                <div class="scope-readout"><span class="scope-live">Live</span><span class="scope-name" id="vizLabel">No visualization selected</span><span>·</span><span class="scope-dimensions" id="scopeDimensions">600×360</span></div>
+                <span class="scope-corner tl"></span><span class="scope-corner tr"></span><span class="scope-corner bl"></span><span class="scope-corner br"></span>
+                <iframe id="vizFrame" title="Dashboard Studio visualization preview" sandbox="allow-scripts allow-same-origin"></iframe>
+                <button id="resizeHandle" class="resize-handle" type="button" title="Drag to resize" aria-label="Drag to resize"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor"><path d="M9 1 1 9M9 5 5 9"/></svg></button>
+            </div>
         </div>
-        <pre id="eventLog" aria-label="Extension event log"></pre>
+        <div class="telemetry">
+            <div class="telemetry-item"><span class="telemetry-key">Status</span><span id="status" class="status telemetry-value">Loading manifest…</span></div>
+            <div class="telemetry-item"><span class="telemetry-key">Theme</span><span id="themeTelemetry" class="telemetry-value">dark</span></div>
+            <div class="telemetry-item"><span class="telemetry-key">Mode</span><span id="modeTelemetry" class="telemetry-value">view</span></div>
+            <div class="telemetry-spacer"></div>
+            <div class="telemetry-item"><button id="eventToggleButton" class="secondary" type="button">Events</button></div>
+        </div>
+        <pre id="eventLog" aria-label="Extension event log" hidden></pre>
+    </main>
+    <section id="helpPanel" class="help-panel" aria-label="Studio harness help" hidden>
+        <div class="help-header"><h2><span>&gt;_</span> man studio-harness</h2><button id="helpCloseButton" class="secondary icon-button" type="button" title="Close help" aria-label="Close help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+        <div class="help-content">
+            <h3>Getting started</h3><ol><li>Select a built extension bundle.</li><li>Adjust generated option controls and data sliders.</li><li>Use No-data, Loading, mode, and resize controls to exercise lifecycle states.</li></ol>
+            <h3>Theme</h3><p>The sun/moon icon changes both the harness chrome and the theme reported through DashboardExtensionAPI. In light mode, the contrast icon changes only the preview backdrop.</p>
+            <h3>Preview scope</h3><p>Enter exact dimensions, click Fit, or drag the lower-right handle. The iframe remains isolated and receives dimensions through the native API mock.</p>
+            <h3>Advanced diagnostics</h3><p>Use Advanced State for raw options, data sources, and tokens. Open Events in the telemetry strip for drilldowns, setOptions, and errors.</p>
+        </div>
     </section>
-</main>
+</div>
+
 
 <script type="module">
 const elements = {
@@ -239,7 +250,14 @@ const elements = {
     noData: document.getElementById('noDataButton'),
     fit: document.getElementById('fitButton'),
     themeButton: document.getElementById('themeButton'),
-    modeButton: document.getElementById('modeButton'),
+    stageBackdrop: document.getElementById('stageBackdropButton'),
+    eventToggle: document.getElementById('eventToggleButton'),
+    resizeHandle: document.getElementById('resizeHandle'),
+    sunIcon: document.getElementById('sunIcon'),
+    moonIcon: document.getElementById('moonIcon'),
+    helpButton: document.getElementById('helpButton'),
+    helpClose: document.getElementById('helpCloseButton'),
+    helpPanel: document.getElementById('helpPanel'),
     width: document.getElementById('widthInput'),
     height: document.getElementById('heightInput'),
     theme: document.getElementById('themeInput'),
@@ -260,6 +278,9 @@ const elements = {
     frame: document.getElementById('vizFrame'),
     stage: document.querySelector('.stage'),
     label: document.getElementById('vizLabel'),
+    dimensions: document.getElementById('scopeDimensions'),
+    themeTelemetry: document.getElementById('themeTelemetry'),
+    modeTelemetry: document.getElementById('modeTelemetry'),
     status: document.getElementById('status'),
     log: document.getElementById('eventLog'),
 };
@@ -270,6 +291,7 @@ let config = null;
 let fixture = null;
 let frameReady = false;
 let savedDataSources = null;
+let stageDark = localStorage.getItem('studio-harness-stage-dark') === 'true';
 
 function log(type, detail) {
     const time = new Date().toLocaleTimeString();
@@ -280,6 +302,20 @@ function log(type, detail) {
 function setStatus(message, isError = false) {
     elements.status.textContent = message;
     elements.status.classList.toggle('error', isError);
+}
+
+function applyHarnessChrome() {
+    const isDark = elements.theme.value === 'dark';
+    document.body.classList.toggle('theme-dark', isDark);
+    document.body.classList.toggle('theme-light', !isDark);
+    elements.themeButton.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+    elements.sunIcon.hidden = !isDark;
+    elements.moonIcon.hidden = isDark;
+    elements.stageBackdrop.hidden = isDark;
+    elements.stageBackdrop.classList.toggle('active', !isDark && stageDark);
+    elements.stage.classList.toggle('stage-dark', !isDark && stageDark);
+    elements.themeTelemetry.textContent = elements.theme.value;
+    elements.modeTelemetry.textContent = elements.mode.value;
 }
 
 function parseJson(element, label) {
@@ -592,6 +628,9 @@ function applyState(logEvent = true) {
         const state = currentState();
         elements.frame.style.width = `${state.width}px`;
         elements.frame.style.height = `${state.height}px`;
+        elements.dimensions.textContent = `${state.width}×${state.height}`;
+        elements.themeTelemetry.textContent = state.theme;
+        elements.modeTelemetry.textContent = state.mode;
         if (frameReady) {
             elements.frame.contentWindow.postMessage({ type: 'studio-harness:set-state', state }, '*');
         }
@@ -768,12 +807,26 @@ elements.fit.addEventListener('click', () => {
 });
 elements.themeButton.addEventListener('click', () => {
     elements.theme.value = elements.theme.value === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('studio-harness-theme', elements.theme.value);
+    applyHarnessChrome();
     applyState();
 });
-elements.modeButton.addEventListener('click', () => {
-    elements.mode.value = elements.mode.value === 'edit' ? 'view' : 'edit';
-    elements.modeButton.textContent = elements.mode.value === 'edit' ? 'View mode' : 'Edit mode';
-    applyState();
+elements.stageBackdrop.addEventListener('click', () => {
+    stageDark = !stageDark;
+    localStorage.setItem('studio-harness-stage-dark', stageDark);
+    applyHarnessChrome();
+});
+elements.eventToggle.addEventListener('click', () => {
+    elements.log.hidden = !elements.log.hidden;
+    elements.eventToggle.classList.toggle('active', !elements.log.hidden);
+});
+elements.helpButton.addEventListener('click', () => {
+    elements.helpPanel.hidden = false;
+    elements.helpButton.classList.add('active');
+});
+elements.helpClose.addEventListener('click', () => {
+    elements.helpPanel.hidden = true;
+    elements.helpButton.classList.remove('active');
 });
 elements.addRow.addEventListener('click', () => {
     const table = primaryTable();
@@ -827,9 +880,40 @@ elements.pasteCsv.addEventListener('click', () => {
     renderDataGrid();
     applyState();
 });
-[elements.width, elements.height, elements.theme, elements.mode, elements.loading].forEach((element) =>
+[elements.width, elements.height, elements.loading].forEach((element) =>
     element.addEventListener('change', () => applyState())
 );
+elements.mode.addEventListener('change', () => {
+    applyHarnessChrome();
+    applyState();
+});
+
+elements.resizeHandle.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startWidth = Number(elements.width.value) || 600;
+    const startHeight = Number(elements.height.value) || 360;
+    elements.resizeHandle.setPointerCapture(event.pointerId);
+
+    const move = (moveEvent) => {
+        elements.width.value = Math.max(50, Math.round(startWidth + moveEvent.clientX - startX));
+        elements.height.value = Math.max(50, Math.round(startHeight + moveEvent.clientY - startY));
+        applyState(false);
+    };
+    const stop = () => {
+        elements.resizeHandle.removeEventListener('pointermove', move);
+        elements.resizeHandle.removeEventListener('pointerup', stop);
+        elements.resizeHandle.removeEventListener('pointercancel', stop);
+    };
+
+    elements.resizeHandle.addEventListener('pointermove', move);
+    elements.resizeHandle.addEventListener('pointerup', stop);
+    elements.resizeHandle.addEventListener('pointercancel', stop);
+});
+
+elements.theme.value = localStorage.getItem('studio-harness-theme') || 'dark';
+applyHarnessChrome();
 
 try {
     const response = await fetch('studio-harness-manifest.json', { cache: 'no-store' });
